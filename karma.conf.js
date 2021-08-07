@@ -2,7 +2,7 @@ module.exports = function (config) {
   config.set({
     frameworks: ["mocha", "chai", "karma-typescript"],
     files: [
-      "src/**/*.{ts,tsx}", // *.tsx for React Jsx
+      "src/**/*.+(ts|tsx)", // *.tsx for React Jsx
       {
         pattern: "node_modules/@dittolive/ditto/web/ditto.wasm",
         included: false,
@@ -11,7 +11,7 @@ module.exports = function (config) {
       },
     ],
     preprocessors: {
-      "**/*.ts": ["karma-typescript"],
+      "**/*.+(ts|tsx)": ["karma-typescript"],
     },
     reporters: ["dots", "karma-typescript"],
     port: 9876, // karma web server port

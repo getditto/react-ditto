@@ -1,5 +1,5 @@
 import { assert } from "chai";
-import { add } from "./foo";
+import { add } from "../foo";
 import { Ditto, init, IdentityDevelopment } from "@dittolive/ditto"
 
 describe("Foo", () => {
