@@ -1,23 +1,26 @@
 {
   "name": "@dittolive/react-ditto",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "React wrappers for Ditto",
+  "main": "dist/index.js",
   "scripts": {
+    "build": "rimraf dist && tsc",
     "test": "karma start"
   },
   "author": "",
   "license": "ISC",
   "peerDependencies": {
+    "@dittolive/ditto": "^1.0.8",
     "react": ">=16.0.0",
-    "react-dom": ">=16.0.0",
-    "@dittolive/ditto": "^1.0.8"
+    "react-dom": ">=16.0.0"
   },
   "devDependencies": {
     "@dittolive/ditto": "^1.0.8",
     "@types/chai": "^4.2.21",
+    "@types/lodash": "^4.14.172",
     "@types/mocha": "^9.0.0",
     "@types/react": "^17.0.16",
+    "@types/react-dom": "^17.0.9",
     "chai": "^4.3.4",
     "karma": "^6.3.4",
     "karma-chai": "^0.1.0",
@@ -25,8 +28,10 @@
     "karma-mocha": "^2.0.1",
     "karma-typescript": "^5.5.1",
     "karma-typescript-es6-transform": "^5.5.1",
+    "lodash": "^4.17.21",
     "mocha": "^9.0.3",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "rimraf": "^3.0.2"
   }
 }

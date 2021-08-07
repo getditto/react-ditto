@@ -39,6 +39,7 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
   const [ditto, setDitto] = useState<Ditto | undefined>(undefined);
 
   useEffect(() => {
+    console.log(`useEffect ditto provider called`)
     init(props.initOptions).then(
       () => {
         const ditto = new Ditto(props.identity, props.path);
@@ -53,7 +54,7 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
         setError(err);
       }
     );
-  });
+  }, []);
 
   const renderFunction: RenderFunction | undefined =
     props.render || props.children;

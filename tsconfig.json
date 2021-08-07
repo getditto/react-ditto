@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "target": "es5",
+    "lib": ["es6", "dom"],
     "allowJs": true,
     "module": "commonjs",
     "noImplicitAny": true,
@@ -7,7 +9,11 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "jsx": "react",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "declaration": true,
+    "declarationDir": "./dist",
+    "declarationMap": true,
+    "outDir": "dist"
   },
   "compileOnSave": false,
   "include": [

@@ -1,23 +1,25 @@
 import {
   Ditto,
+  Document,
   Store,
   PendingCursorOperation,
   LiveQueryEvent,
   LiveQuery,
-} from '@dittolive/ditto';
-import { useEffect, useState } from 'react';
-import { useDitto } from './ditto-context';
+} from "@dittolive/ditto";
+import { useEffect, useState } from "react";
+import { useDitto } from "./ditto-context";
 
 type UseLiveQueryParam = (store: Store) => PendingCursorOperation;
 
 export function useLiveQuery<T = Document>(
   param: UseLiveQueryParam
 ): {
+  ditto: Ditto,
   documents: T[];
   liveQueryEvent: LiveQueryEvent | undefined;
   liveQuery: LiveQuery | undefined;
 } {
-  const ditto: Ditto = useDitto();
+  const ditto = useDitto();
 
   const [documents, setDocuments] = useState<T[]>([]);
   const [liveQueryEvent, setLiveQueryEvent] = useState<
@@ -26,17 +28,22 @@ export function useLiveQuery<T = Document>(
   const [liveQuery, setLiveQuery] = useState<LiveQuery | undefined>();
 
   useEffect(() => {
-    const l = param(ditto.store).observe((docs, event) => {
-      setDocuments((docs as unknown) as Array<T>);
-      setLiveQueryEvent(event);
-    });
-    setLiveQuery(l);
+    let liveQuery: LiveQuery;
+    if (ditto) {
+      liveQuery = param(ditto.store).observe((docs, event) => {
+        setDocuments(docs as unknown as Array<T>);
+        setLiveQueryEvent(event);
+      });
+      setLiveQuery(liveQuery);
+    }
+
     return (): void => {
-      l.stop();
+      liveQuery?.stop();
     };
-  }, [ditto.store, param]);
+  }, [ditto]);
 
   return {
+    ditto,
     documents,
     liveQueryEvent,
     liveQuery,
@@ -44,6 +51,7 @@ export function useLiveQuery<T = Document>(
 }
 
 export function useLiveQueryLazy<T = Document>(): {
+  ditto: Ditto,
   documents: T[];
   liveQueryEvent?: LiveQueryEvent | undefined;
   stop: () => void;
@@ -56,11 +64,13 @@ export function useLiveQueryLazy<T = Document>(): {
     LiveQueryEvent | undefined
   >();
   const [liveQuery, setLiveQuery] = useState<LiveQuery | undefined>();
-  const [pendingCursor, setPendingCursor] = useState<PendingCursorOperation | undefined>();
+  const [pendingCursor, setPendingCursor] = useState<
+    PendingCursorOperation | undefined
+  >();
 
   useEffect(() => {
     const l = pendingCursor?.observe((docs, event) => {
-      setDocuments((docs as unknown) as Array<T>);
+      setDocuments(docs as unknown as Array<T>);
       setLiveQueryEvent(event);
     });
     setLiveQuery(l);
@@ -70,14 +80,17 @@ export function useLiveQueryLazy<T = Document>(): {
   }, [pendingCursor]);
 
   function start(param: UseLiveQueryParam): void {
-    setPendingCursor(param(ditto.store))
+    if (ditto) {
+      setPendingCursor(param(ditto.store));
+    }
   }
-  
+
   function stop(): void {
     liveQuery?.stop();
   }
 
   return {
+    ditto,
     documents,
     liveQueryEvent,
     stop,
