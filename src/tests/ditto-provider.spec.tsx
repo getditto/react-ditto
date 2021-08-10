@@ -20,7 +20,7 @@ describe("Ditto Provider Tests", () => {
     container = null;
   });
 
-  it("should load", function(done) {
+  it("should load ditto", function(done) {
     const identity: IdentityDevelopment = {
       appName: "live.ditto.test",
       siteID: 234,
@@ -35,6 +35,18 @@ describe("Ditto Provider Tests", () => {
         <DittoProvider identity={identity} path="/foo" initOptions={initOptions}>
           {({loading, error, ditto}) => {
             if (loading) {
+              expect(error).to.be.undefined
+              expect(ditto).to.be.undefined
+            }
+            if (error) {
+              expect(loading).to.be.false
+              expect(ditto).to.be.undefined
+            }
+            if (ditto) {
+              expect(loading).to.be.false
+              expect(error).to.be.undefined
+              expect(ditto.identity).to.deep.eq(identity)
+              expect(ditto.path).to.eq("/foo")
               done()
             }
             return <></>
