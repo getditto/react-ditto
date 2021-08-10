@@ -1,14 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import 'bootstrap/dist/css/bootstrap.css';
+import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import { IdentityDevelopment } from '@dittolive/ditto';
 import { DittoProvider } from '@dittolive/react-ditto';
 
-
-const identity: IdentityDevelopment = {
+const identity = {
   appName: "live.ditto.test",
   siteID: 234,
   type: "development",

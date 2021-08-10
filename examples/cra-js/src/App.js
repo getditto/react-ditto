@@ -1,7 +1,7 @@
-import React, { ReactElement, useState } from "react";
+import React, { useState } from "react";
 import { useLiveQuery } from "@dittolive/react-ditto";
 
-export default function Tasks(): ReactElement {
+export default function App() {
   const [newTaskInput, setNewTaskInput] = useState("");
 
   const { documents, ditto } = useLiveQuery<any>((store) =>
@@ -22,25 +22,26 @@ export default function Tasks(): ReactElement {
     setNewTaskInput("");
   };
 
-  const removeById = (_id: any) => {
+  const removeById = (_id) => {
     ditto.store.collection("tasks").findByID(_id).remove();
   };
 
-  const setIsCompleted = (_id: any, isCompleted: boolean) => {
+  const setIsCompleted = (_id, isCompleted) => {
     ditto.store
       .collection("tasks")
       .findByID(_id)
-      .update((mutableDoc: any) => {
+      .update((mutableDoc) => {
         mutableDoc.isCompleted = isCompleted;
       });
   };
 
-  const updateTaskBody = (_id: any, body: string) => {
+  const updateTaskBody = (_id, body) => {
     ditto.store
       .collection("tasks")
       .findByID(_id)
-      .update((mutableDoc: any) => {
+      .update((mutableDoc) => {
         mutableDoc.body = body;
+        console.log(mutableDoc.body)
       });
   };
 
