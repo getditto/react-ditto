@@ -1,6 +1,8 @@
 # React Wrapper Library for Ditto
 
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
+![example workflow](https://github.com/getditto/react-ditto/actions/workflows/ci.yml/badge.svg)
+
 
 This is a React wrapper library for [Ditto](https://www.ditto.live). 
 
