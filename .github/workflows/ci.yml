@@ -5,8 +5,8 @@ jobs:
     name: Continuous Deployment
     runs-on: ubuntu-latest
     steps:
-      - id: 'updating-ubuntu'
-        run: sudo apt-get update && sudo apt-get install -y libgbm-dev
+      # - name: 'Updating Upun'
+      #   run: sudo apt-get update && sudo apt-get install -y libgbm-dev
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
       - uses: browser-actions/setup-chrome@latest
