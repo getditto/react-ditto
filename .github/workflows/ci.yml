@@ -5,7 +5,7 @@ jobs:
     name: Continuous Deployment
     runs-on: ubuntu-latest
     steps:
-      - id: 'updating ubuntu'
+      - id: 'updating-ubuntu'
         run: sudo apt-get update && sudo apt-get install -y libgbm-dev
       - uses: actions/checkout@v2
       - uses: borales/actions-yarn@v2.3.0
