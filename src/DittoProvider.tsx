@@ -7,7 +7,13 @@ export type RenderFunction = (providerState: ProviderState) => ReactNode;
 
 export interface DittoProviderProps extends React.PropsWithChildren<unknown> {
   initOptions?: InitOptions;
-  setup: () => Promise<Ditto | { [name: string]: Ditto }>;
+  /**
+   * This function is called when the DittoProvider initialized the Ditto module.
+   * Use this function to bootstrap the Ditto instance to the provider.
+   *
+   * Return a
+   */
+  setup: () => Promise<Ditto | Ditto[]>;
   render?: RenderFunction;
   children?: RenderFunction;
 }
@@ -36,11 +42,33 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
     (async function () {
       try {
         await init(props.initOptions);
-        const ditto: Ditto | DittoHash = await props.setup();
+        const setupReturnValue: Ditto | Ditto[] = await props.setup();
         const dittoHash: DittoHash = {};
-        if (ditto instanceof Ditto) {
-          dittoHash["default"] = ditto;
+
+        if (!setupReturnValue) {
+          const error = Error(
+            "Please return a Ditto instance or an array of Ditto instances in the provider's setup() function."
+          );
+          setProviderState({
+            loading: false,
+            error: error,
+          });
+          return;
         }
+
+        if (Object.prototype.toString.call(setupReturnValue) === "[object Array]") {
+          const dittoHash: DittoHash = {};
+          (setupReturnValue as Ditto[]).forEach((ditto) => {
+            dittoHash[ditto.path] = ditto;
+          });
+          setDittoHash(dittoHash);
+        } else {
+          const singleDitto: Ditto = setupReturnValue as Ditto;
+          const dittoHash: DittoHash = {};
+          dittoHash[singleDitto.path] = singleDitto;
+          setDittoHash(dittoHash);
+        }
+
         setDittoHash(dittoHash);
         setProviderState({
           error: undefined,
