@@ -17,6 +17,7 @@ jobs:
       - uses: borales/actions-yarn@v2.3.0
         with:
           cmd: test # will run `yarn test` command
+      - uses: browser-actions/setup-chrome@latest
       - uses: borales/actions-yarn@v2.3.0
         with:
           cmd: docs:generate # will run `yarn docs:generate` command
