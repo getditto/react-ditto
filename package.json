@@ -36,6 +36,7 @@
     "karma-mocha": "^2.0.1",
     "karma-typescript": "^5.5.1",
     "karma-typescript-es6-transform": "^5.5.1",
+    "live-server": "^1.2.1",
     "lodash": "^4.17.21",
     "mocha": "^9.0.3",
     "puppeteer": "^10.4.0",
@@ -44,8 +45,5 @@
     "rimraf": "^3.0.2",
     "typedoc": "^0.22.4",
     "typescript": "^4.4.3"
-  },
-  "dependencies": {
-    "live-server": "^1.2.1"
   }
 }
