@@ -38,6 +38,7 @@
     "karma-typescript-es6-transform": "^5.5.1",
     "lodash": "^4.17.21",
     "mocha": "^9.0.3",
+    "puppeteer": "^10.4.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "rimraf": "^3.0.2",
