@@ -9,11 +9,14 @@ jobs:
       #   run: sudo apt-get update && sudo apt-get install -y libgbm-dev
       - name: 'Checkout Repository'
         uses: actions/checkout@v2
-      - name: 'Checkout Node with Chrome'
+        
+      - name: 'Setup Node'
         uses: actions/setup-node@v2
-        uses: browser-actions/setup-chrome@latest
         with:
           node-version: '14'
+        
+      - name: 'Setup Chrome'
+        uses: browser-actions/setup-chrome@latest
           
       - name: 'Install and Build'
         run: |
