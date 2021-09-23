@@ -8,22 +8,8 @@ jobs:
       - id: 'updating-ubuntu'
         run: sudo apt-get update && sudo apt-get install -y libgbm-dev
       - uses: actions/checkout@v2
-      - uses: borales/actions-yarn@v2.3.0
+      - uses: actions/setup-node@v2
         with:
-          cmd: install # will run `yarn install` command
-      - uses: borales/actions-yarn@v2.3.0
-        with:
-          cmd: build # will run `yarn build` command
-      - uses: borales/actions-yarn@v2.3.0
-        with:
-          cmd: test # will run `yarn test` command
-      - uses: browser-actions/setup-chrome@latest
-      - uses: borales/actions-yarn@v2.3.0
-        with:
-          cmd: docs:generate # will run `yarn docs:generate` command
-      - name: deploy
-        uses: peaceiris/actions-gh-pages@v3
-        if: ${{ github.ref == 'refs/heads/master' }}
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./documentation-website
+          node-version: '14'
+      - run: yarn
+      - run: yarn build
