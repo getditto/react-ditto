@@ -7,12 +7,27 @@ jobs:
     steps:
       # - name: 'Updating Upun'
       #   run: sudo apt-get update && sudo apt-get install -y libgbm-dev
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-      - uses: browser-actions/setup-chrome@latest
+      - name: 'Checkout Repository'
+        uses: actions/checkout@v2
+      - name: 'Checkout Node with Chrome'
+        uses: actions/setup-node@v2
+        uses: browser-actions/setup-chrome@latest
         with:
           node-version: '14'
-      - run: yarn
-      - run: yarn build
-      - run: CHROMIUM_BIN=$(which chrome) yarn test
-      - run: yarn docs:generate
+          
+      - name: 'Install and Build'
+        run: |
+          yarn
+          yarn build
+          
+      - name: 'Run Tests'
+        run: CHROMIUM_BIN=$(which chrome) yarn test
+        
+      - name: 'Generate Documentation Website'
+        run: yarn docs:generate
+        
+      - name: Deploy Documentation Website 🚀
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: gh-pages # The branch the action should deploy to.
+          folder: documentation-website # The folder the action should deploy.
