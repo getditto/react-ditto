@@ -1,3 +1,3 @@
-export * from "./ditto-context"
-export * from "./ditto-provider"
-export * from "./query"
+export * from "./DittoContext"
+export * from "./DittoProvider"
+export * from "./queries"

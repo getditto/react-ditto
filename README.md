@@ -2,7 +2,9 @@
 
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 
-This is a React wrapper library for [Ditto](https://www.ditto.live). This has support for web, [NodeJS](https://nodejs.org/en/), and [Electron](https://www.electronjs.org/) environments. 
+This is a React wrapper library for [Ditto](https://www.ditto.live). 
+
+Coming Soon: This has support for web, [NodeJS](https://nodejs.org/en/), and [Electron](https://www.electronjs.org/) environments. 
 
 React Native is coming soon! If you're interested in react native please send us an email at [contact@ditto.live](contact@ditto.live)
 
@@ -107,9 +109,14 @@ ReactDOM.render(
 import { useLiveQuery } from "@dittolive/react-ditto";
 
 export default function App() {
-  const { documents, ditto } = useLiveQuery<any>((store) =>
-    store.collection("tasks").findAll()
-  );
+  
+  const [isCompleted, setIsCompleted] = useState(false)
+  
+  const { documents, ditto } = usePendingCursorOperation({
+    collection: 'tasks',
+    query: 'isCompleted == $args.isCompleted'
+    args: { isCompleted: isCompleted}
+  });
   
   return (
     <ul>
@@ -119,6 +126,9 @@ export default function App() {
         </li>
       ))}
     </ul>
+    <button onClick={() => {
+      setIsCompleted(!isCompleted)
+    }} >Toggle</button>
   )
 }
 ```
@@ -127,6 +137,7 @@ export default function App() {
 
 * __Building:__ run `npm run build` or `yarn build`. 
 * __Run Tests:__ run `npm test` or `yarn test`
+* __Generating Documentation Website Files__ run `npm run docs:generate`
 
 ## Running example apps.
 
