@@ -14,7 +14,7 @@ export interface UsePeersParams {
  * @param params live query parameters.
  * @returns
  */
-export function useLivePeers(params: UsePeersParams = {}): {
+export function useRemotePeers(params: UsePeersParams = {}): {
   ditto: Ditto;
   remotePeers: RemotePeer[];
 } {

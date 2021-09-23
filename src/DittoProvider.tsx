@@ -46,12 +46,11 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
         const dittoHash: DittoHash = {};
 
         if (!setupReturnValue) {
-          const error = Error(
-            "Please return a Ditto instance or an array of Ditto instances in the provider's setup() function."
-          );
           setProviderState({
             loading: false,
-            error: error,
+            error: new Error(
+              "Please return a Ditto instance or an array of Ditto instances in the provider's setup() function."
+            ),
           });
           return;
         }
