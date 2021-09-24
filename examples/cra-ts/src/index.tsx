@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
-import { IdentityDevelopment } from '@dittolive/ditto';
+import { IdentityDevelopment, Ditto } from '@dittolive/ditto';
 import { DittoProvider } from '@dittolive/react-ditto';
 
 
@@ -20,8 +20,11 @@ const initOptions = {
 
 ReactDOM.render(
   <React.StrictMode>
-    <DittoProvider identity={identity} path="/foo" initOptions={initOptions}> 
-      {({loading, error, ditto}) => {
+    <DittoProvider setup={async () => {
+      const ditto = new Ditto(identity)
+      return ditto
+    }} initOptions={initOptions}> 
+      {({loading, error}) => {
         if (loading) return <h1>Loading</h1>
         if (error)  return <h1>{error.message}</h1>
         return <App/>

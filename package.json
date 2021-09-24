@@ -8,7 +8,7 @@
     "test": "karma start",
     "lint": "eslint . --ext .ts",
     "docs:generate": "rimraf documentation-website/* && typedoc",
-    "docs:serve": "live-server ./docs"
+    "docs:serve": "live-server ./documentation-website"
   },
   "author": "",
   "license": "ISC",

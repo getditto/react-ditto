@@ -1,12 +1,19 @@
 import React, { ReactElement, useState } from "react";
-import { useLiveQuery } from "@dittolive/react-ditto";
+import { usePendingCursorOperation } from "@dittolive/react-ditto";
+import { DocumentID } from "@dittolive/ditto";
+
+interface Task {
+  _id: DocumentID;
+  body: string;
+  isCompleted: boolean;
+}
 
 export default function App(): ReactElement {
   const [newTaskInput, setNewTaskInput] = useState("");
 
-  const { documents, ditto } = useLiveQuery<any>((store) =>
-    store.collection("tasks").findAll()
-  );
+  const { documents, ditto } = usePendingCursorOperation<Task>({
+    collection: 'tasks'
+  })
 
   const submit = () => {
     if (newTaskInput.length === 0) {
@@ -70,28 +77,28 @@ export default function App(): ReactElement {
           </form>
 
           {documents.map((doc) => (
-            <div key={doc.value["_id"]} className="input-group mb-3">
+            <div key={doc._id.value} className="input-group mb-3">
               <div className="input-group-text">
                 <input
                   className="form-check-input mt-0"
                   type="checkbox"
-                  checked={doc.value["isCompleted"]}
+                  checked={doc.isCompleted}
                   onChange={() => {
-                    setIsCompleted(doc.id, !doc.value.isCompleted);
+                    setIsCompleted(doc._id, !doc.isCompleted);
                   }}
                 />
               </div>
               <input
                 type="text"
                 className="form-control"
-                value={doc.value["body"]}
+                value={doc.body}
                 onChange={(e) => {
-                  updateTaskBody(doc.id, e.currentTarget.value);
+                  updateTaskBody(doc._id, e.currentTarget.value);
                 }}
               />
               <button
                 className="btn btn-outline-secondary"
-                onClick={() => removeById(doc.id)}
+                onClick={() => removeById(doc._id)}
               >
                 Remove
               </button>
