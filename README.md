@@ -108,7 +108,7 @@ ReactDOM.render(
 4. In your `App` component, you can now use hooks like `useLiveQuery` to get your documents like so:
 
 ```tsx
-import { useLiveQuery } from "@dittolive/react-ditto";
+import { usePendingCursorOperation } from "@dittolive/react-ditto";
 
 export default function App() {
   
