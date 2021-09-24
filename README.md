@@ -114,7 +114,7 @@ export default function App() {
   
   const [isCompleted, setIsCompleted] = useState(false)
   
-  const { documents, ditto } = usePendingCursorOperation({
+  const { documents, ditto } = useLiveQuery({
     collection: 'tasks',
     query: 'isCompleted == $args.isCompleted'
     args: { isCompleted: isCompleted}
