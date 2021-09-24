@@ -13,7 +13,7 @@ export interface DittoProviderProps extends React.PropsWithChildren<unknown> {
    *
    * Return a
    */
-  setup: () => Promise<Ditto | Ditto[]>;
+  setup: () => Ditto | Ditto[];
   render?: RenderFunction;
   children?: RenderFunction;
 }
@@ -41,10 +41,9 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
   useEffect(() => {
     (async function () {
       try {
-        await init(props.initOptions);
-        const setupReturnValue: Ditto | Ditto[] = await props.setup();
+        await init();
+        const setupReturnValue: Ditto | Ditto[] = props.setup();
         const dittoHash: DittoHash = {};
-
         if (!setupReturnValue) {
           setProviderState({
             loading: false,
@@ -54,7 +53,6 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
           });
           return;
         }
-
         if (Object.prototype.toString.call(setupReturnValue) === "[object Array]") {
           const dittoHash: DittoHash = {};
           (setupReturnValue as Ditto[]).forEach((ditto) => {
@@ -74,6 +72,7 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
           loading: false,
         });
       } catch (err) {
+        console.error(err);
         setDittoHash({});
         setProviderState({
           error: err,
