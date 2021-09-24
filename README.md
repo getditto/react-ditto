@@ -108,13 +108,13 @@ ReactDOM.render(
 4. In your `App` component, you can now use hooks like `useLiveQuery` to get your documents like so:
 
 ```tsx
-import { useLiveQuery } from "@dittolive/react-ditto";
+import { usePendingCursorOperation } from "@dittolive/react-ditto";
 
 export default function App() {
   
   const [isCompleted, setIsCompleted] = useState(false)
   
-  const { documents, ditto } = useLiveQuery({
+  const { documents, ditto } = usePendingCursorOperation({
     collection: 'tasks',
     query: 'isCompleted == $args.isCompleted'
     args: { isCompleted: isCompleted}
