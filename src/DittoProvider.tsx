@@ -18,8 +18,17 @@ export interface DittoProviderProps extends React.PropsWithChildren<unknown> {
   children?: RenderFunction;
 }
 
-interface ProviderState {
+/**
+ * A description of the {@link DittoProvider}'s loading state. 
+ */
+export interface ProviderState {
+  /**
+   * If the Provider is loading the ditto.wasm file.
+   */
   loading: boolean;
+  /**
+   * If there was an error loading the ditto.wasm file, the error will have an {@link Error}
+   */
   error: Error | undefined;
 }
 

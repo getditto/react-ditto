@@ -6,15 +6,11 @@
 
 This is a React wrapper library for [Ditto](https://www.ditto.live). 
 
-Coming Soon: This has support for web, [NodeJS](https://nodejs.org/en/), and [Electron](https://www.electronjs.org/) environments. 
-
-React Native is coming soon! If you're interested in react native please send us an email at [contact@ditto.live](contact@ditto.live)
-
-
+Currently, this project works in a web browser environment. This project will soon have support for [NodeJS](https://nodejs.org/en/), and [Electron](https://www.electronjs.org/) and React Native environments. If you're interested in react native please send us an email at [contact@ditto.live](contact@ditto.live)
 
 ## Installation
 
-1. Install this library with npm or yarn
+1. Install this library with npm or yarn:
 
 ```
 npm install @dittolive/ditto @dittolive/react-ditto
@@ -26,9 +22,7 @@ or with yarn
 yarn add @dittolive/ditto @dittolive/react-ditto
 ```
 
-2. (This step is required only for web browser-based react applications. Skip this step if you are building for Electron, React Native, or NodeJS environments.) Ensure the `node_modules/@dittolive/ditto/web/ditto.wasm` can be served while your application runs. It means it's available in some sort of `/public` or `/static` directory. For example, if you're using [webpack](https://webpack.js.org/), you'll most likely want to use the [copy-webpack-plugin](https://webpack.js.org/plugins/copy-webpack-plugin/).
-
-3. At the top level of your react app, wrap it with the `DittoProvider` component like so:
+2. At the top level of your react app, wrap it with the `DittoProvider` component like so:
 
 ```tsx
 <DittoProvider>
@@ -44,21 +38,7 @@ yarn add @dittolive/ditto @dittolive/react-ditto
 
 This is a quick guide on using Ditto with `create-react-app` builds.
 
-1. (This step is required only for web browser based react applications). In your `package.json` add a `postinstall` script  to copy the `ditto.wasm` file into the `public`
-
-```diff
-"scripts": {
-  "start": "react-scripts start",
-  "build": "react-scripts build",
-  "test": "react-scripts test",
-  "eject": "react-scripts eject",
-+ "postinstall": "cp ./node_modules/@dittolive/ditto/web/ditto.wasm ./public"
-}
-```
-
-This postinstall script will copy the `ditto.wasm` file from node_modules into the `./public` directory which represents statically served content. 
-
-2. Install this library with npm or yarn
+1. Install this library with npm or yarn
 
 ```
 npm install @dittolive/ditto @dittolive/react-ditto
@@ -70,7 +50,7 @@ or with yarn
 yarn add @dittolive/ditto @dittolive/react-ditto
 ```
 
-3. In `./src/index.js` or if you're using typescript `./src/index.tsx` setup Ditto with the `DittoProvider` like so:
+2. In `./src/index.js` or if you're using typescript `./src/index.tsx` setup Ditto with the `DittoProvider` like so:
 
 ```tsx
 import { Identity } from '@dittolive/ditto';
@@ -105,7 +85,7 @@ ReactDOM.render(
 );
 ```
 
-4. In your `App` component, you can now use hooks like `useLiveQuery` to get your documents like so:
+3. In your `App` component, you can now use hooks like `useLiveQuery` to get your documents like so:
 
 ```tsx
 import { usePendingCursorOperation } from "@dittolive/react-ditto";
