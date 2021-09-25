@@ -107,14 +107,6 @@ export default function App() {
         </li>
       ))}
     </ul>
-    <button onClick={() => {
-      updateByID((store) => store.collection('tasks').findByID(doc._id), (mutableDoc) => {
-        if (mutableDoc) {
-          mutableDoc.isCompleted = !mutableDoc.isCompleted
-        }
-      })
-      setIsCompleted(!isCompleted)
-    }} >Toggle</button>
   )
 }
 ```

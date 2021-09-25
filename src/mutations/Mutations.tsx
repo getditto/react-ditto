@@ -1,4 +1,5 @@
 import {
+  Collection,
   Document,
   DocumentID,
   DocumentValue,
@@ -43,6 +44,8 @@ export type PendingIDSpecificOperationResolver = (
   store: Store
 ) => PendingIDSpecificOperation;
 export type UpdateByIDClosure<T = Document> = (document: T | undefined) => void;
+
+export type CollectionResolver = (store: Store) => Collection
 
 /**
  * Updates a document by a query
@@ -109,7 +112,7 @@ export type RemoveByIDMutationFunction = (
  * Insert a document into a collection
  */
 export type InsertFunction<V = DocumentValue> = (
-  collection: string,
+  collectionResolver: CollectionResolver,
   value: V,
   insertOptions?: InsertOptions
 ) => Promise<DocumentID>;
@@ -175,8 +178,8 @@ export function useMutations<T = Document>(
     return cursor.remove();
   };
 
-  const insert: InsertFunction<T> = (collection, value, insertOptions) => {
-    return ditto.store.collection(collection).insert(value as unknown as DocumentValue, insertOptions);
+  const insert: InsertFunction<T> = (collectionResolver, value, insertOptions) => {
+    return collectionResolver(ditto.store).insert(value as unknown as DocumentValue, insertOptions);
   };
 
   return {
