@@ -32,8 +32,8 @@ describe("Ditto Provider Tests", () => {
     act(() => {
       render(
         <DittoProvider
-          setup={async () => {
-            await init(initOptions);
+          initOptions={initOptions}
+          setup={() => {
             const ditto = new Ditto(identity);
             return ditto;
           }}
