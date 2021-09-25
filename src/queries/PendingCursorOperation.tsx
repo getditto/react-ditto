@@ -18,7 +18,7 @@ export interface LiveQueryParams {
   path?: string;
   /**
    * A Ditto query string. For more information on the query string syntax refer to https://docs.ditto.live/concepts/querying
-   * For example to query for a color property equal to red use: 
+   * For example to query for a color property equal to red use:
    * `color == 'red'`
    */
   query?: string;
@@ -26,7 +26,7 @@ export interface LiveQueryParams {
    * Optional arguments that will interpolate the values into the `query` string. For example, if your query string is
    * ```
    * "color == $args.color && mileage >= $args.mileage"
-   * ```. You can provide an args dictionary like: 
+   * ```. You can provide an args dictionary like:
    * ```js
    * { color: "red", mileage: "1200" }
    * ```
@@ -35,16 +35,16 @@ export interface LiveQueryParams {
   sort?: {
     /**
      * An optional sort parameter for your query. For example, if you want to sort with ascending values on a specific field like `"createdOn"` use:
-     * 
+     *
      * ```js
      * {
      *   propertyPath: "createdOn",
      *   direction: "ascending"
      * }
      * ```
-     * 
+     *
      * For descending values use:
-     * 
+     *
      * ```js
      * {
      *   propertyPath: "createdOn",
@@ -63,11 +63,13 @@ export interface LiveQueryParams {
 }
 
 /**
- * Runs a ditto live query immediately with the 
+ * Runs a ditto live query immediately with the
  * @param params live query parameters.
- * @returns 
+ * @returns
  */
-export function usePendingCursorOperation<T = Document>(params: LiveQueryParams): {
+export function usePendingCursorOperation<T = Document>(
+  params: LiveQueryParams
+): {
   ditto: Ditto;
   documents: T[];
   liveQueryEvent: LiveQueryEvent | undefined;
@@ -86,9 +88,9 @@ export function usePendingCursorOperation<T = Document>(params: LiveQueryParams)
       const collection = ditto.store.collection(params.collection);
       let cursor: PendingCursorOperation;
       if (params.query) {
-         cursor = collection.findAll()
-      } else {
         cursor = collection.find(params.query, params.args);
+      } else {
+        cursor = collection.findAll();
       }
       if (params.sort) {
         cursor = cursor.sort(params.sort.propertyPath, params.sort.direction);
@@ -101,12 +103,13 @@ export function usePendingCursorOperation<T = Document>(params: LiveQueryParams)
         setLiveQueryEvent(event);
       });
       setLiveQuery(liveQuery);
+    } else {
+      setLiveQuery(undefined)
     }
-
     return (): void => {
       liveQuery?.stop();
     };
-  }, [ditto, params]);
+  }, [ditto, params.args, params.collection, params.limit, params.query, params.sort]);
 
   return {
     ditto,

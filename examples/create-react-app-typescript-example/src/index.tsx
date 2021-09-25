@@ -4,28 +4,26 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { DittoProvider } from "@dittolive/react-ditto";
-import { Ditto, Identity } from "@dittolive/ditto";
-
-const identity: Identity = {
-  appName: "live.ditto.example",
-  siteID: 1234,
-  type: "development",
-};
+import { Ditto } from "@dittolive/ditto";
 
 ReactDOM.render(
   <React.StrictMode>
     <DittoProvider
       setup={() => {
-        const ditto = new Ditto(identity, '/foo');
-        return ditto;
+        const ditto = new Ditto({
+          appName: "live.ditto.example",
+          siteID: 1234,
+          type: "development",
+        }, '/foo');
+        return [ditto];
       }}
     >
       {({ loading, error }) => {
         if (loading) {
-          return <span>Loading</span>
+          return <h1>Loading</h1>;
         }
         if (error) {
-          return <span>{error.toString()}</span>
+          return <h1>Error: {JSON.stringify(error)}</h1>;
         }
         return <App />;
       }}

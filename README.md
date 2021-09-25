@@ -3,8 +3,7 @@
 [![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/)
 ![example workflow](https://github.com/getditto/react-ditto/actions/workflows/ci.yml/badge.svg)
 
-
-This is a React wrapper library for [Ditto](https://www.ditto.live). 
+This is a React wrapper library for [Ditto](https://www.ditto.live).
 
 Currently, this project works in a web browser environment. This project will soon have support for [NodeJS](https://nodejs.org/en/), and [Electron](https://www.electronjs.org/) and React Native environments. If you're interested in react native please send us an email at [contact@ditto.live](contact@ditto.live)
 
@@ -26,10 +25,13 @@ yarn add @dittolive/ditto @dittolive/react-ditto
 
 ```tsx
 <DittoProvider>
-  {({loading, error, ditto}) => {
-    if (loading) return <span>Loading Ditto...</span>
-    if (error) return <span>There was an error loading Ditto. Error: {error.toString()}</span>
-    if (ditto) return <App/>
+  {({ loading, error, ditto }) => {
+    if (loading) return <span>Loading Ditto...</span>;
+    if (error)
+      return (
+        <span>There was an error loading Ditto. Error: {error.toString()}</span>
+      );
+    if (ditto) return <App />;
   }}
 </DittoProvider>
 ```
@@ -53,9 +55,8 @@ yarn add @dittolive/ditto @dittolive/react-ditto
 2. In `./src/index.js` or if you're using typescript `./src/index.tsx` setup Ditto with the `DittoProvider` like so:
 
 ```tsx
-import { Identity } from '@dittolive/ditto';
-import { DittoProvider } from '@dittolive/react-ditto';
-
+import { Identity } from "@dittolive/ditto";
+import { DittoProvider } from "@dittolive/react-ditto";
 
 const identity: Identity = {
   appName: "live.ditto.test",
@@ -64,51 +65,54 @@ const identity: Identity = {
 };
 
 /**
-   * This step is required only for web browser-based react applications.
-   * This tells the `DittoProvider` where it should load the .wasm file. This should match the location of the postinstall script
-   **/
+ * This step is required only for web browser-based react applications.
+ * This tells the `DittoProvider` where it should load the .wasm file. This should match the location of the postinstall script
+ **/
 const initOptions = {
-  webAssemblyModule: "/ditto.wasm"
-}
+  webAssemblyModule: "/ditto.wasm",
+};
 
 ReactDOM.render(
   <React.StrictMode>
-    <DittoProvider identity={identity} path="/foo" initOptions={initOptions}> 
-      {({loading, error, ditto}) => {
-        if (loading) return <p>Loading</p>
-        if (error)  return <p>{error.message}</p>
-        return <App/>
+    <DittoProvider identity={identity} path="/foo" initOptions={initOptions}>
+      {({ loading, error, ditto }) => {
+        if (loading) return <p>Loading</p>;
+        if (error) return <p>{error.message}</p>;
+        return <App />;
       }}
     </DittoProvider>
   </React.StrictMode>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 ```
 
 3. In your `App` component, you can now use hooks like `useLiveQuery` to get your documents like so:
 
 ```tsx
-import { usePendingCursorOperation } from "@dittolive/react-ditto";
+import { usePendingCursorOperation, useMutations } from "@dittolive/react-ditto";
 
 export default function App() {
-  
-  const [isCompleted, setIsCompleted] = useState(false)
-  
+
   const { documents, ditto } = usePendingCursorOperation({
     collection: 'tasks',
-    query: 'isCompleted == $args.isCompleted'
-    args: { isCompleted: isCompleted}
   });
-  
+
+  const { updateByID, insert } = useMutations()
+
   return (
     <ul>
       {documents.map(doc => (
-        <li key={doc.value["_id"]}>
-          {doc.value["body"]}
+        <li key={doc._id}>
+          {doc.body}
         </li>
       ))}
     </ul>
     <button onClick={() => {
+      updateByID((store) => store.collection('tasks').findByID(doc._id), (mutableDoc) => {
+        if (mutableDoc) {
+          mutableDoc.isCompleted = !mutableDoc.isCompleted
+        }
+      })
       setIsCompleted(!isCompleted)
     }} >Toggle</button>
   )
@@ -117,9 +121,9 @@ export default function App() {
 
 ## Building this library and running tests
 
-* __Building:__ run `npm run build` or `yarn build`. 
-* __Run Tests:__ run `npm test` or `yarn test`
-* __Generating Documentation Website Files__ run `npm run docs:generate`
+- **Building:** run `npm run build` or `yarn build`.
+- **Run Tests:** run `npm test` or `yarn test`
+- **Generating Documentation Website Files** run `npm run docs:generate`
 
 ## Running example apps.
 

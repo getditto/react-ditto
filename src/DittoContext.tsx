@@ -1,5 +1,5 @@
 import { Ditto } from "@dittolive/ditto";
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export interface DittoHash {
   [path: string]: Ditto;
@@ -21,30 +21,35 @@ export const DittoContext = createContext<DittoContext>({
 export const useDitto = (
   path?: string
 ): {
-  ditto: Ditto;
+  ditto: Ditto | undefined;
+  dittoHash: DittoHash;
   registerDitto?: RegisterDitto;
   unregisterDitto?: UnregisterDitto;
 } => {
   const { dittoHash, registerDitto, unregisterDitto } =
     useContext(DittoContext);
+    
+  const [ditto, setDitto] = useState<Ditto | undefined>()
 
-  let ditto: Ditto;
-  if (path) {
-    ditto = dittoHash[path];
-  } else {
-    ditto = Object.values(dittoHash)[0];
-  }
-
-  if (!ditto) {
+  useEffect(() => {
+    let foundDitto: Ditto;
     if (path) {
-      throw new Error(`Could not find a ditto with "${path}"`);
+      foundDitto = dittoHash[path];
     } else {
-      throw new Error("Clould not find a ditto instance.");
+      const [first] = Object.values(dittoHash);
+      foundDitto = first;
     }
-  }
+    if (foundDitto) {
+      setDitto(foundDitto);  
+    } else {
+      setDitto(undefined);
+    }
+    
+  }, [path, dittoHash]);
 
   return {
     ditto,
+    dittoHash,
     registerDitto,
     unregisterDitto,
   };

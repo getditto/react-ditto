@@ -40,53 +40,45 @@ export interface ProviderState {
 export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
   props
 ): ReactElement => {
+  
+  
   const [providerState, setProviderState] = useState<ProviderState>({
     loading: true,
-    error: undefined,
+    error: undefined
   });
-
+  
   const [dittoHash, setDittoHash] = useState<DittoHash>({});
+
 
   useEffect(() => {
     (async function () {
       try {
-        await init();
+        await init(props.initOptions);
         const setupReturnValue: Ditto | Ditto[] = props.setup();
-        const dittoHash: DittoHash = {};
-        if (!setupReturnValue) {
-          setProviderState({
-            loading: false,
-            error: new Error(
-              "Please return a Ditto instance or an array of Ditto instances in the provider's setup() function."
-            ),
-          });
-          return;
-        }
-        if (Object.prototype.toString.call(setupReturnValue) === "[object Array]") {
-          const dittoHash: DittoHash = {};
-          (setupReturnValue as Ditto[]).forEach((ditto) => {
+        if (Array.isArray(setupReturnValue)) {
+          const dittoHash: DittoHash = {}
+          const dittos: Ditto[] = setupReturnValue as Ditto[];
+          for (const ditto of dittos) {
             dittoHash[ditto.path] = ditto;
+          }
+          setProviderState({
+            error: undefined,
+            loading: false
           });
-          setDittoHash(dittoHash);
+          setDittoHash(dittoHash)
         } else {
-          const singleDitto: Ditto = setupReturnValue as Ditto;
-          const dittoHash: DittoHash = {};
-          dittoHash[singleDitto.path] = singleDitto;
-          setDittoHash(dittoHash);
+          const ditto = setupReturnValue as Ditto;
+          const dittoHash: DittoHash = {}
+          dittoHash[ditto.path] = ditto;
+          setDittoHash(dittoHash)
         }
-
-        setDittoHash(dittoHash);
-        setProviderState({
-          error: undefined,
-          loading: false,
-        });
+        
       } catch (err) {
-        console.error(err);
-        setDittoHash({});
         setProviderState({
           error: err,
           loading: false,
         });
+        setDittoHash({})
       }
     })();
   }, [props]);
@@ -112,7 +104,7 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
 
   return (
     <DittoContext.Provider
-      value={{ dittoHash, registerDitto, unregisterDitto }}
+      value={{ dittoHash: dittoHash, registerDitto, unregisterDitto }}
     >
       {children}
     </DittoContext.Provider>

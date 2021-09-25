@@ -1,5 +1,4 @@
 import {
-  Ditto,
   Document,
   DocumentID,
   DocumentValue,
@@ -135,13 +134,13 @@ export type InsertFunction<V = DocumentValue> = (
  * @param param Parameters to execute the mutation
  */
 export function useMutations<T = Document>(
-  param: UseMutationsParams
+  param: UseMutationsParams = {}
 ): {
   update: UpdateMutationFunction<T>;
   updateByID: UpdateByIDMutationFunction<T>;
   remove: RemoveMutationFunction;
   removeByID: RemoveByIDMutationFunction;
-  insert: InsertFunction;
+  insert: InsertFunction<T>;
 } {
   const { ditto } = useDitto(param.path);
 
@@ -176,8 +175,8 @@ export function useMutations<T = Document>(
     return cursor.remove();
   };
 
-  const insert: InsertFunction = (collection, value, insertOptions) => {
-    return ditto.store.collection(collection).insert(value, insertOptions);
+  const insert: InsertFunction<T> = (collection, value, insertOptions) => {
+    return ditto.store.collection(collection).insert(value as unknown as DocumentValue, insertOptions);
   };
 
   return {
