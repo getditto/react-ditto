@@ -14,15 +14,19 @@ interface Task {
   isCompleted: boolean
 }
 
-const App: React.FC = () => {
+type Props = {
+  path: string
+}
+
+const App: React.FC<Props> = ({ path }) => {
   const [newBodyText, setNewBodyText] = useState<string>('')
-  const { ditto } = useDitto('/foo')
+  const { ditto } = useDitto(path)
   const { documents: tasks } = usePendingCursorOperation<Task>({
-    path: '/foo',
+    path: path,
     collection: 'tasks',
   })
   const { insert, removeByID, updateByID } = useMutations<Task>({
-    path: '/foo',
+    path: path,
   })
 
   return (
