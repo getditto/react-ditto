@@ -1,4 +1,5 @@
 export * from './DittoContext'
 export * from './DittoProvider'
+export * from './identity'
 export * from './mutations'
 export * from './queries'
