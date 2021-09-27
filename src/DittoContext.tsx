@@ -1,56 +1,54 @@
-import { Ditto } from "@dittolive/ditto";
-import { createContext, useContext, useEffect, useState } from "react";
+import { Ditto } from '@dittolive/ditto'
+import { createContext, useContext, useEffect, useState } from 'react'
 
 export interface DittoHash {
-  [path: string]: Ditto;
+  [path: string]: Ditto
 }
 
-export type RegisterDitto = (ditto: Ditto) => void;
-export type UnregisterDitto = (path: string) => void;
+export type RegisterDitto = (ditto: Ditto) => void
+export type UnregisterDitto = (path: string) => void
 
 export interface DittoContext {
-  dittoHash: DittoHash;
-  registerDitto?: RegisterDitto;
-  unregisterDitto?: UnregisterDitto;
+  dittoHash: DittoHash
+  registerDitto?: RegisterDitto
+  unregisterDitto?: UnregisterDitto
 }
 
 export const DittoContext = createContext<DittoContext>({
   dittoHash: {},
-});
+})
 
 export const useDitto = (
-  path?: string
+  path?: string,
 ): {
-  ditto: Ditto | undefined;
-  dittoHash: DittoHash;
-  registerDitto?: RegisterDitto;
-  unregisterDitto?: UnregisterDitto;
+  ditto: Ditto | undefined
+  dittoHash: DittoHash
+  registerDitto?: RegisterDitto
+  unregisterDitto?: UnregisterDitto
 } => {
-  const { dittoHash, registerDitto, unregisterDitto } =
-    useContext(DittoContext);
-    
+  const { dittoHash, registerDitto, unregisterDitto } = useContext(DittoContext)
+
   const [ditto, setDitto] = useState<Ditto | undefined>()
 
   useEffect(() => {
-    let foundDitto: Ditto;
+    let foundDitto: Ditto
     if (path) {
-      foundDitto = dittoHash[path];
+      foundDitto = dittoHash[path]
     } else {
-      const [first] = Object.values(dittoHash);
-      foundDitto = first;
+      const [first] = Object.values(dittoHash)
+      foundDitto = first
     }
     if (foundDitto) {
-      setDitto(foundDitto);  
+      setDitto(foundDitto)
     } else {
-      setDitto(undefined);
+      setDitto(undefined)
     }
-    
-  }, [path, dittoHash]);
+  }, [path, dittoHash])
 
   return {
     ditto,
     dittoHash,
     registerDitto,
     unregisterDitto,
-  };
-};
+  }
+}

@@ -1,55 +1,56 @@
-import { expect } from "chai";
-import { Ditto, IdentityDevelopment, init } from "@dittolive/ditto";
-import { render, unmountComponentAtNode } from "react-dom";
-import { act } from "react-dom/test-utils";
-import React from "react";
-import { DittoProvider } from "../DittoProvider";
+import { Ditto, IdentityDevelopment } from '@dittolive/ditto'
+import { expect } from 'chai'
+import React from 'react'
+import { render, unmountComponentAtNode } from 'react-dom'
+import { act } from 'react-dom/test-utils'
 
-describe("Ditto Provider Tests", () => {
-  let container: HTMLDivElement;
+import { DittoProvider } from '../DittoProvider'
+
+describe('Ditto Provider Tests', () => {
+  let container: HTMLDivElement
 
   beforeEach(() => {
-    container = document.createElement("div");
-    document.body.appendChild(container);
-  });
+    container = document.createElement('div')
+    document.body.appendChild(container)
+  })
 
   afterEach(() => {
-    unmountComponentAtNode(container);
-    container.remove();
-    container = null;
-  });
+    unmountComponentAtNode(container)
+    container.remove()
+    container = null
+  })
 
-  it("should load ditto", function () {
+  it('should load ditto', function () {
     const identity: IdentityDevelopment = {
-      appName: "live.ditto.test",
+      appName: 'live.ditto.test',
       siteID: 234,
-      type: "development",
-    };
+      type: 'development',
+    }
     const initOptions = {
-      webAssemblyModule: "/base/node_modules/@dittolive/ditto/web/ditto.wasm",
-    };
+      webAssemblyModule: '/base/node_modules/@dittolive/ditto/web/ditto.wasm',
+    }
 
     act(() => {
       render(
         <DittoProvider
           initOptions={initOptions}
           setup={() => {
-            const ditto = new Ditto(identity);
-            return ditto;
+            const ditto = new Ditto(identity)
+            return ditto
           }}
         >
           {({ loading, error }) => {
             if (loading) {
-              expect(error).to.be.undefined;
+              expect(error).to.be.undefined
             }
             if (error) {
-              expect(loading).to.be.false;
+              expect(loading).to.be.false
             }
-            return <></>;
+            return <></>
           }}
         </DittoProvider>,
-        container
-      );
-    });
-  });
-});
+        container,
+      )
+    })
+  })
+})

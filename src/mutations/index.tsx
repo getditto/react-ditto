@@ -1,1 +1,1 @@
-export * from "./Mutations"
+export * from './Mutations'

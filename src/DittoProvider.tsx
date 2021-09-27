@@ -1,35 +1,36 @@
-import React, { useState, useEffect, ReactNode, ReactElement } from "react";
-import { Ditto, init, InitOptions } from "@dittolive/ditto";
-import { DittoContext } from "./DittoContext";
-import { DittoHash, RegisterDitto, UnregisterDitto } from ".";
+import { Ditto, init, InitOptions } from '@dittolive/ditto'
+import React, { ReactElement, ReactNode, useEffect, useState } from 'react'
 
-export type RenderFunction = (providerState: ProviderState) => ReactNode;
+import { DittoHash, RegisterDitto, UnregisterDitto } from '.'
+import { DittoContext } from './DittoContext'
+
+export type RenderFunction = (providerState: ProviderState) => ReactNode
 
 export interface DittoProviderProps extends React.PropsWithChildren<unknown> {
-  initOptions?: InitOptions;
+  initOptions?: InitOptions
   /**
    * This function is called when the DittoProvider initialized the Ditto module.
    * Use this function to bootstrap the Ditto instance to the provider.
    *
    * Return a
    */
-  setup: () => Ditto | Ditto[];
-  render?: RenderFunction;
-  children?: RenderFunction;
+  setup: () => Ditto | Ditto[]
+  render?: RenderFunction
+  children?: RenderFunction
 }
 
 /**
- * A description of the {@link DittoProvider}'s loading state. 
+ * A description of the {@link DittoProvider}'s loading state.
  */
 export interface ProviderState {
   /**
    * If the Provider is loading the ditto.wasm file.
    */
-  loading: boolean;
+  loading: boolean
   /**
    * If there was an error loading the ditto.wasm file, the error will have an {@link Error}
    */
-  error: Error | undefined;
+  error: Error | undefined
 }
 
 /**
@@ -38,69 +39,65 @@ export interface ProviderState {
  * @returns A function that needs to return a React.Element
  */
 export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
-  props
+  props,
 ): ReactElement => {
-  
-  
   const [providerState, setProviderState] = useState<ProviderState>({
     loading: true,
-    error: undefined
-  });
-  
-  const [dittoHash, setDittoHash] = useState<DittoHash>({});
+    error: undefined,
+  })
 
+  const [dittoHash, setDittoHash] = useState<DittoHash>({})
 
   useEffect(() => {
-    (async function () {
+    ;(async function () {
       try {
-        await init(props.initOptions);
-        const setupReturnValue: Ditto | Ditto[] = props.setup();
+        await init(props.initOptions)
+        const setupReturnValue: Ditto | Ditto[] = props.setup()
         if (Array.isArray(setupReturnValue)) {
           const dittoHash: DittoHash = {}
-          const dittos: Ditto[] = setupReturnValue as Ditto[];
+          const dittos: Ditto[] = setupReturnValue as Ditto[]
           for (const ditto of dittos) {
-            dittoHash[ditto.path] = ditto;
+            dittoHash[ditto.path] = ditto
           }
           setProviderState({
             error: undefined,
-            loading: false
-          });
+            loading: false,
+          })
           setDittoHash(dittoHash)
         } else {
-          const ditto = setupReturnValue as Ditto;
+          const ditto = setupReturnValue as Ditto
           const dittoHash: DittoHash = {}
-          dittoHash[ditto.path] = ditto;
+          dittoHash[ditto.path] = ditto
           setDittoHash(dittoHash)
         }
-        
       } catch (err) {
         setProviderState({
           error: err,
           loading: false,
-        });
+        })
         setDittoHash({})
       }
-    })();
-  }, [props]);
+    })()
+  }, [props])
 
   const renderFunction: RenderFunction | undefined =
-    props.render || props.children;
-  let children: ReactNode = <></>;
+    props.render || props.children
+  let children: ReactNode = <></>
   if (renderFunction) {
-    children = renderFunction(providerState);
+    children = renderFunction(providerState)
   }
 
   const registerDitto: RegisterDitto = (ditto) => {
-    const hash = { ...dittoHash };
-    hash[ditto.path] = ditto;
-    setDittoHash(hash);
-  };
+    const hash = { ...dittoHash }
+    hash[ditto.path] = ditto
+    setDittoHash(hash)
+  }
 
   const unregisterDitto: UnregisterDitto = (path) => {
-    const hash = { ...dittoHash };
-    delete hash[path];
-    setDittoHash(hash);
-  };
+    const hash = { ...dittoHash }
+    delete hash[path]
+    setDittoHash(hash)
+  }
 
   return (
     <DittoContext.Provider
@@ -108,5 +105,5 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
     >
       {children}
     </DittoContext.Provider>
-  );
-};
+  )
+}
