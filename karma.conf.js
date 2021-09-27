@@ -13,7 +13,7 @@ module.exports = function (config) {
     preprocessors: {
       "**/*.+(ts|tsx)": ["karma-typescript"],
     },
-    reporters: ["dots", "karma-typescript"],
+    reporters: ["mocha", "karma-typescript"],
     port: 9876, // karma web server port
     colors: true,
     logLevel: config.LOG_INFO,
