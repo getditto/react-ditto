@@ -1,7 +1,9 @@
 import { Ditto } from '@dittolive/ditto'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext } from 'react'
 
-export interface DittoHash {}
+export interface DittoHash {
+  [key: string]: any
+}
 
 export type RegisterDitto = (ditto: Ditto) => void
 export type UnregisterDitto = (path: string) => void
