@@ -9,7 +9,7 @@ import {
 } from '@dittolive/ditto'
 import { useEffect, useRef, useState } from 'react'
 
-import { useDitto } from '../DittoContext'
+import { useDitto } from '../useDitto'
 
 export interface LiveQueryParams {
   collection: string
