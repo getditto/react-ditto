@@ -24,7 +24,7 @@ yarn add @dittolive/ditto @dittolive/react-ditto
 2. At the top level of your react app, wrap it with the `DittoProvider` component like so:
 
 ```tsx
-<DittoProvider>
+<DittoProvider setup={createDittoInstance}>
   {({ loading, error, ditto }) => {
     if (loading) return <span>Loading Ditto...</span>;
     if (error)
@@ -34,6 +34,27 @@ yarn add @dittolive/ditto @dittolive/react-ditto
     if (ditto) return <App />;
   }}
 </DittoProvider>
+```
+
+Ditto instances are created by providing an `Identity` object to the Ditto constructor. Identities can be of several different types,
+and can be created manually as JS objects, or using the identity hooks (`useDevelopmentIdentity`, `useOnlineIdentity`), which also makes it easier to configure authentication for your
+apps:
+
+```ts
+const { create, isAuthenticationRequired, authenticate } = useOnlineIdentity()
+
+const createDittoInstance = () => {
+  // Example of how to create an online instance with authentication enabled
+  const dittoOnline = new Ditto(
+    create({
+      // If you're using the Ditto cloud this ID should be the app ID shown on your app settings page, on the portal.
+      appID: uuidv4(),
+      enableDittoCloudSync: true,
+    }),
+    '/path-online',
+  )
+  return dittoOnline
+}
 ```
 
 ## Quick Start with `create-react-app`
@@ -55,32 +76,40 @@ yarn add @dittolive/ditto @dittolive/react-ditto
 2. In `./src/index.js` or if you're using typescript `./src/index.tsx` setup Ditto with the `DittoProvider` like so:
 
 ```tsx
-import { Identity } from "@dittolive/ditto";
-import { DittoProvider } from "@dittolive/react-ditto";
-
-const identity: Identity = {
-  appName: "live.ditto.test",
-  siteID: 234,
-  type: "development",
-};
+import { DittoProvider, useDevelopmentIdentity } from '@dittolive/react-ditto'
 
 /**
- * This step is required only for web browser-based react applications.
- * This tells the `DittoProvider` where it should load the .wasm file. This should match the location of the postinstall script
+ * This configuration is optional for web browser-based react applications.
+ * This tells the `DittoProvider` where it should load the .wasm file. If no path is provided (ie. initOptions is undefined),
+ * the wasm will be loaded from our CDN.
  **/
 const initOptions = {
   webAssemblyModule: "/ditto.wasm",
-};
+}
 
-ReactDOM.render(
-  <React.StrictMode>
-    <DittoProvider identity={identity} path="/foo" initOptions={initOptions}>
+/** Example of a React root component setting up a single ditto instance that uses a development connection */
+const RootComponent = () => {
+  const { create } = useDevelopmentIdentity()
+  
+  return (
+    <DittoProvider 
+      setup={() => new Ditto(create({ appName: 'my app', siteID: 1234 }, '/foo'))} 
+      /*initOptions={initOptions} */
+    >
       {({ loading, error, ditto }) => {
         if (loading) return <p>Loading</p>;
         if (error) return <p>{error.message}</p>;
         return <App />;
       }}
     </DittoProvider>
+  )
+}
+
+
+
+ReactDOM.render(
+  <React.StrictMode>
+    <RootComponent />
   </React.StrictMode>,
   document.getElementById("root")
 );
@@ -110,6 +139,46 @@ export default function App() {
   )
 }
 ```
+
+## Working with Online apps
+
+Using the [Portal](http://portal.ditto.live) you can create apps that sync to the cloud. These apps must be created with an `Online` identity type, for which the `useOnlineIdentity` hook can be used. The `useOnlineIdentity` hook help you create online Ditto instances that sync with the cloud, following these steps:
+
+```tsx
+/** Example of a React root component setting up a single ditto instance that uses a development connection */
+const RootComponent = () => {
+  const { create, isAuthenticationRequired, authenticate, tokenExpiresInSeconds } = useOnlineIdentity()
+  
+  return (
+    <>
+        <DittoProvider 
+          setup={() => new Ditto(create({ appID: 'your-app-id' }, '/my-online-path'))} 
+          /*initOptions={initOptions} */
+        >
+          {({ loading, error, ditto }) => {
+            if (loading) return <p>Loading</p>;
+            if (error) return <p>{error.message}</p>;
+            return <App />;
+          }}
+        </DittoProvider>
+        {isAuthenticationRequired && (
+          <div>
+            <div>You need to authenticate!</div>
+            <button onClick={() => authenticate('some token', 'provider')}>Authenticate</button>
+          </div>
+        )}
+    </>
+  )
+}
+
+```
+
+For Online apps, the `useOnlineIdentity` hook returns the following set of properties that can be used to manage authentication for your app:
+
+* `create`: Creates an `OnlineIdentity` object preconfigured such that the hook can manage the authentication flow using the exposed `authenticate` function.
+* `isAuthenticationRequired`: Will be true if your Ditto instance is requiring the current user to authenticate with the app. You can configure authentication webhooks on the [Portal](http://portal.ditto.live), from your app settings area, in order to provide your own set of validation services for your app.
+* `tokenExpiresInSeconds`: Number of second in which your current token expires.
+* `authenticate`: Function that can be used to make an authentication request for your app. Requires you to provide the token and the provider name (taken from the list of the configured token validation providers) that you want to validate the token against.
 
 ## Building this library and running tests
 

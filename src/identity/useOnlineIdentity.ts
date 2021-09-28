@@ -9,45 +9,26 @@ import { useRef, useState } from 'react'
  * @example
 
  * ```js
+ **
+ * const { create, authenticate, isAuthenticationRequired, tokenExpiresInSeconds } = useOnlineIdentity();
  *
- * const { development } = useIdentity();
- *
- * const myIdentity = development({appName: 'my-app', siteID: 1234});
- * const ditto = new Ditto(myIdentity, '/path');
- *
- * const { online, authenticate, isAuthenticationRequired, tokenExpiresInSeconds } = useIdentity();
- *
- * const onlineIdentity = development({appID: uuid(), enableDittoCloudSync: true});
- * const ditto = new Ditto(enableDittoCloudSync, '/path');
+ * const onlineIdentity = create({appID: uuid(), enableDittoCloudSync: true});
+ * const ditto = new Ditto(onlineIdentity, '/path');
  *
  * ...
  * ...
  *
  * return <button onClick={() => authenticate('my-token', 'my-provider')}>Authenticate</button>
  *
- * A hook for creating Ditto identity objects.
+ * A hook for creating OnlineDitto identity objects.
  */
-export const useDittoIdentity = () => {
+export const useOnlineIdentity = () => {
   const [isAuthenticationRequired, setIsAuthenticationRequired] =
     useState(false)
   const [tokenExpiresInSeconds, setTokenExpiresInSeconds] = useState<number>()
   const authenticatorRef = useRef<Authenticator>()
 
-  const development = ({
-    appName,
-    siteID,
-  }: {
-    appName: string
-    siteID: number | BigInt
-  }): IdentityDevelopment => {
-    return {
-      appName,
-      siteID,
-      type: 'development',
-    } as IdentityDevelopment
-  }
-
-  const online = ({
+  const create = ({
     appID,
     enableDittoCloudSync,
     customAuthURL,
@@ -75,8 +56,7 @@ export const useDittoIdentity = () => {
   }
 
   return {
-    development,
-    online,
+    create,
     isAuthenticationRequired,
     tokenExpiresInSeconds,
     authenticate: (token: string, provider: string) => {

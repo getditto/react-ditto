@@ -25,6 +25,7 @@ const AuthenticationPanel: React.FC<Props> = ({ onSubmit }) => {
         height: '300px',
         padding: '16px',
         backgroundColor: '#FEE2E2',
+        boxSizing: 'border-box',
       }}
     >
       <form
@@ -32,14 +33,22 @@ const AuthenticationPanel: React.FC<Props> = ({ onSubmit }) => {
           evt.preventDefault()
           onSubmit(token, provider).catch((err) => {
             setAuthError(err)
-            throw err
           })
         }}
       >
         <h3>Authentication required</h3>
-        <div style={{ display: 'flex', marginBottom: '16px' }}>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: '200px 1fr',
+            gridColumnGap: '8px',
+            marginBottom: '16px',
+          }}
+        >
           <div>
-            <label htmlFor="provider">Provider</label>
+            <label htmlFor="provider" style={{ display: 'block' }}>
+              Provider
+            </label>
             <input
               type="text"
               id="provider"
@@ -48,12 +57,14 @@ const AuthenticationPanel: React.FC<Props> = ({ onSubmit }) => {
             />
           </div>
           <div>
-            <label htmlFor="token">Token</label>
-            <input
-              type="text"
+            <label htmlFor="token" style={{ display: 'block' }}>
+              Token
+            </label>
+            <textarea
               id="token"
               value={token}
               onChange={(evt) => setToken(evt.target.value)}
+              style={{ width: '100%', boxSizing: 'border-box' }}
             />
           </div>
         </div>
