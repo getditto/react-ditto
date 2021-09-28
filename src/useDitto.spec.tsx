@@ -26,7 +26,7 @@ describe("useDittoSpec tests", function () {
     container = null;
   });
 
-  it("should return a ditto instance with a matching path variable", function () {
+  it("should return a ditto instance with a matching path variable", async function () {
     const setup = (): Ditto => {
       const ditto = new Ditto(identity, "/test");
       return ditto;
@@ -39,12 +39,12 @@ describe("useDittoSpec tests", function () {
         }}
       </DittoProvider>
     );
-    const { result } = renderHook(() => useDitto('/test'), { wrapper })
-    act(() => {
-      if (result?.current?.ditto) {
-        expect(result.current.ditto.path).to.eq('/test2')
-      }
-    })
-    expect(result.current?.ditto?.path).to.be('/test2')
+    const { result, waitFor } = renderHook(() => useDitto("/test"), {
+      wrapper,
+    });
+
+    await waitFor(() => !!result.current?.ditto);
+
+    expect(result.current?.ditto?.path).to.eq("/test");
   });
 });

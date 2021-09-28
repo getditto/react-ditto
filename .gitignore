@@ -2,7 +2,6 @@ coverage
 dist
 node_modules
 documentation-website
-
 # misc
 .DS_Store
 
