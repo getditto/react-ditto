@@ -1,38 +1,19 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import { DittoProvider } from "@dittolive/react-ditto";
-import { Ditto } from "@dittolive/ditto";
+import './index.css'
+
+import React from 'react'
+import ReactDOM from 'react-dom'
+
+import AppContainer from './AppContainer'
+import reportWebVitals from './reportWebVitals'
 
 ReactDOM.render(
   <React.StrictMode>
-    <DittoProvider
-      setup={() => {
-        const ditto = new Ditto({
-          appName: "live.ditto.example",
-          siteID: 1234,
-          type: "development",
-        }, '/foo');
-        return [ditto];
-      }}
-    >
-      {({ loading, error }) => {
-        if (loading) {
-          return <h1>Loading</h1>;
-        }
-        if (error) {
-          return <h1>Error: {JSON.stringify(error)}</h1>;
-        }
-        return <App />;
-      }}
-    </DittoProvider>
+    <AppContainer />
   </React.StrictMode>,
-  document.getElementById("root")
-);
+  document.getElementById('root'),
+)
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+reportWebVitals()

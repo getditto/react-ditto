@@ -1,12 +1,13 @@
-import { Ditto, RemotePeer, Observer } from "@dittolive/ditto";
-import { useEffect, useState } from "react";
-import { useDitto } from "../DittoContext";
+import { Ditto, Observer, RemotePeer } from '@dittolive/ditto'
+import { useEffect, useState } from 'react'
+
+import { useDitto } from '../DittoContext'
 
 export interface UsePeersParams {
   /**
    * Ditto Path
    */
-  path?: string;
+  path?: string
 }
 
 /**
@@ -15,29 +16,29 @@ export interface UsePeersParams {
  * @returns
  */
 export function useRemotePeers(params: UsePeersParams = {}): {
-  ditto: Ditto;
-  remotePeers: RemotePeer[];
+  ditto: Ditto
+  remotePeers: RemotePeer[]
 } {
-  const { ditto } = useDitto(params.path);
-  const [remotePeers, setRemotePeers] = useState<RemotePeer[]>([]);
+  const { ditto } = useDitto(params.path)
+  const [remotePeers, setRemotePeers] = useState<RemotePeer[]>([])
 
   useEffect(() => {
-    let observer: Observer | undefined;
+    let observer: Observer | undefined
     if (ditto) {
       observer = ditto.observePeers((peers: RemotePeer[]) => {
-        setRemotePeers(peers);
-      });
+        setRemotePeers(peers)
+      })
     } else {
-      setRemotePeers([]);
-      observer = undefined;
+      setRemotePeers([])
+      observer = undefined
     }
     return (): void => {
-      observer?.stop();
-    };
-  }, [ditto]);
+      observer?.stop()
+    }
+  }, [ditto])
 
   return {
     ditto,
     remotePeers,
-  };
+  }
 }
