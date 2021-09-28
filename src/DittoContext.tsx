@@ -2,7 +2,7 @@ import { Ditto } from '@dittolive/ditto'
 import { createContext } from 'react'
 
 export interface DittoHash {
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export type RegisterDitto = (ditto: Ditto) => void

@@ -8,23 +8,24 @@ import {
   QueryArguments,
   UpdateResult,
   UpdateResultsMap,
-} from "@dittolive/ditto";
-import { useDitto } from "../useDitto";
+} from '@dittolive/ditto'
+
+import { useDitto } from '../useDitto'
 
 export interface UpdateParams<T> {
   /**
    * A Ditto query that specifies the documents to update. If this is omitted, then the `updateClosure` will
    * apply to _all documents_.
    */
-  query?: string;
+  query?: string
   /**
    * Arguments to use with the `query`
    */
-  args?: QueryArguments;
+  args?: QueryArguments
   /**
    * A function used to update all the documents
    */
-  updateClosure: (mutableDocuments: T[]) => void;
+  updateClosure: (mutableDocuments: T[]) => void
 }
 
 export type UpdateFunction<T> = (
