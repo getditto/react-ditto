@@ -21,6 +21,8 @@ jobs:
       - name: 'Install and Build'
         run: |
           yarn
+          yarn types
+          yarn lint
           yarn build
           
       - name: 'Run Tests'
