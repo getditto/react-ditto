@@ -1,7 +1,7 @@
 import { Ditto, Observer, RemotePeer } from '@dittolive/ditto'
 import { useEffect, useState } from 'react'
 
-import { useDitto } from '../DittoContext'
+import { useDitto } from '../useDitto'
 
 export interface UsePeersParams {
   /**

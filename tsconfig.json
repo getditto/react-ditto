@@ -13,7 +13,8 @@
     "declaration": true,
     "declarationDir": "./dist",
     "declarationMap": true,
-    "outDir": "dist"
+    "outDir": "./dist",
+    "sourceRoot": "./src"
   },
   "compileOnSave": false,
   "exclude": [

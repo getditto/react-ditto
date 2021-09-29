@@ -4,9 +4,9 @@ import {
   LiveQuery,
   SingleDocumentLiveQueryEvent,
 } from '@dittolive/ditto'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import { useDitto } from '../DittoContext'
+import { useDitto } from '../useDitto'
 
 export interface UsePendingIDSpecificOperationParams {
   /**
@@ -25,10 +25,16 @@ export interface UsePendingIDSpecificOperationParams {
 
 export function usePendingIDSpecificOperation<T = Document>(
   params: UsePendingIDSpecificOperationParams,
-): { document: T | undefined; event?: SingleDocumentLiveQueryEvent } {
+): {
+  document: T | undefined
+  event?: SingleDocumentLiveQueryEvent
+  liveQuery: LiveQuery | undefined
+} {
+  const liveQueryRef = useRef<LiveQuery>()
   const { ditto } = useDitto(params.path)
   const [document, setDocument] = useState<T>(undefined)
   const [event, setEvent] = useState<SingleDocumentLiveQueryEvent | undefined>()
+
   useEffect(() => {
     let liveQuery: LiveQuery
     if (params._id && params.collection && ditto) {
@@ -51,5 +57,6 @@ export function usePendingIDSpecificOperation<T = Document>(
   return {
     document,
     event,
+    liveQuery: liveQueryRef.current,
   }
 }

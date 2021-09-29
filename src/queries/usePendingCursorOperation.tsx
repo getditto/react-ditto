@@ -7,9 +7,9 @@ import {
   QueryArguments,
   SortDirection,
 } from '@dittolive/ditto'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import { useDitto } from '../DittoContext'
+import { useDitto } from '../useDitto'
 
 export interface LiveQueryParams {
   collection: string
@@ -81,10 +81,9 @@ export function usePendingCursorOperation<T = Document>(
   const [liveQueryEvent, setLiveQueryEvent] = useState<
     LiveQueryEvent | undefined
   >()
-  const [liveQuery, setLiveQuery] = useState<LiveQuery | undefined>()
+  const liveQueryRef = useRef<LiveQuery>()
 
   useEffect(() => {
-    let liveQuery: LiveQuery | undefined
     if (ditto) {
       const collection = ditto.store.collection(params.collection)
       let cursor: PendingCursorOperation
@@ -99,16 +98,17 @@ export function usePendingCursorOperation<T = Document>(
       if (params.limit) {
         cursor = cursor.limit(params.limit)
       }
-      liveQuery = cursor.observe((docs, event) => {
+      liveQueryRef.current = cursor.observe((docs, event) => {
         setDocuments(docs)
         setLiveQueryEvent(event)
       })
-      setLiveQuery(liveQuery)
     } else {
-      setLiveQuery(undefined)
+      if (liveQueryRef.current) {
+        liveQueryRef.current?.stop()
+      }
     }
     return (): void => {
-      liveQuery?.stop()
+      liveQueryRef.current?.stop()
     }
   }, [
     ditto,
@@ -123,6 +123,6 @@ export function usePendingCursorOperation<T = Document>(
     ditto,
     documents,
     liveQueryEvent,
-    liveQuery,
+    liveQuery: liveQueryRef.current,
   }
 }

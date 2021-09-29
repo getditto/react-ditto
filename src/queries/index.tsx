@@ -1,3 +1,3 @@
-export * from './Peers'
-export * from './PendingCursorOperation'
-export * from './PendingIDSpecificOperation'
+export * from './usePendingCursorOperation'
+export * from './usePendingIDSpecificOperation'
+export * from './useRemotePeers'
