@@ -1,19 +1,19 @@
 module.exports = function (config) {
   config.set({
-    frameworks: ["mocha", "chai", "karma-typescript"],
+    frameworks: ['mocha', 'chai', 'karma-typescript'],
     files: [
-      "src/**/*.+(ts|tsx)", // *.tsx for React Jsx
+      'src/**/*.+(ts|tsx)', // *.tsx for React Jsx
       {
-        pattern: "node_modules/@dittolive/ditto/web/ditto.wasm",
+        pattern: 'node_modules/@dittolive/ditto/web/ditto.wasm',
         included: false,
         served: true,
-        type: "wasm",
+        type: 'wasm',
       },
     ],
     preprocessors: {
-      "**/*.+(ts|tsx)": ["karma-typescript"],
+      '**/*.+(ts|tsx)': ['karma-typescript'],
     },
-    reporters: ["mocha", "karma-typescript"],
+    reporters: ['mocha', 'karma-typescript'],
     port: 9876, // karma web server port
     colors: true,
     logLevel: config.LOG_INFO,
@@ -23,19 +23,19 @@ module.exports = function (config) {
     concurrency: Infinity,
     singleRun: true,
     mime: {
-      "application/wasm": ["wasm"],
+      'application/wasm': ['wasm'],
     },
     karmaTypescriptConfig: {
-      tsconfig: "./tsconfig.json",
+      tsconfig: './tsconfig.json',
       bundlerOptions: {
         transforms: [
-          require("karma-typescript-es6-transform")({
+          require('karma-typescript-es6-transform')({
             presets: [
               [
-                "@babel/preset-env",
+                '@babel/preset-env',
                 {
                   targets: {
-                    chrome: "92",
+                    chrome: '92',
                   },
                 },
               ],
@@ -44,5 +44,9 @@ module.exports = function (config) {
         ],
       },
     },
-  });
-};
+    parallelOptions: {
+      executors: 4, // Defaults to cpu-count - 1
+      shardStrategy: 'round-robin',
+    },
+  })
+}
