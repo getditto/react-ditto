@@ -30,7 +30,7 @@ describe('Ditto Provider Tests', () => {
       render(
         <DittoProvider
           setup={() => {
-            const ditto = new Ditto(identity)
+            const ditto = new Ditto(identity, '/test')
             return ditto
           }}
         >
@@ -64,7 +64,7 @@ describe('Ditto Provider Tests', () => {
         <DittoProvider
           initOptions={initOptions}
           setup={() => {
-            const ditto = new Ditto(identity)
+            const ditto = new Ditto(identity, '/test')
             return ditto
           }}
         >
@@ -99,7 +99,7 @@ describe('Ditto Provider Tests', () => {
         <DittoProvider
           initOptions={initOptions}
           setup={() => {
-            const ditto = new Ditto(identity)
+            const ditto = new Ditto(identity, '/test')
             return ditto
           }}
         >

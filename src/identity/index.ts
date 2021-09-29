@@ -1,1 +1,2 @@
-export * from './Identity'
+export * from './useDevelopmentIdentity'
+export * from './useOnlineIdentity'

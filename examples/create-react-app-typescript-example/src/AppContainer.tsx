@@ -1,5 +1,9 @@
 import { Ditto } from '@dittolive/ditto'
-import { DittoProvider, useDittoIdentity } from '@dittolive/react-ditto'
+import {
+  DittoProvider,
+  useDevelopmentIdentity,
+  useOnlineIdentity,
+} from '@dittolive/react-ditto'
 import React, { useState } from 'react'
 import { default as ReactSelect, SingleValue } from 'react-select'
 import { v4 as uuidv4 } from 'uuid'
@@ -20,23 +24,27 @@ const options: IdentityOption[] = [
  * Container component that shows how to initialize the DittoProvider component.
  * */
 const AppContainer: React.FC = () => {
-  const { development } = useDittoIdentity()
-  const { online, isAuthenticationRequired, authenticate } = useDittoIdentity()
+  const { create: createDevelopment } = useDevelopmentIdentity()
+  const {
+    create: createOnline,
+    isAuthenticationRequired,
+    authenticate,
+  } = useOnlineIdentity()
   const [currentPath, setCurrentPath] = useState('/path-development')
 
   const handleCreateDittoInstances = () => {
     // Example of how to create a development instance
     const dittoDevelopment = new Ditto(
-      development({ appName: 'live.ditto.example', siteID: 1234 }),
+      createDevelopment({ appName: 'live.ditto.example', siteID: 1234 }),
       '/path-development',
     )
 
     // Example of how to create an online instance with authentication enabled
     const dittoOnline = new Ditto(
-      online({
+      createOnline({
         // If you're using the Ditto cloud this ID should be the app ID shown on your app settings page, on the portal.
         appID: uuidv4(),
-        enableDittoCloudSync: true,
+        // enableDittoCloudSync: true,
       }),
       '/path-online',
     )
