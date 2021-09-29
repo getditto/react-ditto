@@ -115,7 +115,7 @@ ReactDOM.render(
 );
 ```
 
-3. In your `App` component, you can now use hooks like `useLiveQuery` to get your documents like so:
+3. In your `App` component, you can now use hooks like `usePendingCursorOperation` to get your documents like so:
 
 ```tsx
 import { usePendingCursorOperation, useMutations } from "@dittolive/react-ditto";
