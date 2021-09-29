@@ -5,9 +5,9 @@ import { IdentityDevelopment } from '@dittolive/ditto'
 
  * ```js
  *
- * const createDevelopmentIdentity = useDevelopmentIdentity();
+ * const { create } = useDevelopmentIdentity();
  *
- * const myIdentity = createDevelopmentIdentity({appName: 'my-app', siteID: 1234});
+ * const myIdentity = create({appName: 'my-app', siteID: 1234});
  * const ditto = new Ditto(myIdentity, '/path');
  *
  * A hook for creating Development Ditto identity objects.
