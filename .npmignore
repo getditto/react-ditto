@@ -10,3 +10,4 @@ node_modules
 karma.conf.js
 tsconfig.json
 yarn.lock
+.idea
