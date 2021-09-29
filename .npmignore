@@ -1,0 +1,12 @@
+.github
+src
+examples
+node_modules
+.DS_Store
+.eslintignore
+.eslintrc
+.gitignore
+.prettierrc
+karma.conf.js
+tsconfig.json
+yarn.lock
