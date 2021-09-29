@@ -11,3 +11,4 @@ karma.conf.js
 tsconfig.json
 yarn.lock
 .idea
+coverage
