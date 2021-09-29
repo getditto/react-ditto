@@ -43,7 +43,7 @@ describe('useDittoSpec tests', function () {
       wrapper,
     })
 
-    await waitFor(() => !!result.current?.ditto)
+    await waitFor(() => !!result.current?.ditto, { timeout: 2000 })
 
     expect(result.current?.ditto?.path).to.eq('/test')
   })
