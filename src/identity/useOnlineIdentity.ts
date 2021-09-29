@@ -1,8 +1,4 @@
-import {
-  Authenticator,
-  IdentityDevelopment,
-  IdentityOnline,
-} from '@dittolive/ditto'
+import { Authenticator, IdentityOnline } from '@dittolive/ditto'
 import { useRef, useState } from 'react'
 
 /**
