@@ -81,7 +81,7 @@ export function usePendingCursorOperation<T = Document>(
   const [liveQueryEvent, setLiveQueryEvent] = useState<
     LiveQueryEvent | undefined
   >()
-  const liveQueryRef = useRef<LiveQuery>(undefined)
+  const liveQueryRef = useRef<LiveQuery>()
 
   useEffect(() => {
     if (ditto) {
