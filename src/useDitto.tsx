@@ -11,7 +11,7 @@ export const useDitto = (
   registerDitto?: RegisterDitto
   unregisterDitto?: UnregisterDitto
 } => {
-  const { dittoHash, registerDitto, unregisterDitto } = useContext(DittoContext)
+  const { dittoHash } = useContext(DittoContext)
 
   const [ditto, setDitto] = useState<Ditto | undefined>()
 
@@ -33,7 +33,5 @@ export const useDitto = (
   return {
     ditto,
     dittoHash,
-    registerDitto,
-    unregisterDitto,
   }
 }
