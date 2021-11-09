@@ -21,7 +21,7 @@
     "react-dom": ">=16.0.0"
   },
   "devDependencies": {
-    "@dittolive/ditto": "^1.0.10",
+    "@dittolive/ditto": "^1.0.14",
     "@testing-library/react": "^12.1.1",
     "@testing-library/react-hooks": "^7.0.2",
     "@types/chai": "^4.2.21",

@@ -12,7 +12,7 @@ export interface DittoProviderProps extends React.PropsWithChildren<unknown> {
    * This function is called when the DittoProvider initialized the Ditto module.
    * Use this function to bootstrap the Ditto instance to the provider.
    *
-   * Return a
+   * Returns a single Ditto instance or an array of instances.
    */
   setup: () => Ditto | Ditto[]
   render?: RenderFunction
@@ -34,7 +34,9 @@ export interface ProviderState {
 }
 
 /**
- *
+ * Implements an eager Ditto provider where all Ditto instances are initialized when the
+ * provider is mounted through a call to the setup function, which then returns one or multiple
+ * Ditto instances.
  * @param props
  * @returns A function that needs to return a React.Element
  */
@@ -101,7 +103,16 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
 
   return (
     <DittoContext.Provider
-      value={{ dittoHash: dittoHash, registerDitto, unregisterDitto }}
+      value={{
+        dittoHash: dittoHash,
+        registerDitto,
+        unregisterDitto,
+        load: () =>
+          Promise.reject(
+            'Async loading can only be done using a DittoLazyProvider.',
+          ),
+        isLazy: false,
+      }}
     >
       {children}
     </DittoContext.Provider>
