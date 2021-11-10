@@ -80,7 +80,7 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
         setDittoHash({})
       }
     })()
-  }, [props])
+  }, [])
 
   const renderFunction: RenderFunction | undefined =
     props.render || props.children

@@ -1,12 +1,8 @@
 import './App.css'
 
 import { DocumentID } from '@dittolive/ditto'
-import {
-  useDitto,
-  useMutations,
-  usePendingCursorOperation,
-} from '@dittolive/react-ditto'
-import React, { useState } from 'react'
+import { useMutations, usePendingCursorOperation } from '@dittolive/react-ditto'
+import React, { useMemo, useState } from 'react'
 
 interface Task {
   _id?: DocumentID
@@ -20,18 +16,22 @@ type Props = {
 
 const App: React.FC<Props> = ({ path }) => {
   const [newBodyText, setNewBodyText] = useState<string>('')
-  const { ditto } = useDitto(path)
-  const { documents: tasks } = usePendingCursorOperation<Task>({
-    path: path,
-    collection: 'tasks',
-  })
+  const params = useMemo(
+    () => ({
+      path: path,
+      collection: 'tasks',
+    }),
+    [path],
+  )
+  const { documents: tasks } = usePendingCursorOperation<Task>(params)
   const { insert, removeByID, updateByID } = useMutations<Task>({
+    collection: 'tasks',
     path: path,
   })
 
   return (
     <div className="App">
-      <p>Using Ditto with path &ldquo;{ditto?.path}&ldquo;</p>
+      <p>Using Ditto with path &ldquo;{path}&ldquo;</p>
       <span>Number of tasks {tasks.length}</span>
 
       <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
@@ -44,9 +44,11 @@ const App: React.FC<Props> = ({ path }) => {
         <button
           type="button"
           onClick={() => {
-            insert('tasks', {
-              body: newBodyText,
-              isCompleted: false,
+            insert({
+              value: {
+                body: newBodyText,
+                isCompleted: false,
+              },
             })
             setNewBodyText('')
           }}
@@ -65,23 +67,21 @@ const App: React.FC<Props> = ({ path }) => {
               </p>
               <button
                 onClick={() => {
-                  removeByID((store) =>
-                    store.collection('tasks').findByID(task._id),
-                  )
+                  removeByID({ _id: task._id })
                 }}
               >
                 Remove
               </button>
               <button
                 onClick={() => {
-                  updateByID(
-                    (store) => store.collection('tasks').findByID(task._id),
-                    (mutableDoc) => {
+                  updateByID({
+                    _id: task._id,
+                    updateClosure: (mutableDoc) => {
                       if (mutableDoc) {
                         mutableDoc.isCompleted = !mutableDoc.isCompleted
                       }
                     },
-                  )
+                  })
                 }}
               >
                 Toggle

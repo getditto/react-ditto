@@ -55,7 +55,7 @@ export const DittoLazyProvider: React.FunctionComponent<DittoLazyProviderProps> 
           })
         }
       })()
-    }, [initOptions])
+    }, [])
 
     const renderFunction: RenderFunction | undefined = render || children
 
