@@ -73,6 +73,8 @@ export interface LiveQueryParams {
  * check on it's dependencies, so it's important to use `useMemo` when you create your params to avoid
  * unnecessary rerenders and infinite loops with useEffect. Eg:
  *
+ * @example
+ * ```tsx
  * const params = useMemo(
  *   () => ({
  *     path: myPath,
@@ -86,7 +88,7 @@ export interface LiveQueryParams {
  *   [myPath],
  *  )
  *  const { documents } = usePendingCursorOperation<Webhook>(params)
- *
+ * ```
  * @param params live query parameters.
  * @returns
  */
