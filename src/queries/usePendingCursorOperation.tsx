@@ -58,20 +58,44 @@ export interface LiveQueryParams {
     direction?: SortDirection
   }
   /**
-   * An optional number to limit the results of the query. If you omit this value, the query will return values
+   * An optional number to limit the results of the query. If you omit this value, the query will return all values
    */
   limit?: number
+  /**
+   * An optional number to use as an offset of the results of the query. If you omit this value, an offset of 0 is assumed.
+   */
+  offset?: number
 }
 
 /**
- * Runs a ditto live query immediately with the
+ * Runs a ditto live query immediately with the passed in query params. We're using useEffect
+ * to update the Ditto live query based on the input params. useEffect doesn't perform a deep equality
+ * check on it's dependencies, so it's important to use `useMemo` when you create your params to avoid
+ * unnecessary rerenders and infinite loops with useEffect. Eg:
+ *
+ * @example
+ * ```tsx
+ * const params = useMemo(
+ *   () => ({
+ *     path: myPath,
+ *     offset: 0,
+ *     collection: 'collection'
+ *     sort: {
+ *       propertyPath: 'createdAt',
+ *       direction: 'descending' as SortDirection,
+ *     },
+ *   }),
+ *   [myPath],
+ *  )
+ *  const { documents } = usePendingCursorOperation<Webhook>(params)
+ * ```
  * @param params live query parameters.
  * @returns
  */
 export function usePendingCursorOperation<T = Document>(
   params: LiveQueryParams,
 ): {
-  ditto: Ditto
+  ditto: Ditto | null
   documents: T[]
   liveQueryEvent: LiveQueryEvent | undefined
   liveQuery: LiveQuery | undefined
@@ -84,7 +108,7 @@ export function usePendingCursorOperation<T = Document>(
   const liveQueryRef = useRef<LiveQuery>()
 
   useEffect(() => {
-    if (ditto) {
+    if (ditto && !liveQueryRef.current) {
       const collection = ditto.store.collection(params.collection)
       let cursor: PendingCursorOperation
       if (params.query) {
@@ -98,26 +122,20 @@ export function usePendingCursorOperation<T = Document>(
       if (params.limit) {
         cursor = cursor.limit(params.limit)
       }
+      if (params.offset) {
+        cursor = cursor.offset(params.offset)
+      }
       liveQueryRef.current = cursor.observe((docs, event) => {
         setDocuments(docs)
         setLiveQueryEvent(event)
       })
-    } else {
-      if (liveQueryRef.current) {
+
+      return (): void => {
         liveQueryRef.current?.stop()
+        liveQueryRef.current = null
       }
     }
-    return (): void => {
-      liveQueryRef.current?.stop()
-    }
-  }, [
-    ditto,
-    params.args,
-    params.collection,
-    params.limit,
-    params.query,
-    params.sort,
-  ])
+  }, [ditto, params])
 
   return {
     ditto,

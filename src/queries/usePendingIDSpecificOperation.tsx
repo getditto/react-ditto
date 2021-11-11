@@ -1,4 +1,5 @@
 import {
+  Ditto,
   Document,
   DocumentID,
   LiveQuery,
@@ -26,14 +27,15 @@ export interface UsePendingIDSpecificOperationParams {
 export function usePendingIDSpecificOperation<T = Document>(
   params: UsePendingIDSpecificOperationParams,
 ): {
+  ditto: Ditto | null
   document: T | undefined
   event?: SingleDocumentLiveQueryEvent
   liveQuery: LiveQuery | undefined
 } {
   const liveQueryRef = useRef<LiveQuery>()
   const { ditto } = useDitto(params.path)
-  const [document, setDocument] = useState<T>(undefined)
-  const [event, setEvent] = useState<SingleDocumentLiveQueryEvent | undefined>()
+  const [document, setDocument] = useState<T>()
+  const [event, setEvent] = useState<SingleDocumentLiveQueryEvent>()
 
   useEffect(() => {
     let liveQuery: LiveQuery
@@ -52,9 +54,11 @@ export function usePendingIDSpecificOperation<T = Document>(
     return () => {
       liveQuery?.stop()
     }
-  }, [params, ditto])
+    /** We need to serialize the _id in order for React's dependency array comparison to work. */
+  }, [params.path, params.collection, params._id?.toString() || '', ditto])
 
   return {
+    ditto,
     document,
     event,
     liveQuery: liveQueryRef.current,

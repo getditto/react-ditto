@@ -1,4 +1,5 @@
 import {
+  Ditto,
   Document,
   DocumentID,
   DocumentValue,
@@ -81,6 +82,7 @@ export interface UseMutationParams {
 export function useMutations<T = Document>(
   useMutationParams: UseMutationParams,
 ): {
+  ditto: Ditto
   update: UpdateFunction<T>
   updateByID: UpdateByIDFunction<T>
   insert: InsertFunction<T>
@@ -101,11 +103,10 @@ export function useMutations<T = Document>(
           .collection(useMutationParams.collection)
           .find(params.query)
       }
+    } else {
+      cursor = ditto.store.collection(useMutationParams.collection).findAll()
     }
-    cursor = ditto.store.collection(useMutationParams.collection).findAll()
-    return cursor.update((documents: T[]) => {
-      params.updateClosure(documents)
-    })
+    return cursor.update(params.updateClosure)
   }
 
   const updateByID: UpdateByIDFunction<T> = (params) => {
@@ -153,6 +154,7 @@ export function useMutations<T = Document>(
   }
 
   return {
+    ditto,
     update,
     updateByID,
     insert,

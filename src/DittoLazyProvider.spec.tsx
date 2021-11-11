@@ -5,9 +5,9 @@ import { render, unmountComponentAtNode } from 'react-dom'
 import { act } from 'react-dom/test-utils'
 
 import { DittoContext } from './DittoContext'
-import { DittoProvider } from './DittoProvider'
+import { DittoLazyProvider } from './DittoLazyProvider'
 
-describe('Ditto Provider Tests', () => {
+describe('Ditto Lazy Provider Tests', () => {
   let container: HTMLDivElement
 
   beforeEach(() => {
@@ -29,10 +29,9 @@ describe('Ditto Provider Tests', () => {
     }
     act(() => {
       render(
-        <DittoProvider
+        <DittoLazyProvider
           setup={() => {
-            const ditto = new Ditto(identity, '/test')
-            return ditto
+            return Promise.resolve(new Ditto(identity, '/test'))
           }}
         >
           {({ loading, error }) => {
@@ -44,7 +43,7 @@ describe('Ditto Provider Tests', () => {
             }
             return <></>
           }}
-        </DittoProvider>,
+        </DittoLazyProvider>,
         container,
       )
     })
@@ -62,11 +61,10 @@ describe('Ditto Provider Tests', () => {
 
     act(() => {
       render(
-        <DittoProvider
+        <DittoLazyProvider
           initOptions={initOptions}
           setup={() => {
-            const ditto = new Ditto(identity, '/test')
-            return ditto
+            return Promise.resolve(new Ditto(identity, '/test'))
           }}
         >
           {({ loading, error }) => {
@@ -78,7 +76,7 @@ describe('Ditto Provider Tests', () => {
             }
             return <></>
           }}
-        </DittoProvider>,
+        </DittoLazyProvider>,
         container,
       )
     })
@@ -97,11 +95,10 @@ describe('Ditto Provider Tests', () => {
 
     act(() => {
       render(
-        <DittoProvider
+        <DittoLazyProvider
           initOptions={initOptions}
           setup={() => {
-            const ditto = new Ditto(identity, '/test')
-            return ditto
+            return Promise.resolve(new Ditto(identity, '/test'))
           }}
         >
           {({ loading, error }) => {
@@ -110,35 +107,35 @@ describe('Ditto Provider Tests', () => {
             }
             return <></>
           }}
-        </DittoProvider>,
+        </DittoLazyProvider>,
         container,
       )
     })
   })
 
-  it('should mount the provider with the initialized Ditto instance.', () => {
+  it('should mount the provider with an empty set of Ditto instances.', () => {
     const identity: IdentityOfflinePlayground = {
       appName: 'live.ditto.test',
       siteID: 234,
       type: 'offlinePlayground',
     }
 
-    const TesterChildComponent = ({ loading }: { loading: boolean }) => {
+    const TesterChildComponent = () => {
       const { dittoHash } = useContext(DittoContext)
 
-      expect(Object.values(dittoHash).length).to.eq(loading ? 0 : 1)
+      expect(dittoHash).to.eqls({})
 
       return <></>
     }
     act(() => {
       render(
-        <DittoProvider
+        <DittoLazyProvider
           setup={() => {
-            return new Ditto(identity, '/test')
+            return Promise.resolve(new Ditto(identity, '/test'))
           }}
         >
-          {({ loading }) => <TesterChildComponent loading={loading} />}
-        </DittoProvider>,
+          {() => <TesterChildComponent />}
+        </DittoLazyProvider>,
         container,
       )
     })

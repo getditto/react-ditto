@@ -1,2 +1,2 @@
-export * from './useDevelopmentIdentity'
+export * from './useOfflinePlaygroundIdentity'
 export * from './useOnlineIdentity'

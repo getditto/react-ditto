@@ -14,23 +14,25 @@ describe('Ditto useOnlineIdentity hook tests', () => {
     const { result } = renderHook(() => useOnlineIdentity())
 
     expect(result.current.create).to.exist
+    expect(result.current.getAuthenticationRequired).to.exist
+    expect(result.current.getTokenExpiresInSeconds).to.exist
+    expect(result.current.authenticate).to.exist
 
-    const identity = result.current.create({ appID })
+    const identity = result.current.create({ appID }, 'app')
 
-    expect(identity.type).to.eql('online')
+    expect(identity.type).to.eql('onlineWithAuthentication')
     expect(identity.appID).to.eql(appID)
     expect(identity.authHandler).to.exist
     expect(identity.authHandler.authenticationRequired).to.exist
     expect(identity.authHandler.authenticationExpiringSoon).to.exist
   })
 
-  it('should set isAuthenticationRequired to true when an online identity is used to connect to an app', async () => {
+  it('should return true when the getAuthenticationRequired function is called and authentication is required to connect to an app', async () => {
     const appID = uuidv4()
     const { result } = renderHook(() => useOnlineIdentity())
 
     expect(result.current.create).to.exist
-    expect(result.current.isAuthenticationRequired).false
-    const identity = result.current.create({ appID })
+    const identity = result.current.create({ appID }, 'app')
 
     const { unmount } = render(
       <DittoProvider
@@ -49,7 +51,7 @@ describe('Ditto useOnlineIdentity hook tests', () => {
     )
 
     await waitFor(() => !!screen.queryAllByTestId('loaded').length)
-    await waitFor(() => !!result.current.isAuthenticationRequired)
+    await waitFor(() => !!result.current.getAuthenticationRequired('app'))
     await waitFor(unmount)
   })
 })

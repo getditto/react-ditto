@@ -1,7 +1,7 @@
 import { Ditto } from '@dittolive/ditto'
 import {
   DittoProvider,
-  useDevelopmentIdentity,
+  useOfflinePlaygroundIdentity,
   useOnlineIdentity,
 } from '@dittolive/react-ditto'
 import React, { useState } from 'react'
@@ -24,15 +24,16 @@ const options: IdentityOption[] = [
  * Container component that shows how to initialize the DittoProvider component.
  * */
 const AppContainer: React.FC = () => {
-  const { create: createDevelopment } = useDevelopmentIdentity()
+  const { create: createDevelopment } = useOfflinePlaygroundIdentity()
   const {
     create: createOnline,
-    isAuthenticationRequired,
+    getAuthenticationRequired,
     authenticate,
   } = useOnlineIdentity()
   const [currentPath, setCurrentPath] = useState('/path-development')
 
   const handleCreateDittoInstances = () => {
+    console.log('CREATING INSTANCES')
     // Example of how to create a development instance
     const dittoDevelopment = new Ditto(
       createDevelopment({ appName: 'live.ditto.example', siteID: 1234 }),
@@ -41,14 +42,18 @@ const AppContainer: React.FC = () => {
 
     // Example of how to create an online instance with authentication enabled
     const dittoOnline = new Ditto(
-      createOnline({
-        // If you're using the Ditto cloud this ID should be the app ID shown on your app settings page, on the portal.
-        appID: uuidv4(),
-        // enableDittoCloudSync: true,
-      }),
+      createOnline(
+        {
+          // If you're using the Ditto cloud this ID should be the app ID shown on your app settings page, on the portal.
+          appID: uuidv4(),
+          // enableDittoCloudSync: true,
+        },
+        '/path-online',
+      ),
       '/path-online',
     )
     return [dittoDevelopment, dittoOnline]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }
 
   return (
@@ -81,12 +86,15 @@ const AppContainer: React.FC = () => {
           if (error) {
             return <h1>Error: {JSON.stringify(error)}</h1>
           }
+
           return <App path={currentPath} />
         }}
       </DittoProvider>
-      {isAuthenticationRequired && (
+      {getAuthenticationRequired(currentPath) && (
         <AuthenticationPanel
-          onSubmit={(token, provider) => authenticate(token, provider)}
+          onSubmit={(token, provider) =>
+            authenticate(currentPath, provider, token)
+          }
         />
       )}
     </>
