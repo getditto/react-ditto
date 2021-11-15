@@ -67,6 +67,19 @@ export interface LiveQueryParams {
   offset?: number
 }
 
+export interface PendingCursorOperationReturn<T> {
+  /** The initialized Ditto instance if one could be found for the provided path. */
+  ditto: Ditto | null
+  /** The set of documents found for the current query. */
+  documents: T[]
+  /** The last LiveQueryEvent received by the query observer. */
+  liveQueryEvent: LiveQueryEvent | undefined
+  /** Currently active live query. */
+  liveQuery: LiveQuery | undefined
+  /** A function used to stop the currect live query and create a new one using the current input params.*/
+  reset: () => void
+}
+
 /**
  * Runs a ditto live query immediately with the passed in query params. We're using useEffect
  * to update the Ditto live query based on the input params. useEffect doesn't perform a deep equality
@@ -94,12 +107,7 @@ export interface LiveQueryParams {
  */
 export function usePendingCursorOperation<T = Document>(
   params: LiveQueryParams,
-): {
-  ditto: Ditto | null
-  documents: T[]
-  liveQueryEvent: LiveQueryEvent | undefined
-  liveQuery: LiveQuery | undefined
-} {
+): PendingCursorOperationReturn<T> {
   const { ditto } = useDitto(params.path)
   const [documents, setDocuments] = useState<T[]>([])
   const [liveQueryEvent, setLiveQueryEvent] = useState<
@@ -107,7 +115,7 @@ export function usePendingCursorOperation<T = Document>(
   >()
   const liveQueryRef = useRef<LiveQuery>()
 
-  useEffect(() => {
+  const createLiveQuery = () => {
     if (ditto && !liveQueryRef.current) {
       const collection = ditto.store.collection(params.collection)
       let cursor: PendingCursorOperation
@@ -129,11 +137,24 @@ export function usePendingCursorOperation<T = Document>(
         setDocuments(docs)
         setLiveQueryEvent(event)
       })
+    }
+  }
 
-      return (): void => {
-        liveQueryRef.current?.stop()
-        liveQueryRef.current = null
-      }
+  const handleResetLiveQuery = () => {
+    if (liveQueryRef.current) {
+      liveQueryRef.current.stop()
+      liveQueryRef.current = null
+    }
+
+    createLiveQuery()
+  }
+
+  useEffect(() => {
+    createLiveQuery()
+
+    return (): void => {
+      liveQueryRef.current?.stop()
+      liveQueryRef.current = null
     }
   }, [ditto, params])
 
@@ -142,5 +163,6 @@ export function usePendingCursorOperation<T = Document>(
     documents,
     liveQueryEvent,
     liveQuery: liveQueryRef.current,
+    reset: handleResetLiveQuery,
   }
 }
