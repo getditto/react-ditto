@@ -55,6 +55,7 @@ export const DittoLazyProvider: React.FunctionComponent<DittoLazyProviderProps> 
           })
         }
       })()
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const renderFunction: RenderFunction | undefined = render || children

@@ -55,6 +55,7 @@ export function usePendingIDSpecificOperation<T = Document>(
       liveQuery?.stop()
     }
     /** We need to serialize the _id in order for React's dependency array comparison to work. */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.path, params.collection, params._id?.toString() || '', ditto])
 
   return {

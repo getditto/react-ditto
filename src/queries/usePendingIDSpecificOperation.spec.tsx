@@ -63,7 +63,7 @@ describe('usePendingCursorOperation tests', function () {
           insert({ value: { document: 4 } })
           insert({ value: { document: 5 } })
         }
-      }, [ditto])
+      }, [ditto, insert])
 
       return <></>
     }

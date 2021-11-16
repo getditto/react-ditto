@@ -51,7 +51,7 @@ describe('useCollections tests', function () {
         if (ditto) {
           insert({ value: { document: 1 } })
         }
-      }, [ditto])
+      }, [ditto, insert])
 
       return <></>
     }

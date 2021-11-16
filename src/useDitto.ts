@@ -32,6 +32,7 @@ export const useDitto = (path: string | null | undefined): DittoHookProps => {
     if (isLazy) {
       lazyLoadDitto()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ditto, isLazy, path])
 
   return { loading, error, ditto }

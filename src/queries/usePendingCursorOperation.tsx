@@ -156,6 +156,7 @@ export function usePendingCursorOperation<T = Document>(
       liveQueryRef.current?.stop()
       liveQueryRef.current = null
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ditto, params])
 
   return {
