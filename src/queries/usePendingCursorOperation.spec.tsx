@@ -58,7 +58,8 @@ describe('usePendingCursorOperation tests', function () {
           insert({ value: { document: 4 } })
           insert({ value: { document: 5 } })
         }
-      }, [ditto, insert])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [ditto])
 
       return <></>
     }
@@ -126,7 +127,8 @@ describe('usePendingCursorOperation tests', function () {
           insert({ value: { document: 4 } })
           insert({ value: { document: 5 } })
         }
-      }, [ditto, insert])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [ditto])
 
       return <></>
     }
@@ -195,7 +197,8 @@ describe('usePendingCursorOperation tests', function () {
           insert({ value: { document: 4 } })
           insert({ value: { document: 5 } })
         }
-      }, [ditto, insert])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, [ditto])
 
       return <></>
     }
