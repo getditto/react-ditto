@@ -80,6 +80,7 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
         setDittoHash({})
       }
     })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const renderFunction: RenderFunction | undefined =

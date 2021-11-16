@@ -2,7 +2,6 @@ import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
 import { expect } from 'chai'
 import React, { useContext } from 'react'
 import { render, unmountComponentAtNode } from 'react-dom'
-import { act } from 'react-dom/test-utils'
 import { v4 as uuidv4 } from 'uuid'
 
 import { DittoContext } from './DittoContext'
