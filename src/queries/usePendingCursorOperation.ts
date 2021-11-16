@@ -10,6 +10,7 @@ import {
 import { useEffect, useRef, useState } from 'react'
 
 import { useDitto } from '../useDitto'
+import { useVersion } from './useVersion'
 
 export interface LiveQueryParams {
   collection: string
@@ -81,15 +82,11 @@ export interface PendingCursorOperationReturn<T> {
 }
 
 /**
- * Runs a ditto live query immediately with the passed in query params. We're using useEffect
- * to update the Ditto live query based on the input params. useEffect doesn't perform a deep equality
- * check on it's dependencies, so it's important to use `useMemo` when you create your params to avoid
- * unnecessary rerenders and infinite loops with useEffect. Eg:
+ * Runs a ditto live query immediately with the passed in query params. Eg:
  *
  * @example
  * ```tsx
- * const params = useMemo(
- *   () => ({
+ *  const { documents } = usePendingCursorOperation<Webhook>({
  *     path: myPath,
  *     offset: 0,
  *     collection: 'collection'
@@ -97,10 +94,7 @@ export interface PendingCursorOperationReturn<T> {
  *       propertyPath: 'createdAt',
  *       direction: 'descending' as SortDirection,
  *     },
- *   }),
- *   [myPath],
- *  )
- *  const { documents } = usePendingCursorOperation<Webhook>(params)
+ *   })
  * ```
  * @param params live query parameters.
  * @returns
@@ -114,6 +108,7 @@ export function usePendingCursorOperation<T = Document>(
     LiveQueryEvent | undefined
   >()
   const liveQueryRef = useRef<LiveQuery>()
+  const paramsVersion = useVersion(params)
 
   const createLiveQuery = () => {
     if (ditto && !liveQueryRef.current) {
@@ -157,7 +152,7 @@ export function usePendingCursorOperation<T = Document>(
       liveQueryRef.current = null
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ditto, params])
+  }, [ditto, paramsVersion])
 
   return {
     ditto,
