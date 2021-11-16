@@ -1,11 +1,25 @@
 import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
+// import { waitFor } from '@testing-library/react'
 import { expect } from 'chai'
 import React, { useContext } from 'react'
 import { render, unmountComponentAtNode } from 'react-dom'
-import { act } from 'react-dom/test-utils'
+import { v4 as uuidv4 } from 'uuid'
 
 import { DittoContext } from './DittoContext'
 import { DittoProvider } from './DittoProvider'
+import { waitFor } from './utils.spec'
+
+const testIdentity: () => {
+  identity: IdentityOfflinePlayground
+  path: string
+} = () => ({
+  identity: {
+    appName: 'dittoProviderSpec',
+    siteID: 100,
+    type: 'offlinePlayground',
+  },
+  path: uuidv4(),
+})
 
 describe('Ditto Provider Tests', () => {
   let container: HTMLDivElement
@@ -21,126 +35,202 @@ describe('Ditto Provider Tests', () => {
     container = null
   })
 
-  it('should load ditto wasm from the CDN', function () {
-    const identity: IdentityOfflinePlayground = {
-      appName: 'live.ditto.test',
-      siteID: 234,
-      type: 'offlinePlayground',
-    }
-    act(() => {
-      render(
-        <DittoProvider
-          setup={() => {
-            const ditto = new Ditto(identity, '/test')
-            return ditto
-          }}
-        >
-          {({ loading, error }) => {
-            if (loading) {
-              expect(error).to.be.undefined
-            }
-            if (error) {
-              expect(loading).to.be.false
-            }
-            return <></>
-          }}
-        </DittoProvider>,
-        container,
-      )
-    })
+  const initOptions = {
+    webAssemblyModule: '/base/node_modules/@dittolive/ditto/web/ditto.wasm',
+  }
+
+  it('should load ditto wasm from the CDN', async function () {
+    const config = testIdentity()
+
+    render(
+      <DittoProvider
+        setup={() => {
+          const ditto = new Ditto(config.identity, config.path)
+          return ditto
+        }}
+      >
+        {({ loading, error }) => {
+          return (
+            <>
+              <div data-testid="loading">{`${loading}`}</div>
+              <div data-testid="error">{error}</div>
+            </>
+          )
+        }}
+      </DittoProvider>,
+      container,
+    )
+
+    await waitFor(
+      () =>
+        container.querySelector("div[data-testid='loading']").innerHTML ===
+        'false',
+    )
+
+    expect(container.querySelector("div[data-testid='error']").innerHTML).to.eq(
+      '',
+    )
   })
 
-  it('should load ditto wasm from a locally served ditto.wasm file', function () {
-    const identity: IdentityOfflinePlayground = {
-      appName: 'live.ditto.test',
-      siteID: 234,
-      type: 'offlinePlayground',
-    }
-    const initOptions = {
-      webAssemblyModule: '/base/node_modules/@dittolive/ditto/web/ditto.wasm',
-    }
+  it('should load ditto wasm from a locally served ditto.wasm file', async function () {
+    const config = testIdentity()
 
-    act(() => {
-      render(
-        <DittoProvider
-          initOptions={initOptions}
-          setup={() => {
-            const ditto = new Ditto(identity, '/test')
-            return ditto
-          }}
-        >
-          {({ loading, error }) => {
-            if (loading) {
-              expect(error).to.be.undefined
-            }
-            if (error) {
-              expect(loading).to.be.false
-            }
-            return <></>
-          }}
-        </DittoProvider>,
-        container,
-      )
-    })
+    render(
+      <DittoProvider
+        initOptions={initOptions}
+        setup={() => {
+          const ditto = new Ditto(config.identity, config.path)
+          return ditto
+        }}
+      >
+        {({ loading, error }) => {
+          return (
+            <>
+              <div data-testid="loading">{`${loading}`}</div>
+              <div data-testid="error">{error}</div>
+            </>
+          )
+        }}
+      </DittoProvider>,
+      container,
+    )
+
+    await waitFor(
+      () =>
+        container.querySelector("div[data-testid='loading']").innerHTML ===
+        'false',
+    )
+
+    expect(container.querySelector("div[data-testid='error']").innerHTML).to.eq(
+      '',
+    )
   })
 
-  it('should fail to load ditto from web assembly file that does not exist', function () {
-    const identity: IdentityOfflinePlayground = {
-      appName: 'live.ditto.test',
-      siteID: 234,
-      type: 'offlinePlayground',
-    }
+  it('should fail to load ditto from web assembly file that does not exist', async function () {
+    const config = testIdentity()
+
     const initOptions = {
       webAssemblyModule:
         '/base/node_modules/@dittolive/ditto/web/ditto-that-does-not-exist.wasm',
     }
 
-    act(() => {
-      render(
-        <DittoProvider
-          initOptions={initOptions}
-          setup={() => {
-            const ditto = new Ditto(identity, '/test')
-            return ditto
-          }}
-        >
-          {({ loading, error }) => {
-            if (loading == false) {
-              expect(error).to.not.be.undefined
-            }
-            return <></>
-          }}
-        </DittoProvider>,
-        container,
+    render(
+      <DittoProvider
+        initOptions={initOptions}
+        setup={() => {
+          const ditto = new Ditto(config.identity, config.path)
+          return ditto
+        }}
+      >
+        {({ loading, error }) => {
+          return (
+            <>
+              <div data-testid="loading">{`${loading}`}</div>
+              <div data-testid="error">{error?.message}</div>
+            </>
+          )
+        }}
+      </DittoProvider>,
+      container,
+    )
+
+    await waitFor(
+      () =>
+        container.querySelector("div[data-testid='loading']").innerHTML ===
+        'false',
+    )
+    await waitFor(
+      () =>
+        container.querySelector("div[data-testid='error']").innerHTML === '',
+    )
+  })
+
+  it('should mount the provider with the initialized Ditto instance.', async () => {
+    const config = testIdentity()
+
+    const TesterChildComponent = () => {
+      const { dittoHash } = useContext(DittoContext)
+
+      return (
+        <div data-testid="dittoHash">
+          {JSON.stringify(Object.keys(dittoHash))}
+        </div>
+      )
+    }
+
+    render(
+      <DittoProvider
+        setup={() => {
+          return new Ditto(config.identity, config.path)
+        }}
+        initOptions={initOptions}
+      >
+        {() => <TesterChildComponent />}
+      </DittoProvider>,
+      container,
+    )
+
+    await waitFor(() => {
+      return (
+        container.querySelector("div[data-testid='dittoHash']").innerHTML ===
+        `["${config.path}"]`
       )
     })
   })
 
-  it('should mount the provider with the initialized Ditto instance.', () => {
-    const identity: IdentityOfflinePlayground = {
-      appName: 'live.ditto.test',
-      siteID: 234,
-      type: 'offlinePlayground',
-    }
+  it('should pass the loading state to the child component when the provider is initialized as a single instance', async () => {
+    const config = testIdentity()
 
-    const TesterChildComponent = ({ loading }: { loading: boolean }) => {
-      const { dittoHash } = useContext(DittoContext)
+    render(
+      <DittoProvider
+        setup={() => {
+          return new Ditto(config.identity, config.path)
+        }}
+        initOptions={initOptions}
+      >
+        {({ loading }) => <div data-testid="loading">{`${loading}`}</div>}
+      </DittoProvider>,
+      container,
+    )
 
-      expect(Object.values(dittoHash).length).to.eq(loading ? 0 : 1)
+    expect(
+      container.querySelector("div[data-testid='loading']").innerHTML,
+    ).to.eq('true')
 
-      return <></>
-    }
-    act(() => {
-      render(
-        <DittoProvider
-          setup={() => {
-            return new Ditto(identity, '/test')
-          }}
-        >
-          {({ loading }) => <TesterChildComponent loading={loading} />}
-        </DittoProvider>,
-        container,
-      )
-    })
+    await waitFor(
+      () =>
+        container.querySelector("div[data-testid='loading']").innerHTML ===
+        'false',
+    )
+  })
+
+  it('should pass the loading state to the child component when the provider is initialized as an array of instances', async () => {
+    const config = testIdentity()
+    const config2 = testIdentity()
+
+    render(
+      <DittoProvider
+        setup={() => {
+          return [
+            new Ditto(config.identity, config.path),
+            new Ditto(config2.identity, config2.path),
+          ]
+        }}
+        initOptions={initOptions}
+      >
+        {({ loading }) => <div data-testid="loading">{`${loading}`}</div>}
+      </DittoProvider>,
+      container,
+    )
+
+    expect(
+      container.querySelector("div[data-testid='loading']").innerHTML,
+    ).to.eq('true')
+
+    await waitFor(
+      () =>
+        container.querySelector("div[data-testid='loading']").innerHTML ===
+        'false',
+    )
   })
 })
