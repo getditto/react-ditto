@@ -67,6 +67,8 @@ export interface LiveQueryParams {
    * An optional number to use as an offset of the results of the query. If you omit this value, an offset of 0 is assumed.
    */
   offset?: number
+  /** When true the query will only on local data mutations and will not rely on replication. */
+  localOnly?: boolean
 }
 
 export interface PendingCursorOperationReturn<T> {
@@ -132,10 +134,18 @@ export function usePendingCursorOperation<T = DocumentLike>(
       if (params.offset) {
         cursor = cursor.offset(params.offset)
       }
-      liveQueryRef.current = cursor.observe((docs, event) => {
-        setDocuments(docs)
-        setLiveQueryEvent(event)
-      })
+
+      if (!!params.localOnly) {
+        liveQueryRef.current = cursor.observeLocal((docs, event) => {
+          setDocuments(docs)
+          setLiveQueryEvent(event)
+        })
+      } else {
+        liveQueryRef.current = cursor.observe((docs, event) => {
+          setDocuments(docs)
+          setLiveQueryEvent(event)
+        })
+      }
 
       setCollection(nextCollection)
     }

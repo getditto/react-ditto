@@ -127,6 +127,36 @@ describe('useLazyPendingCursorOperation tests', function () {
     }
   })
 
+  it('should load all documents correctly observing only for local data', async () => {
+    const testConfiguration = testIdentity()
+
+    const params: LiveQueryParams = {
+      path: testConfiguration.path,
+      collection: 'foo',
+      localOnly: true,
+    }
+    const { result, waitFor, waitForNextUpdate } = renderHook(
+      () => useLazyPendingCursorOperation(),
+      {
+        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+      },
+    )
+
+    // we wait for the Ditto instance to load.
+    await waitForNextUpdate()
+    await result.current.exec(params)
+
+    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+
+    expect(result.current.documents.length).to.eq(5)
+
+    for (let i = 1; i < 6; i++) {
+      expect(
+        !!result.current.documents.find((doc) => doc._value.document === i),
+      ).to.eq(true)
+    }
+  })
+
   it('should load documents correctly using a query', async () => {
     const testConfiguration = testIdentity()
 

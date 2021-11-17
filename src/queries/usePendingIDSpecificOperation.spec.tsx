@@ -110,6 +110,27 @@ describe('usePendingIDSpecificOperation tests', function () {
     expect(result.current.document._value.document).to.eq(1)
   })
 
+  it('should load a document by ID correctly observing only the local store', async () => {
+    const testConfiguration = testIdentity()
+
+    const params: UsePendingIDSpecificOperationParams = {
+      path: testConfiguration.path,
+      collection: 'foo',
+      _id: new DocumentID('someId'),
+      localOnly: true,
+    }
+    const { result, waitFor } = renderHook(
+      () => usePendingIDSpecificOperation(params),
+      {
+        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+      },
+    )
+    await waitFor(() => !!result.current.document, { timeout: 5000 })
+
+    expect(result.current.document._id.toString()).to.eq('"someId"')
+    expect(result.current.document._value.document).to.eq(1)
+  })
+
   it('should return the loaded Ditto collection so developers can launch queries on the store with it', async function () {
     const testConfiguration = testIdentity()
 

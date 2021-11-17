@@ -70,12 +70,22 @@ export function useLazyPendingIDSpecificOperation<
 
     if (nextDitto) {
       const nextCollection = nextDitto.store.collection(params.collection)
-      liveQueryRef.current = nextCollection
-        .findByID(params._id)
-        .observe((doc: T, e) => {
-          setEvent(e)
-          setDocument(doc)
-        })
+
+      if (!!params.localOnly) {
+        liveQueryRef.current = nextCollection
+          .findByID(params._id)
+          .observeLocal((doc: T, e) => {
+            setEvent(e)
+            setDocument(doc)
+          })
+      } else {
+        liveQueryRef.current = nextCollection
+          .findByID(params._id)
+          .observe((doc: T, e) => {
+            setEvent(e)
+            setDocument(doc)
+          })
+      }
 
       setDitto(nextDitto)
       setCollection(nextCollection)
