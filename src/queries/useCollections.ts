@@ -52,23 +52,16 @@ type CollectionsEvent = {
 }
 
 /**
- * Runs a ditto live query on the collections collection. We're using useEffect
- * to update the Ditto live query based on the input params. useEffect doesn't perform a deep equality
- * check on it's dependencies, so it's important to use `useMemo` when you create your params to avoid
- * unnecessary rerenders and infinite loops with useEffect. Eg:
+ * Runs a ditto live query on the collections collection. Eg:
  *
- * const params = useMemo(
- *   () => ({
+ *  const { documents } = useCollections({
  *     path: myPath,
  *     sort: {
  *       propertyPath: 'name',
  *       direction: 'descending' as SortDirection,
  *     },
  *     limit: 2
- *   }),
- *   [myPath],
- *  )
- *  const { documents } = useCollections(params)
+ *   })
  *
  * @param params collections query parameters.
  * @returns
@@ -108,7 +101,14 @@ export function useCollections(params: CollectionsQueryParams): {
     return (): void => {
       liveQueryRef.current?.stop()
     }
-  }, [ditto, params])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    ditto,
+    params.path,
+    params.sort?.propertyPath,
+    params.sort?.direction,
+    params.limit,
+  ])
 
   return {
     ditto,

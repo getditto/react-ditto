@@ -1,4 +1,5 @@
 import {
+  Collection,
   Ditto,
   Document,
   LiveQuery,
@@ -10,6 +11,7 @@ import {
 import { useEffect, useRef, useState } from 'react'
 
 import { useDitto } from '../useDitto'
+import { useVersion } from './useVersion'
 
 export interface LiveQueryParams {
   collection: string
@@ -78,18 +80,16 @@ export interface PendingCursorOperationReturn<T> {
   liveQuery: LiveQuery | undefined
   /** A function used to stop the currect live query and create a new one using the current input params.*/
   reset: () => void
+  /** Current Ditto collection instance. */
+  collection: Collection | undefined
 }
 
 /**
- * Runs a ditto live query immediately with the passed in query params. We're using useEffect
- * to update the Ditto live query based on the input params. useEffect doesn't perform a deep equality
- * check on it's dependencies, so it's important to use `useMemo` when you create your params to avoid
- * unnecessary rerenders and infinite loops with useEffect. Eg:
+ * Runs a ditto live query immediately with the passed in query params. Eg:
  *
  * @example
  * ```tsx
- * const params = useMemo(
- *   () => ({
+ *  const { documents } = usePendingCursorOperation<Webhook>({
  *     path: myPath,
  *     offset: 0,
  *     collection: 'collection'
@@ -97,10 +97,7 @@ export interface PendingCursorOperationReturn<T> {
  *       propertyPath: 'createdAt',
  *       direction: 'descending' as SortDirection,
  *     },
- *   }),
- *   [myPath],
- *  )
- *  const { documents } = usePendingCursorOperation<Webhook>(params)
+ *   })
  * ```
  * @param params live query parameters.
  * @returns
@@ -113,16 +110,18 @@ export function usePendingCursorOperation<T = Document>(
   const [liveQueryEvent, setLiveQueryEvent] = useState<
     LiveQueryEvent | undefined
   >()
+  const [collection, setCollection] = useState<Collection>()
   const liveQueryRef = useRef<LiveQuery>()
+  const paramsVersion = useVersion(params)
 
   const createLiveQuery = () => {
     if (ditto && !liveQueryRef.current) {
-      const collection = ditto.store.collection(params.collection)
+      const nextCollection = ditto.store.collection(params.collection)
       let cursor: PendingCursorOperation
       if (params.query) {
-        cursor = collection.find(params.query, params.args)
+        cursor = nextCollection.find(params.query, params.args)
       } else {
-        cursor = collection.findAll()
+        cursor = nextCollection.findAll()
       }
       if (params.sort) {
         cursor = cursor.sort(params.sort.propertyPath, params.sort.direction)
@@ -137,6 +136,8 @@ export function usePendingCursorOperation<T = Document>(
         setDocuments(docs)
         setLiveQueryEvent(event)
       })
+
+      setCollection(nextCollection)
     }
   }
 
@@ -145,6 +146,10 @@ export function usePendingCursorOperation<T = Document>(
       liveQueryRef.current.stop()
       liveQueryRef.current = null
     }
+
+    setCollection(null)
+    setLiveQueryEvent(null)
+    setDocuments([])
 
     createLiveQuery()
   }
@@ -157,9 +162,10 @@ export function usePendingCursorOperation<T = Document>(
       liveQueryRef.current = null
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ditto, params])
+  }, [ditto, paramsVersion])
 
   return {
+    collection,
     ditto,
     documents,
     liveQueryEvent,

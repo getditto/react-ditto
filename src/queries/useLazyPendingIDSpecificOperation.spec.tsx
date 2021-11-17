@@ -7,10 +7,8 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { DittoProvider } from '../DittoProvider'
 import { useMutations } from '../mutations'
-import {
-  usePendingIDSpecificOperation,
-  UsePendingIDSpecificOperationParams,
-} from './usePendingIDSpecificOperation'
+import { useLazyPendingIDSpecificOperation } from './useLazyPendingIDSpecificOperation'
+import { UsePendingIDSpecificOperationParams } from './usePendingIDSpecificOperation'
 
 const testIdentity: () => {
   identity: IdentityOfflinePlayground
@@ -76,7 +74,7 @@ const wrapper =
       </DittoProvider>
     )
 
-describe('usePendingIDSpecificOperation tests', function () {
+describe('useLazyPendingIDSpecificOperation tests', function () {
   let container: HTMLDivElement
 
   beforeEach(() => {
@@ -90,7 +88,7 @@ describe('usePendingIDSpecificOperation tests', function () {
     container = null
   })
 
-  it('should load a document by ID correctly', async () => {
+  it('should load a document by ID correctly when the exec function is called', async () => {
     const testConfiguration = testIdentity()
 
     const params: UsePendingIDSpecificOperationParams = {
@@ -98,19 +96,33 @@ describe('usePendingIDSpecificOperation tests', function () {
       collection: 'foo',
       _id: new DocumentID('someId'),
     }
-    const { result, waitFor } = renderHook(
-      () => usePendingIDSpecificOperation(params),
+    const { result, waitFor, waitForNextUpdate } = renderHook(
+      () => useLazyPendingIDSpecificOperation(),
       {
         wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
       },
     )
+
+    // we wait for the Ditto instance to load.
+    await waitForNextUpdate()
+
+    expect(result.current.document).to.eq(undefined)
+    expect(result.current.ditto).to.eq(undefined)
+    expect(result.current.liveQuery).to.eq(undefined)
+    expect(result.current.event).to.eq(undefined)
+
+    await result.current.exec(params)
     await waitFor(() => !!result.current.document, { timeout: 5000 })
 
     expect(result.current.document._id.toString()).to.eq('"someId"')
     expect(result.current.document._value.document).to.eq(1)
+
+    expect(result.current.ditto).not.to.eq(undefined)
+    expect(result.current.liveQuery).not.to.eq(undefined)
+    expect(result.current.event).not.to.eq(undefined)
   })
 
-  it('should return the loaded Ditto collection so developers can launch queries on the store with it', async function () {
+  it('should return the loaded Ditto collection so developers can launch queries on the store with it, once the exec function is called', async function () {
     const testConfiguration = testIdentity()
 
     const params: UsePendingIDSpecificOperationParams = {
@@ -118,15 +130,18 @@ describe('usePendingIDSpecificOperation tests', function () {
       collection: 'foo',
       _id: new DocumentID('someId'),
     }
-    const { result, waitFor } = renderHook(
-      () => usePendingIDSpecificOperation(params),
+    const { result, waitFor, waitForNextUpdate } = renderHook(
+      () => useLazyPendingIDSpecificOperation(),
       {
         wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
       },
     )
-    await waitFor(() => !!result.current.document, { timeout: 5000 })
 
-    expect(result.current.collection).not.to.eq(undefined)
+    // we wait for the Ditto instance to load.
+    await waitForNextUpdate()
+
+    await result.current.exec(params)
+    await waitFor(() => !!result.current.document, { timeout: 5000 })
 
     const allDocs = await result.current.collection.findAll().exec()
 
