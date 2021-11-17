@@ -1,8 +1,8 @@
 import {
   Collection,
   Ditto,
-  Document,
   DocumentID,
+  DocumentLike,
   LiveQuery,
   SingleDocumentLiveQueryEvent,
 } from '@dittolive/ditto'
@@ -53,7 +53,7 @@ export interface PendingIDSpecificOperationReturn<T> {
  * @param params live query parameters.
  * @returns PendingIDSpecificOperationReturn
  */
-export function usePendingIDSpecificOperation<T = Document>(
+export function usePendingIDSpecificOperation<T = DocumentLike>(
   params: UsePendingIDSpecificOperationParams,
 ): PendingIDSpecificOperationReturn<T> {
   const liveQueryRef = useRef<LiveQuery>()

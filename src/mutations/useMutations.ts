@@ -1,7 +1,7 @@
 import {
   Ditto,
-  Document,
   DocumentID,
+  DocumentLike,
   DocumentValue,
   InsertOptions,
   PendingCursorOperation,
@@ -79,7 +79,7 @@ export interface UseMutationParams {
   collection: string
 }
 
-export function useMutations<T = Document>(
+export function useMutations<T = DocumentLike>(
   useMutationParams: UseMutationParams,
 ): {
   ditto: Ditto

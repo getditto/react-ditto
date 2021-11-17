@@ -1,7 +1,7 @@
 import {
   Collection,
   Ditto,
-  Document,
+  DocumentLike,
   LiveQuery,
   SingleDocumentLiveQueryEvent,
 } from '@dittolive/ditto'
@@ -46,7 +46,7 @@ export interface LazyPendingIDSpecificOperationReturn<T> {
  * @returns LazyPendingIDSpecificOperationReturn
  */
 export function useLazyPendingIDSpecificOperation<
-  T = Document,
+  T = DocumentLike,
 >(): LazyPendingIDSpecificOperationReturn<T> {
   const { dittoHash, isLazy, load } = useContext(DittoContext)
   const liveQueryRef = useRef<LiveQuery>()

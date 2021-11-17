@@ -1,7 +1,7 @@
 import {
   Collection,
   Ditto,
-  Document,
+  DocumentLike,
   LiveQuery,
   LiveQueryEvent,
   PendingCursorOperation,
@@ -50,7 +50,7 @@ export interface LazyPendingCursorOperationReturn<T> {
  * @returns LazyPendingCursorOperationReturn
  */
 export function useLazyPendingCursorOperation<
-  T = Document,
+  T = DocumentLike,
 >(): LazyPendingCursorOperationReturn<T> {
   const { dittoHash, isLazy, load } = useContext(DittoContext)
   const [documents, setDocuments] = useState<T[]>([])
