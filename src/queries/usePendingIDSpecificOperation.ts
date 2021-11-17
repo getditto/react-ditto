@@ -21,9 +21,28 @@ export interface UsePendingIDSpecificOperationParams {
   /**
    * The _id of the document to query
    */
-  _id?: unknown | DocumentID
+  _id: unknown | DocumentID
 }
 
+/**
+ * Runs a ditto live query immediately with the passed in query params over a know document ID. As a result of
+ * this the live query may return a the document with the ID passed in as a parameter, if it exists.
+ *
+ * @example
+ * ```tsx
+ *  const { documents } = usePendingCursorOperation<Webhook>({
+ *     path: myPath,
+ *     offset: 0,
+ *     collection: 'collection'
+ *     sort: {
+ *       propertyPath: 'createdAt',
+ *       direction: 'descending' as SortDirection,
+ *     },
+ *   })
+ * ```
+ * @param params live query parameters.
+ * @returns
+ */
 export function usePendingIDSpecificOperation<T = Document>(
   params: UsePendingIDSpecificOperationParams,
 ): {

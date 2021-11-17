@@ -1,48 +1,26 @@
 import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
 import { renderHook } from '@testing-library/react-hooks/dom'
 import { expect } from 'chai'
-import React, { ReactNode, useEffect } from 'react'
+import React, { ReactNode } from 'react'
 import { unmountComponentAtNode } from 'react-dom'
 import { v4 as uuidv4 } from 'uuid'
 
 import { DittoProvider } from '../DittoProvider'
-import { useMutations } from '../mutations'
-import {
-  LiveQueryParams,
-  usePendingCursorOperation,
-} from './usePendingCursorOperation'
+import { useLazyPendingCursorOperation } from './useLazyPendingCursorOperation'
+import { LiveQueryParams } from './usePendingCursorOperation'
+import { DocumentInserter } from './usePendingCursorOperation.spec'
 
 const testIdentity: () => {
   identity: IdentityOfflinePlayground
   path: string
 } = () => ({
   identity: {
-    appName: 'usePendingCursorOperationSpec',
+    appName: 'useLazyPendingCursorOperationSpec',
     siteID: 100,
     type: 'offlinePlayground',
   },
   path: uuidv4(),
 })
-
-export const DocumentInserter: React.FC<{ path: string }> = ({ path }) => {
-  const { ditto, insert } = useMutations<unknown>({
-    path,
-    collection: 'foo',
-  })
-
-  useEffect(() => {
-    if (ditto) {
-      insert({ value: { document: 1 } })
-      insert({ value: { document: 2 } })
-      insert({ value: { document: 3 } })
-      insert({ value: { document: 4 } })
-      insert({ value: { document: 5 } })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ditto])
-
-  return <></>
-}
 
 const initOptions = {
   webAssemblyModule: '/base/node_modules/@dittolive/ditto/web/ditto.wasm',
@@ -72,7 +50,7 @@ const wrapper =
       </DittoProvider>
     )
 
-describe('usePendingCursorOperation tests', function () {
+describe('useLazyPendingCursorOperation tests', function () {
   let container: HTMLDivElement
 
   beforeEach(() => {
@@ -86,6 +64,40 @@ describe('usePendingCursorOperation tests', function () {
     container = null
   })
 
+  it('should not load any values until a query is executed with the exec function', async () => {
+    const testConfiguration = testIdentity()
+
+    const params: LiveQueryParams = {
+      path: testConfiguration.path,
+      collection: 'foo',
+    }
+    const { result, waitFor, waitForNextUpdate } = renderHook(
+      () => useLazyPendingCursorOperation(),
+      {
+        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+      },
+    )
+
+    // we wait for the Ditto instance to load.
+    await waitForNextUpdate()
+
+    expect(result.current.documents).to.eql([])
+    expect(result.current.liveQuery).to.eq(undefined)
+    expect(result.current.liveQueryEvent).to.eq(undefined)
+    expect(result.current.ditto).to.eq(undefined)
+
+    await result.current.exec(params)
+
+    await waitFor(() => result.current.documents.length !== 0, {
+      timeout: 5000,
+    })
+
+    expect(result.current.documents.length).to.eql(5)
+    expect(result.current.liveQuery).not.to.eq(undefined)
+    expect(result.current.liveQueryEvent).not.to.eq(undefined)
+    expect(result.current.ditto).not.to.eq(undefined)
+  })
+
   it('should load all documents correctly', async () => {
     const testConfiguration = testIdentity()
 
@@ -93,12 +105,17 @@ describe('usePendingCursorOperation tests', function () {
       path: testConfiguration.path,
       collection: 'foo',
     }
-    const { result, waitFor } = renderHook(
-      () => usePendingCursorOperation(params),
+    const { result, waitFor, waitForNextUpdate } = renderHook(
+      () => useLazyPendingCursorOperation(),
       {
         wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
       },
     )
+
+    // we wait for the Ditto instance to load.
+    await waitForNextUpdate()
+    await result.current.exec(params)
+
     await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
 
     expect(result.current.documents.length).to.eq(5)
@@ -118,12 +135,18 @@ describe('usePendingCursorOperation tests', function () {
       collection: 'foo',
       query: 'document > 3',
     }
-    const { result, waitFor } = renderHook(
-      () => usePendingCursorOperation(params),
+
+    const { result, waitFor, waitForNextUpdate } = renderHook(
+      () => useLazyPendingCursorOperation(),
       {
         wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
       },
     )
+
+    // we wait for the Ditto instance to load.
+    await waitForNextUpdate()
+    await result.current.exec(params)
+
     await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
 
     expect(result.current.documents.length).to.eq(2)
@@ -135,7 +158,7 @@ describe('usePendingCursorOperation tests', function () {
     }
   })
 
-  it('should correctly reset the current live query and create a new one when the reset function is called.', async () => {
+  it('should correctly reset the current live query and create a new one when the exec function is called a second time.', async () => {
     const testConfiguration = testIdentity()
 
     const params: LiveQueryParams = {
@@ -143,24 +166,29 @@ describe('usePendingCursorOperation tests', function () {
       collection: 'foo',
       query: 'document > 3',
     }
-    const { result, waitFor } = renderHook(
-      () => usePendingCursorOperation(params),
+
+    const { result, waitFor, waitForNextUpdate } = renderHook(
+      () => useLazyPendingCursorOperation(),
       {
         wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
       },
     )
+
+    // we wait for the Ditto instance to load.
+    await waitForNextUpdate()
+    await result.current.exec(params)
+
     await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
 
     expect(result.current.documents.length).to.eq(2)
+    const liveQuery = result.current.liveQuery
 
-    const liveQueryBeforeReset = result.current.liveQuery
-
-    result.current.reset()
-
-    await waitFor(() => result.current.liveQuery !== liveQueryBeforeReset, {
-      timeout: 5000,
+    await result.current.exec({
+      path: testConfiguration.path,
+      collection: 'foo',
     })
 
-    expect(result.current.documents.length).to.eq(2)
+    expect(result.current.documents.length).to.eql(5)
+    expect(result.current.liveQuery).not.to.eq(liveQuery)
   })
 })

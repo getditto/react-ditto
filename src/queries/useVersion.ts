@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from 'react'
  * by performing a deep comparison between the current value and previous value, and returns a version number that
  * can be handed over to a list of useEffect dependencies.
  */
-export const useVersion = <T>(value: T) => {
+export const useVersion = <T>(value: T): number => {
   const valueRef = useRef<T>(value)
   const [version, setVersion] = useState(0)
 

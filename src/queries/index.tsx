@@ -1,4 +1,6 @@
 export * from './useCollections'
+export * from './useLazyPendingCursorOperation'
+export * from './useLazyPendingIDSpecificOperation'
 export * from './usePendingCursorOperation'
 export * from './usePendingIDSpecificOperation'
 export * from './useRemotePeers'

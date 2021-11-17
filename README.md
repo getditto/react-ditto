@@ -197,25 +197,42 @@ ReactDOM.render(
 );
 ```
 
-3. In your `App` component, you can now use hooks like `usePendingCursorOperation` to get your documents like so:
+3. In your `App` component, you can now use hooks like `usePendingCursorOperation` or `usePendingIDSpecificOperation` to get your documents like so:
 
 ```tsx
 import { usePendingCursorOperation, useMutations } from "@dittolive/react-ditto";
 
 export default function App() {
-
-  /** 
-   * As documented on usePendingCursorOperation, it's important to memoize the hook params
-   * in order for the internal useEffect hook to correctly perform a comparison between params
-   * in subsequent render cycles. 
-   * */
-  const params = useMemo(() => ({
+  const { documents, ditto } = usePendingCursorOperation({
     collection: 'tasks',
-  }), []) 
-  const { documents, ditto } = usePendingCursorOperation(params);
+  });
 
   const { updateByID, insert } = useMutations({ collection: 'tasks' })
 
+  return (
+    <ul>
+      {documents.map(doc => (
+        <li key={doc._id}>
+          {doc.body}
+        </li>
+      ))}
+    </ul>
+  )
+}
+```
+
+Alternatively, you can also choose to go with the lazy variants of these hooks (`useLazyPendingCursorOperation` and `useLazyPendingIDSpecificOperation`), ir order to launch queries on the data store as a response to a user event:
+
+```tsx
+import { usePendingCursorOperation, useMutations } from "@dittolive/react-ditto";
+
+export default function App() {
+  const { documents, ditto, exec } = useLazyPendingCursorOperation();
+  
+  if(!documents?.length) {
+    return <button onClick={() => exec({ collection: 'tasks' })}>Click to load!</button>
+  }
+  
   return (
     <ul>
       {documents.map(doc => (

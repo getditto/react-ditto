@@ -101,6 +101,7 @@ export function useCollections(params: CollectionsQueryParams): {
     return (): void => {
       liveQueryRef.current?.stop()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     ditto,
     params.path,
