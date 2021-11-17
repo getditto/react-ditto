@@ -191,4 +191,30 @@ describe('useLazyPendingCursorOperation tests', function () {
     expect(result.current.documents.length).to.eql(5)
     expect(result.current.liveQuery).not.to.eq(liveQuery)
   })
+
+  it('should return the Ditto collection as an alternative way for developers to query the collection', async () => {
+    const testConfiguration = testIdentity()
+
+    const params: LiveQueryParams = {
+      path: testConfiguration.path,
+      collection: 'foo',
+    }
+    const { result, waitFor, waitForNextUpdate } = renderHook(
+      () => useLazyPendingCursorOperation(),
+      {
+        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+      },
+    )
+
+    // we wait for the Ditto instance to load.
+    await waitForNextUpdate()
+    await result.current.exec(params)
+
+    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+
+    expect(result.current.documents.length).to.eq(5)
+
+    const collectionDocuments = await result.current.collection.findAll().exec()
+    expect(collectionDocuments.length).to.eq(5)
+  })
 })

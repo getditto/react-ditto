@@ -1,4 +1,5 @@
 import {
+  Collection,
   Ditto,
   Document,
   DocumentID,
@@ -24,50 +25,56 @@ export interface UsePendingIDSpecificOperationParams {
   _id: unknown | DocumentID
 }
 
+export interface PendingIDSpecificOperationReturn<T> {
+  /** The initialized Ditto instance if one could be found for the provided path. */
+  ditto: Ditto | null
+  /** The documents found for the current query. */
+  document: T | undefined
+  /** The last SingleDocumentLiveQueryEvent received by the query observer. */
+  event?: SingleDocumentLiveQueryEvent
+  /** Currently active live query. */
+  liveQuery: LiveQuery | undefined
+  /** Current Ditto collection instance. */
+  collection: Collection | undefined
+}
+
 /**
  * Runs a ditto live query immediately with the passed in query params over a know document ID. As a result of
  * this the live query may return a the document with the ID passed in as a parameter, if it exists.
  *
  * @example
  * ```tsx
- *  const { documents } = usePendingCursorOperation<Webhook>({
+ *  const { document } = usePendingIDSpecificOperation<Webhook>({
  *     path: myPath,
- *     offset: 0,
  *     collection: 'collection'
- *     sort: {
- *       propertyPath: 'createdAt',
- *       direction: 'descending' as SortDirection,
- *     },
+ *     _id: new DocumentID("some_id")
  *   })
  * ```
  * @param params live query parameters.
- * @returns
+ * @returns PendingIDSpecificOperationReturn
  */
 export function usePendingIDSpecificOperation<T = Document>(
   params: UsePendingIDSpecificOperationParams,
-): {
-  ditto: Ditto | null
-  document: T | undefined
-  event?: SingleDocumentLiveQueryEvent
-  liveQuery: LiveQuery | undefined
-} {
+): PendingIDSpecificOperationReturn<T> {
   const liveQueryRef = useRef<LiveQuery>()
   const { ditto } = useDitto(params.path)
   const [document, setDocument] = useState<T>()
+  const [collection, setCollection] = useState<Collection>()
   const [event, setEvent] = useState<SingleDocumentLiveQueryEvent>()
 
   useEffect(() => {
     let liveQuery: LiveQuery
     if (params._id && params.collection && ditto) {
-      liveQuery = ditto.store
-        .collection(params.collection)
-        .findByID(params._id)
-        .observe((doc: T, e) => {
-          setEvent(e)
-          setDocument(doc)
-        })
+      const nextCollection = ditto.store.collection(params.collection)
+
+      liveQuery = nextCollection.findByID(params._id).observe((doc: T, e) => {
+        setEvent(e)
+        setDocument(doc)
+      })
+      setCollection(nextCollection)
     } else {
       setDocument(undefined)
+      setCollection(undefined)
       setEvent(undefined)
     }
     return () => {
@@ -78,6 +85,7 @@ export function usePendingIDSpecificOperation<T = Document>(
   }, [params.path, params.collection, params._id?.toString() || '', ditto])
 
   return {
+    collection,
     ditto,
     document,
     event,

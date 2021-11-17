@@ -1,4 +1,5 @@
 import {
+  Collection,
   Ditto,
   Document,
   LiveQuery,
@@ -79,6 +80,8 @@ export interface PendingCursorOperationReturn<T> {
   liveQuery: LiveQuery | undefined
   /** A function used to stop the currect live query and create a new one using the current input params.*/
   reset: () => void
+  /** Current Ditto collection instance. */
+  collection: Collection | undefined
 }
 
 /**
@@ -107,17 +110,18 @@ export function usePendingCursorOperation<T = Document>(
   const [liveQueryEvent, setLiveQueryEvent] = useState<
     LiveQueryEvent | undefined
   >()
+  const [collection, setCollection] = useState<Collection>()
   const liveQueryRef = useRef<LiveQuery>()
   const paramsVersion = useVersion(params)
 
   const createLiveQuery = () => {
     if (ditto && !liveQueryRef.current) {
-      const collection = ditto.store.collection(params.collection)
+      const nextCollection = ditto.store.collection(params.collection)
       let cursor: PendingCursorOperation
       if (params.query) {
-        cursor = collection.find(params.query, params.args)
+        cursor = nextCollection.find(params.query, params.args)
       } else {
-        cursor = collection.findAll()
+        cursor = nextCollection.findAll()
       }
       if (params.sort) {
         cursor = cursor.sort(params.sort.propertyPath, params.sort.direction)
@@ -132,6 +136,8 @@ export function usePendingCursorOperation<T = Document>(
         setDocuments(docs)
         setLiveQueryEvent(event)
       })
+
+      setCollection(nextCollection)
     }
   }
 
@@ -140,6 +146,10 @@ export function usePendingCursorOperation<T = Document>(
       liveQueryRef.current.stop()
       liveQueryRef.current = null
     }
+
+    setCollection(null)
+    setLiveQueryEvent(null)
+    setDocuments([])
 
     createLiveQuery()
   }
@@ -155,6 +165,7 @@ export function usePendingCursorOperation<T = Document>(
   }, [ditto, paramsVersion])
 
   return {
+    collection,
     ditto,
     documents,
     liveQueryEvent,

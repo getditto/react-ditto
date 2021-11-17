@@ -1,4 +1,5 @@
 import {
+  Collection,
   Ditto,
   Document,
   LiveQuery,
@@ -21,6 +22,8 @@ export interface LazyPendingCursorOperationReturn<T> {
   liveQuery: LiveQuery | undefined
   /** Function used to trigger a query on a collection */
   exec: (params: LiveQueryParams) => Promise<void>
+  /** Current Ditto collection instance. */
+  collection: Collection | undefined
 }
 
 /**
@@ -56,6 +59,7 @@ export function useLazyPendingCursorOperation<
   >()
   const liveQueryRef = useRef<LiveQuery>()
   const [ditto, setDitto] = useState<Ditto>()
+  const [collection, setCollection] = useState<Collection>()
 
   const createLiveQuery = async (params: LiveQueryParams) => {
     let nextDitto
@@ -69,12 +73,12 @@ export function useLazyPendingCursorOperation<
     }
 
     if (nextDitto) {
-      const collection = nextDitto.store.collection(params.collection)
+      const nextCollection = nextDitto.store.collection(params.collection)
       let cursor: PendingCursorOperation
       if (params.query) {
-        cursor = collection.find(params.query, params.args)
+        cursor = nextCollection.find(params.query, params.args)
       } else {
-        cursor = collection.findAll()
+        cursor = nextCollection.findAll()
       }
       if (params.sort) {
         cursor = cursor.sort(params.sort.propertyPath, params.sort.direction)
@@ -90,6 +94,7 @@ export function useLazyPendingCursorOperation<
         setLiveQueryEvent(event)
       })
 
+      setCollection(nextCollection)
       setDitto(nextDitto)
     } else {
       return Promise.reject(
@@ -110,16 +115,18 @@ export function useLazyPendingCursorOperation<
     if (liveQueryRef.current) {
       liveQueryRef.current.stop()
       liveQueryRef.current = null
-
-      setDocuments([])
-      setDitto(undefined)
-      setLiveQueryEvent(undefined)
     }
+
+    setDocuments([])
+    setDitto(undefined)
+    setLiveQueryEvent(undefined)
+    setCollection(undefined)
 
     return createLiveQuery(params)
   }
 
   return {
+    collection,
     ditto,
     documents,
     liveQueryEvent,

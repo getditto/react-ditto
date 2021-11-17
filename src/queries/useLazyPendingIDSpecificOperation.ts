@@ -1,4 +1,5 @@
 import {
+  Collection,
   Ditto,
   Document,
   LiveQuery,
@@ -18,6 +19,8 @@ export interface LazyPendingIDSpecificOperationReturn<T> {
   event?: SingleDocumentLiveQueryEvent
   /** Currently active live query. */
   liveQuery: LiveQuery | undefined
+  /** Current Ditto collection instance. */
+  collection: Collection | undefined
   /** Function used to trigger a query on a collection */
   exec: (params: UsePendingIDSpecificOperationParams) => Promise<void>
 }
@@ -49,6 +52,7 @@ export function useLazyPendingIDSpecificOperation<
   const liveQueryRef = useRef<LiveQuery>()
   const [ditto, setDitto] = useState<Ditto>()
   const [document, setDocument] = useState<T>()
+  const [collection, setCollection] = useState<Collection>()
   const [event, setEvent] = useState<SingleDocumentLiveQueryEvent>()
 
   const createLiveQuery = async (
@@ -65,8 +69,8 @@ export function useLazyPendingIDSpecificOperation<
     }
 
     if (nextDitto) {
-      liveQueryRef.current = nextDitto.store
-        .collection(params.collection)
+      const nextCollection = nextDitto.store.collection(params.collection)
+      liveQueryRef.current = nextCollection
         .findByID(params._id)
         .observe((doc: T, e) => {
           setEvent(e)
@@ -74,6 +78,7 @@ export function useLazyPendingIDSpecificOperation<
         })
 
       setDitto(nextDitto)
+      setCollection(nextCollection)
     } else {
       return Promise.reject(
         new Error(
@@ -93,16 +98,17 @@ export function useLazyPendingIDSpecificOperation<
     if (liveQueryRef.current) {
       liveQueryRef.current.stop()
       liveQueryRef.current = null
-
-      setDocument(undefined)
-      setDitto(undefined)
-      setEvent(undefined)
     }
+    setDocument(undefined)
+    setDitto(undefined)
+    setEvent(undefined)
+    setCollection(undefined)
 
     return createLiveQuery(params)
   }
 
   return {
+    collection,
     ditto,
     document,
     event,

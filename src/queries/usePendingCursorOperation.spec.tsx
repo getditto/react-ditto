@@ -163,4 +163,25 @@ describe('usePendingCursorOperation tests', function () {
 
     expect(result.current.documents.length).to.eq(2)
   })
+
+  it('should return the Ditto collection as an alternative way for developers to query the collection', async () => {
+    const testConfiguration = testIdentity()
+
+    const params: LiveQueryParams = {
+      path: testConfiguration.path,
+      collection: 'foo',
+    }
+    const { result, waitFor } = renderHook(
+      () => usePendingCursorOperation(params),
+      {
+        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+      },
+    )
+    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+
+    expect(result.current.documents.length).to.eq(5)
+
+    const collectionDocuments = await result.current.collection.findAll().exec()
+    expect(collectionDocuments.length).to.eq(5)
+  })
 })
