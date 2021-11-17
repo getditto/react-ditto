@@ -122,6 +122,35 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
     expect(result.current.event).not.to.eq(undefined)
   })
 
+  it('should load a document by ID correctly when the exec function is called, observing only the local store', async () => {
+    const testConfiguration = testIdentity()
+
+    const params: UsePendingIDSpecificOperationParams = {
+      path: testConfiguration.path,
+      collection: 'foo',
+      _id: new DocumentID('someId'),
+      localOnly: true,
+    }
+    const { result, waitFor, waitForNextUpdate } = renderHook(
+      () => useLazyPendingIDSpecificOperation(),
+      {
+        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+      },
+    )
+
+    // we wait for the Ditto instance to load.
+    await waitForNextUpdate()
+    await result.current.exec(params)
+    await waitFor(() => !!result.current.document, { timeout: 5000 })
+
+    expect(result.current.document._id.toString()).to.eq('"someId"')
+    expect(result.current.document._value.document).to.eq(1)
+
+    expect(result.current.ditto).not.to.eq(undefined)
+    expect(result.current.liveQuery).not.to.eq(undefined)
+    expect(result.current.event).not.to.eq(undefined)
+  })
+
   it('should return the loaded Ditto collection so developers can launch queries on the store with it, once the exec function is called', async function () {
     const testConfiguration = testIdentity()
 

@@ -23,6 +23,10 @@ export interface UsePendingIDSpecificOperationParams {
    * The _id of the document to query
    */
   _id: unknown | DocumentID
+  /**
+   * When true the query will only on local data mutations and will not rely on replication.
+   * */
+  localOnly?: boolean
 }
 
 export interface PendingIDSpecificOperationReturn<T> {
@@ -67,10 +71,19 @@ export function usePendingIDSpecificOperation<T = DocumentLike>(
     if (params._id && params.collection && ditto) {
       const nextCollection = ditto.store.collection(params.collection)
 
-      liveQuery = nextCollection.findByID(params._id).observe((doc: T, e) => {
-        setEvent(e)
-        setDocument(doc)
-      })
+      if (!!params.localOnly) {
+        liveQuery = nextCollection
+          .findByID(params._id)
+          .observeLocal((doc: T, e) => {
+            setEvent(e)
+            setDocument(doc)
+          })
+      } else {
+        liveQuery = nextCollection.findByID(params._id).observe((doc: T, e) => {
+          setEvent(e)
+          setDocument(doc)
+        })
+      }
       setCollection(nextCollection)
     } else {
       setDocument(undefined)

@@ -89,10 +89,18 @@ export function useLazyPendingCursorOperation<
       if (params.offset) {
         cursor = cursor.offset(params.offset)
       }
-      liveQueryRef.current = cursor.observe((docs, event) => {
-        setDocuments(docs)
-        setLiveQueryEvent(event)
-      })
+
+      if (params.localOnly) {
+        liveQueryRef.current = cursor.observeLocal((docs, event) => {
+          setDocuments(docs)
+          setLiveQueryEvent(event)
+        })
+      } else {
+        liveQueryRef.current = cursor.observe((docs, event) => {
+          setDocuments(docs)
+          setLiveQueryEvent(event)
+        })
+      }
 
       setCollection(nextCollection)
       setDitto(nextDitto)
