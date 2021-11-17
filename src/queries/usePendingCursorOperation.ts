@@ -1,7 +1,7 @@
 import {
   Collection,
   Ditto,
-  Document,
+  DocumentLike,
   LiveQuery,
   LiveQueryEvent,
   PendingCursorOperation,
@@ -102,7 +102,7 @@ export interface PendingCursorOperationReturn<T> {
  * @param params live query parameters.
  * @returns
  */
-export function usePendingCursorOperation<T = Document>(
+export function usePendingCursorOperation<T = DocumentLike>(
   params: LiveQueryParams,
 ): PendingCursorOperationReturn<T> {
   const { ditto } = useDitto(params.path)
