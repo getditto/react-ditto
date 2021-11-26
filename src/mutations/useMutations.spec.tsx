@@ -75,7 +75,7 @@ describe('useMutations tests', function () {
     })
 
     // @ts-ignore
-    expect(insertResult!.toString()).to.eql('"some_id"')
+    expect(insertResult!.toString()).to.eql('some_id')
 
     const updateResult = await mutations.current.updateByID({
       _id: 'some_id',
@@ -138,7 +138,7 @@ describe('useMutations tests', function () {
     expect(updateResult.keys().length).to.eq(2)
 
     updateResult.keys().forEach((key) => {
-      expect(key.toString()).not.to.eq('"bike"')
+      expect(key.toString()).not.to.eq('bike')
       // Comment these back in once https://github.com/getditto/ditto/issues/4242 is fixed
       // expect(updateResult.get(key).length).to.eq(1)
       // expect(updateResult.get(key)[0].type).to.eq('set')

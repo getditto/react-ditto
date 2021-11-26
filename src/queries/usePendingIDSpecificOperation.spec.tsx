@@ -1,4 +1,4 @@
-import { Ditto, DocumentID, IdentityOfflinePlayground } from '@dittolive/ditto'
+import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
 import { renderHook } from '@testing-library/react-hooks/dom'
 import { expect } from 'chai'
 import React, { ReactNode, useEffect } from 'react'
@@ -96,7 +96,7 @@ describe('usePendingIDSpecificOperation tests', function () {
     const params: UsePendingIDSpecificOperationParams = {
       path: testConfiguration.path,
       collection: 'foo',
-      _id: new DocumentID('someId'),
+      _id: 'someId',
     }
     const { result, waitFor } = renderHook(
       () => usePendingIDSpecificOperation(params),
@@ -106,7 +106,7 @@ describe('usePendingIDSpecificOperation tests', function () {
     )
     await waitFor(() => !!result.current.document, { timeout: 5000 })
 
-    expect(result.current.document._id.toString()).to.eq('"someId"')
+    expect(result.current.document._id.toString()).to.eq('someId')
     expect(result.current.document._value.document).to.eq(1)
   })
 
@@ -116,7 +116,7 @@ describe('usePendingIDSpecificOperation tests', function () {
     const params: UsePendingIDSpecificOperationParams = {
       path: testConfiguration.path,
       collection: 'foo',
-      _id: new DocumentID('someId'),
+      _id: 'someId',
       localOnly: true,
     }
     const { result, waitFor } = renderHook(
@@ -127,7 +127,7 @@ describe('usePendingIDSpecificOperation tests', function () {
     )
     await waitFor(() => !!result.current.document, { timeout: 5000 })
 
-    expect(result.current.document._id.toString()).to.eq('"someId"')
+    expect(result.current.document._id.toString()).to.eq('someId')
     expect(result.current.document._value.document).to.eq(1)
   })
 
@@ -137,7 +137,7 @@ describe('usePendingIDSpecificOperation tests', function () {
     const params: UsePendingIDSpecificOperationParams = {
       path: testConfiguration.path,
       collection: 'foo',
-      _id: new DocumentID('someId'),
+      _id: 'someId',
     }
     const { result, waitFor } = renderHook(
       () => usePendingIDSpecificOperation(params),

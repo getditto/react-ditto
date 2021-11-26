@@ -1,7 +1,7 @@
 import {
   Collection,
   Ditto,
-  DocumentID,
+  DocumentIDValue,
   DocumentLike,
   LiveQuery,
   SingleDocumentLiveQueryEvent,
@@ -22,7 +22,7 @@ export interface UsePendingIDSpecificOperationParams {
   /**
    * The _id of the document to query
    */
-  _id: unknown | DocumentID
+  _id: DocumentIDValue
   /**
    * When true the query will only on local data mutations and will not rely on replication.
    * */

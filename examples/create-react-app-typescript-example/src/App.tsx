@@ -1,11 +1,11 @@
 import './App.css'
 
-import { DocumentID } from '@dittolive/ditto'
+import { DocumentIDValue } from '@dittolive/ditto'
 import { useMutations, usePendingCursorOperation } from '@dittolive/react-ditto'
 import React, { useMemo, useState } from 'react'
 
 interface Task {
-  _id?: DocumentID
+  _id?: DocumentIDValue
   body: string
   isCompleted: boolean
 }
@@ -59,8 +59,8 @@ const App: React.FC<Props> = ({ path }) => {
       <ul className="no-bullets">
         {tasks.map((task) => {
           return (
-            <li key={task._id?.value}>
-              <p>DocumentId: {task._id?.value}</p>
+            <li key={task._id}>
+              <p>DocumentId: {task._id}</p>
               <p>Body: {task.body}</p>
               <p>
                 Is Completed: {task.isCompleted ? 'Completed' : 'Not Completed'}
