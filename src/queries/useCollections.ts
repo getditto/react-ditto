@@ -1,7 +1,6 @@
 import {
   Collection,
-  // TODO this needs to be exposed by the SDK.
-  // CollectionsEvent,
+  CollectionsEvent,
   Ditto,
   LiveQuery,
   SortDirection,
@@ -44,11 +43,6 @@ export interface CollectionsQueryParams {
    * An optional number to limit the results of the collections query. If you omit this value, the query will return all values
    */
   limit?: number
-}
-
-// TODO replace this with the one exposed by the SDK
-type CollectionsEvent = {
-  collections: { name: string }[]
 }
 
 /**

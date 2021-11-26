@@ -1,6 +1,6 @@
 import {
   Ditto,
-  DocumentID,
+  DocumentIDValue,
   DocumentLike,
   DocumentValue,
   InsertOptions,
@@ -37,7 +37,7 @@ export interface UpdateByIDParams<T> {
   /**
    * The _id of the document to remove
    */
-  _id: unknown | DocumentID
+  _id: DocumentIDValue
   /**
    * The update function to perform on the specified document
    */
@@ -53,17 +53,21 @@ export interface InsertParams<T> {
   insertOptions?: InsertOptions
 }
 
-export type InsertFunction<T> = (params: InsertParams<T>) => Promise<DocumentID>
+export type InsertFunction<T> = (
+  params: InsertParams<T>,
+) => Promise<DocumentIDValue>
 
 export interface RemoveParams {
   query?: string
   args?: QueryArguments
 }
 
-export type RemoveFunction = (params: RemoveParams) => Promise<DocumentID[]>
+export type RemoveFunction = (
+  params: RemoveParams,
+) => Promise<DocumentIDValue[]>
 
 export interface RemoveByIDParams {
-  _id: unknown | DocumentID
+  _id: unknown | DocumentIDValue
 }
 
 export type RemoveByIDFunction = (params: RemoveByIDParams) => Promise<boolean>
@@ -126,7 +130,7 @@ export function useMutations<T = DocumentLike>(
 
   const remove: RemoveFunction = (
     params: RemoveParams,
-  ): Promise<DocumentID[]> => {
+  ): Promise<DocumentIDValue[]> => {
     let cursor: PendingCursorOperation
     if (params.query) {
       if (params.args) {

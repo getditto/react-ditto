@@ -1,6 +1,6 @@
 {
   "name": "@dittolive/react-ditto",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "React wrappers for Ditto",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,12 +16,12 @@
   "author": "",
   "license": "ISC",
   "peerDependencies": {
-    "@dittolive/ditto": "^1.0.10",
+    "@dittolive/ditto": "^1.0.17",
     "react": ">=16.0.0",
     "react-dom": ">=16.0.0"
   },
   "devDependencies": {
-    "@dittolive/ditto": "^1.0.14",
+    "@dittolive/ditto": "^1.0.17",
     "@testing-library/react": "^12.1.1",
     "@testing-library/react-hooks": "^7.0.2",
     "@types/chai": "^4.2.21",
