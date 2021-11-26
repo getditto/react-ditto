@@ -114,7 +114,7 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
     await result.current.exec(params)
     await waitFor(() => !!result.current.document, { timeout: 5000 })
 
-    expect(result.current.document._id.toString()).to.eq('someId')
+    expect(result.current.document._id).to.eq('someId')
     expect(result.current.document._value.document).to.eq(1)
 
     expect(result.current.ditto).not.to.eq(undefined)
@@ -143,7 +143,7 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
     await result.current.exec(params)
     await waitFor(() => !!result.current.document, { timeout: 5000 })
 
-    expect(result.current.document._id.toString()).to.eq('someId')
+    expect(result.current.document._id).to.eq('someId')
     expect(result.current.document._value.document).to.eq(1)
 
     expect(result.current.ditto).not.to.eq(undefined)
