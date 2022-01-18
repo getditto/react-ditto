@@ -1,7 +1,7 @@
 import { Ditto } from '@dittolive/ditto'
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { DittoContext } from '.'
+import { useDittoContext } from '.'
 
 export interface DittoHookProps {
   ditto: Ditto | null
@@ -10,7 +10,7 @@ export interface DittoHookProps {
 }
 
 export const useDitto = (path: string | null | undefined): DittoHookProps => {
-  const { dittoHash, isLazy, load } = useContext(DittoContext)
+  const { dittoHash, isLazy, load } = useDittoContext()
   const [loading, setLoading] = useState(isLazy && !(path in dittoHash))
   const [error, setError] = useState<Error>()
   const ditto = !!path ? dittoHash[path] : Object.values(dittoHash)[0]

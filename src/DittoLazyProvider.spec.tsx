@@ -1,10 +1,10 @@
 import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
 import { expect } from 'chai'
-import React, { useContext } from 'react'
+import React from 'react'
 import { render, unmountComponentAtNode } from 'react-dom'
 import { v4 as uuidv4 } from 'uuid'
 
-import { DittoContext } from './DittoContext'
+import { useDittoContext } from './DittoContext'
 import { DittoLazyProvider } from './DittoLazyProvider'
 import { waitFor } from './utils.spec'
 
@@ -142,7 +142,7 @@ describe('Ditto Lazy Provider Tests', () => {
     const config = testIdentity()
 
     const TesterChildComponent = () => {
-      const { dittoHash } = useContext(DittoContext)
+      const { dittoHash } = useDittoContext()
 
       return (
         <div data-testid="dittoHash">
