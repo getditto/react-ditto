@@ -1,5 +1,5 @@
 import { Ditto } from '@dittolive/ditto'
-import { createContext } from 'react'
+import { createContext, useContext } from 'react'
 
 export interface DittoHash {
   [key: string]: Ditto
@@ -25,3 +25,10 @@ export const DittoContext = createContext<DittoContextProps>({
   load: () => Promise.resolve(),
   isLazy: false,
 })
+
+export const useDittoContext = (): DittoContextProps => {
+  const dittoContext = useContext(DittoContext)
+  if (!dittoContext)
+    throw new Error('useDittoContext must be called within a DittoProvider tag')
+  return dittoContext
+}

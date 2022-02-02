@@ -6,9 +6,9 @@ import {
   LiveQueryEvent,
   PendingCursorOperation,
 } from '@dittolive/ditto'
-import { useContext, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
-import { DittoContext } from '../DittoContext'
+import { useDittoContext } from '../DittoContext'
 import { LiveQueryParams } from './usePendingCursorOperation'
 
 export interface LazyPendingCursorOperationReturn<T> {
@@ -52,7 +52,7 @@ export interface LazyPendingCursorOperationReturn<T> {
 export function useLazyPendingCursorOperation<
   T = DocumentLike,
 >(): LazyPendingCursorOperationReturn<T> {
-  const { dittoHash, isLazy, load } = useContext(DittoContext)
+  const { dittoHash, isLazy, load } = useDittoContext()
   const [documents, setDocuments] = useState<T[]>([])
   const [liveQueryEvent, setLiveQueryEvent] = useState<
     LiveQueryEvent | undefined
