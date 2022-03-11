@@ -13,7 +13,7 @@ const testIdentity: () => {
   path: string
 } = () => ({
   identity: {
-    appName: 'dittoLazyProviderSpec',
+    appID: 'dittoLazyProviderSpec',
     siteID: 100,
     type: 'offlinePlayground',
   },
@@ -47,7 +47,7 @@ describe('Ditto Lazy Provider Tests', () => {
           return (
             <>
               <div data-testid="loading">{`${loading}`}</div>
-              <div data-testid="error">{error}</div>
+              <div data-testid="error">{error?.message}</div>
             </>
           )
         }}

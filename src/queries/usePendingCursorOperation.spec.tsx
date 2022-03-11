@@ -17,7 +17,7 @@ const testIdentity: () => {
   path: string
 } = () => ({
   identity: {
-    appName: 'usePendingCursorOperationSpec',
+    appID: 'usePendingCursorOperationSpec',
     siteID: 100,
     type: 'offlinePlayground',
   },
@@ -182,11 +182,16 @@ describe('usePendingCursorOperation tests', function () {
 
     result.current.reset()
 
-    await waitFor(() => result.current.liveQuery !== liveQueryBeforeReset, {
-      timeout: 5000,
-    })
+    expect(result.current.documents.length).to.eq(0)
 
-    expect(result.current.documents.length).to.eq(2)
+    await waitFor(
+      () =>
+        result.current.liveQuery !== liveQueryBeforeReset &&
+        result.current.documents.length === 2,
+      {
+        timeout: 5000,
+      },
+    )
   })
 
   it('should return the Ditto collection as an alternative way for developers to query the collection', async () => {
