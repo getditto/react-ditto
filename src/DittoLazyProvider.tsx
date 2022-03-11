@@ -1,5 +1,5 @@
 import { Ditto, init, InitOptions } from '@dittolive/ditto'
-import React, { ReactNode, useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useRef, useState } from 'react'
 
 import {
   DittoContext,
@@ -34,6 +34,7 @@ export interface DittoLazyProviderProps
 export const DittoLazyProvider: React.FunctionComponent<DittoLazyProviderProps> =
   ({ initOptions, setup, render, children }) => {
     const [dittoHash, setDittoHash] = useState<DittoHash>({})
+    const createdPaths = useRef([])
     const [providerState, setProviderState] = useState<ProviderState>({
       loading: true,
       error: undefined,
@@ -66,9 +67,10 @@ export const DittoLazyProvider: React.FunctionComponent<DittoLazyProviderProps> 
     }
 
     const handleLoadInstance = async (appPath: string) => {
-      if (appPath in dittoHash) {
-        return dittoHash[appPath]
+      if (createdPaths.current.includes(appPath)) {
+        return dittoHash[appPath] || null
       } else {
+        createdPaths.current.push(appPath)
         /** The app path is initialized to null while loading to avoid parallel initializations
          * of the same instance.
          */

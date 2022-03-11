@@ -14,7 +14,7 @@ const testIdentity: () => {
   path: string
 } = () => ({
   identity: {
-    appName: 'useCollectionsSpec',
+    appID: 'useCollectionsSpec',
     siteID: 100,
     type: 'offlinePlayground',
   },

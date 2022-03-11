@@ -15,7 +15,7 @@ const testIdentity: () => {
   path: string
 } = () => ({
   identity: {
-    appName: 'useLazyPendingCursorOperationSpec',
+    appID: 'useLazyPendingCursorOperationSpec',
     siteID: 100,
     type: 'offlinePlayground',
   },
@@ -218,7 +218,10 @@ describe('useLazyPendingCursorOperation tests', function () {
       collection: 'foo',
     })
 
-    expect(result.current.documents.length).to.eql(5)
+    await waitFor(() => result.current.documents.length === 5, {
+      timeout: 5000,
+    })
+
     expect(result.current.liveQuery).not.to.eq(liveQuery)
   })
 

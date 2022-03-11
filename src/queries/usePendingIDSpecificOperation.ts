@@ -67,22 +67,23 @@ export function usePendingIDSpecificOperation<T = DocumentLike>(
   const [event, setEvent] = useState<SingleDocumentLiveQueryEvent>()
 
   useEffect(() => {
-    let liveQuery: LiveQuery
     if (params._id && params.collection && ditto) {
       const nextCollection = ditto.store.collection(params.collection)
 
       if (!!params.localOnly) {
-        liveQuery = nextCollection
+        liveQueryRef.current = nextCollection
           .findByID(params._id)
           .observeLocal((doc: T, e) => {
             setEvent(e)
             setDocument(doc)
           })
       } else {
-        liveQuery = nextCollection.findByID(params._id).observe((doc: T, e) => {
-          setEvent(e)
-          setDocument(doc)
-        })
+        liveQueryRef.current = nextCollection
+          .findByID(params._id)
+          .observe((doc: T, e) => {
+            setEvent(e)
+            setDocument(doc)
+          })
       }
       setCollection(nextCollection)
     } else {
@@ -91,7 +92,7 @@ export function usePendingIDSpecificOperation<T = DocumentLike>(
       setEvent(undefined)
     }
     return () => {
-      liveQuery?.stop()
+      liveQueryRef.current?.stop()
     }
     /** We need to serialize the _id in order for React's dependency array comparison to work. */
     // eslint-disable-next-line react-hooks/exhaustive-deps
