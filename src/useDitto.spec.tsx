@@ -73,16 +73,20 @@ describe('useDittoSpec tests', function () {
         }}
       </DittoLazyProvider>
     )
-    const { result, waitFor } = renderHook(
+    const { result, waitFor, rerender } = renderHook(
       () => useDitto(testConfiguration.path),
       {
         wrapper,
       },
     )
 
-    await waitFor(() => !result.current.loading && !!result.current?.ditto, {
-      timeout: 5000,
-    })
+    await waitFor(
+      () => {
+        rerender()
+        return !result.current.loading && !!result.current?.ditto
+      },
+      { timeout: 5000 },
+    )
 
     expect(result.current?.ditto.path).to.eq(testConfiguration.path)
     expect(result.current?.loading).to.eq(false)
