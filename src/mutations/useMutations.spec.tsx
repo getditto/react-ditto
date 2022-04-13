@@ -4,7 +4,6 @@ import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
 import { renderHook } from '@testing-library/react-hooks/dom'
 import { expect } from 'chai'
 import React, { ReactNode } from 'react'
-import { unmountComponentAtNode } from 'react-dom'
 import { v4 as uuidv4 } from 'uuid'
 
 import { DittoProvider } from '../DittoProvider'
@@ -23,19 +22,7 @@ const testIdentity: () => {
 })
 
 describe('useMutations tests', function () {
-  let container: HTMLDivElement
   const collection = 'collection'
-
-  beforeEach(() => {
-    container = document.createElement('div')
-    document.body.appendChild(container)
-  })
-
-  afterEach(() => {
-    unmountComponentAtNode(container)
-    container.remove()
-    container = null
-  })
 
   it('should correctly create a new entity inside of a collection and update it by ID', async () => {
     const testConfiguration = testIdentity()

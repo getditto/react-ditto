@@ -2,7 +2,6 @@ import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
 import { renderHook } from '@testing-library/react-hooks/dom'
 import { expect } from 'chai'
 import React, { ReactNode, useEffect } from 'react'
-import { unmountComponentAtNode } from 'react-dom'
 import { v4 as uuidv4 } from 'uuid'
 
 import { DittoProvider } from '../DittoProvider'
@@ -77,19 +76,6 @@ const wrapper =
     )
 
 describe('usePendingIDSpecificOperation tests', function () {
-  let container: HTMLDivElement
-
-  beforeEach(() => {
-    container = document.createElement('div')
-    document.body.appendChild(container)
-  })
-
-  afterEach(() => {
-    unmountComponentAtNode(container)
-    container.remove()
-    container = null
-  })
-
   it('should load a document by ID correctly', async () => {
     const testConfiguration = testIdentity()
 

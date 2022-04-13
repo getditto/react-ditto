@@ -2,7 +2,6 @@ import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
 import { renderHook } from '@testing-library/react-hooks/dom'
 import { expect } from 'chai'
 import React, { ReactNode } from 'react'
-import { unmountComponentAtNode } from 'react-dom'
 import { v4 as uuidv4 } from 'uuid'
 
 import { DittoProvider } from '../DittoProvider'
@@ -51,19 +50,6 @@ const wrapper =
     )
 
 describe('useLazyPendingCursorOperation tests', function () {
-  let container: HTMLDivElement
-
-  beforeEach(() => {
-    container = document.createElement('div')
-    document.body.appendChild(container)
-  })
-
-  afterEach(() => {
-    unmountComponentAtNode(container)
-    container.remove()
-    container = null
-  })
-
   it('should not load any values until a query is executed with the exec function', async () => {
     const testConfiguration = testIdentity()
 
