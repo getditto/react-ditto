@@ -181,56 +181,46 @@ describe('Ditto Provider Tests', () => {
 
   it('should pass the loading state to the child component when the provider is initialized as a single instance', async () => {
     const config = testIdentity()
+    const renderFn = sinon.stub()
+    renderFn.withArgs(sinon.match({ loading: false })).returns('loaded')
 
     root.render(
       <DittoProvider
-        setup={() => {
-          return new Ditto(config.identity, config.path)
-        }}
+        setup={() => new Ditto(config.identity, config.path)}
         initOptions={initOptions}
       >
-        {({ loading }) => <div data-testid="loading">{`${loading}`}</div>}
+        {renderFn}
       </DittoProvider>,
     )
 
-    expect(
-      container.querySelector("div[data-testid='loading']").innerHTML,
-    ).to.eq('true')
-
-    await waitFor(
-      () =>
-        container.querySelector("div[data-testid='loading']").innerHTML ===
-        'false',
-    )
+    await waitFor(() => container.textContent === 'loaded')
+    expect(renderFn).to.have.been.calledTwice
+    expect(renderFn.getCall(0)).to.have.been.calledWithMatch({ loading: true })
+    expect(renderFn.getCall(1)).to.have.been.calledWithMatch({ loading: false })
   })
 
   it('should pass the loading state to the child component when the provider is initialized as an array of instances', async () => {
     const config = testIdentity()
     const config2 = testIdentity()
+    const renderFn = sinon.stub()
+    renderFn.withArgs(sinon.match({ loading: false })).returns('loaded')
 
     root.render(
       <DittoProvider
-        setup={() => {
-          return [
-            new Ditto(config.identity, config.path),
-            new Ditto(config2.identity, config2.path),
-          ]
-        }}
+        setup={() => [
+          new Ditto(config.identity, config.path),
+          new Ditto(config2.identity, config2.path),
+        ]}
         initOptions={initOptions}
       >
-        {({ loading }) => <div data-testid="loading">{`${loading}`}</div>}
+        {renderFn}
       </DittoProvider>,
     )
 
-    expect(
-      container.querySelector("div[data-testid='loading']").innerHTML,
-    ).to.eq('true')
-
-    await waitFor(
-      () =>
-        container.querySelector("div[data-testid='loading']").innerHTML ===
-        'false',
-    )
+    await waitFor(() => container.textContent === 'loaded')
+    expect(renderFn).to.have.been.calledTwice
+    expect(renderFn.getCall(0)).to.have.been.calledWithMatch({ loading: true })
+    expect(renderFn.getCall(1)).to.have.been.calledWithMatch({ loading: false })
   })
 
   it("should call setup and Ditto's init only once in strict mode", async () => {
