@@ -39,9 +39,16 @@ export const DittoLazyProvider: React.FunctionComponent<DittoLazyProviderProps> 
       loading: true,
       error: undefined,
     })
+    const hasMountEffectStarted = useRef(false)
 
     useEffect(() => {
+      if (hasMountEffectStarted.current) {
+        return
+      }
+
       ;(async function () {
+        hasMountEffectStarted.current = true
+
         try {
           await init(initOptions)
 

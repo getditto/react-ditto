@@ -1,5 +1,11 @@
 import { Ditto, init, InitOptions } from '@dittolive/ditto'
-import React, { ReactElement, ReactNode, useEffect, useState } from 'react'
+import React, {
+  ReactElement,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 import { DittoHash, RegisterDitto, UnregisterDitto } from '.'
 import { DittoContext } from './DittoContext'
@@ -47,11 +53,16 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
     loading: true,
     error: undefined,
   })
-
   const [dittoHash, setDittoHash] = useState<DittoHash>({})
+  const hasMountEffectStarted = useRef(false)
 
   useEffect(() => {
+    if (hasMountEffectStarted.current) {
+      return
+    }
+
     ;(async function () {
+      hasMountEffectStarted.current = true
       try {
         await init(props.initOptions)
         const setupReturnValue: Ditto | Ditto[] = props.setup()
