@@ -12,7 +12,7 @@ import { DittoContext } from './DittoContext'
 
 export type RenderFunction = (providerState: ProviderState) => ReactNode
 
-export interface DittoProviderProps extends React.PropsWithChildren<unknown> {
+export interface DittoProviderProps {
   initOptions?: InitOptions
   /**
    * This function is called when the DittoProvider initialized the Ditto module.

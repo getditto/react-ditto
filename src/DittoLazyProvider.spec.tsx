@@ -89,7 +89,7 @@ describe('Ditto Lazy Provider Tests', () => {
           return (
             <>
               <div data-testid="loading">{`${loading}`}</div>
-              <div data-testid="error">{error}</div>
+              <div data-testid="error">{error?.message}</div>
             </>
           )
         }}
@@ -124,7 +124,7 @@ describe('Ditto Lazy Provider Tests', () => {
           return (
             <>
               <div data-testid="loading">{`${loading}`}</div>
-              <div data-testid="error">{error}</div>
+              <div data-testid="error">{error?.message}</div>
             </>
           )
         }}
