@@ -1,5 +1,5 @@
 import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
-import { renderHook } from '@testing-library/react-hooks/dom'
+import { renderHook, waitFor } from '@testing-library/react'
 import { expect } from 'chai'
 import React, { ReactNode, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -79,13 +79,12 @@ describe('usePendingCursorOperation tests', function () {
       path: testConfiguration.path,
       collection: 'foo',
     }
-    const { result, waitFor } = renderHook(
-      () => usePendingCursorOperation(params),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
-    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+    const { result } = renderHook(() => usePendingCursorOperation(params), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
+    await waitFor(() => expect(result.current.documents).not.to.be.empty, {
+      timeout: 5000,
+    })
 
     expect(result.current.documents.length).to.eq(5)
 
@@ -104,13 +103,12 @@ describe('usePendingCursorOperation tests', function () {
       collection: 'foo',
       localOnly: true,
     }
-    const { result, waitFor } = renderHook(
-      () => usePendingCursorOperation(params),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
-    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+    const { result } = renderHook(() => usePendingCursorOperation(params), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
+    await waitFor(() => expect(result.current.documents).not.to.be.empty, {
+      timeout: 5000,
+    })
 
     expect(result.current.documents.length).to.eq(5)
 
@@ -129,13 +127,12 @@ describe('usePendingCursorOperation tests', function () {
       collection: 'foo',
       query: 'document > 3',
     }
-    const { result, waitFor } = renderHook(
-      () => usePendingCursorOperation(params),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
-    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+    const { result } = renderHook(() => usePendingCursorOperation(params), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
+    await waitFor(() => expect(result.current.documents).not.to.be.empty, {
+      timeout: 5000,
+    })
 
     expect(result.current.documents.length).to.eq(2)
 
@@ -154,13 +151,12 @@ describe('usePendingCursorOperation tests', function () {
       collection: 'foo',
       query: 'document > 3',
     }
-    const { result, waitFor } = renderHook(
-      () => usePendingCursorOperation(params),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
-    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+    const { result } = renderHook(() => usePendingCursorOperation(params), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
+    await waitFor(() => expect(result.current.documents).not.to.be.empty, {
+      timeout: 5000,
+    })
 
     expect(result.current.documents.length).to.eq(2)
 
@@ -168,15 +164,12 @@ describe('usePendingCursorOperation tests', function () {
 
     result.current.reset()
 
-    expect(result.current.documents.length).to.eq(0)
-
     await waitFor(
-      () =>
-        result.current.liveQuery !== liveQueryBeforeReset &&
-        result.current.documents.length === 2,
-      {
-        timeout: 5000,
+      () => {
+        expect(result.current.liveQuery).not.to.eq(liveQueryBeforeReset)
+        expect(result.current.documents).to.have.lengthOf(2)
       },
+      { timeout: 5000 },
     )
   })
 
@@ -187,13 +180,12 @@ describe('usePendingCursorOperation tests', function () {
       path: testConfiguration.path,
       collection: 'foo',
     }
-    const { result, waitFor } = renderHook(
-      () => usePendingCursorOperation(params),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
-    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+    const { result } = renderHook(() => usePendingCursorOperation(params), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
+    await waitFor(() => expect(result.current.documents).not.to.be.empty, {
+      timeout: 5000,
+    })
 
     expect(result.current.documents.length).to.eq(5)
 

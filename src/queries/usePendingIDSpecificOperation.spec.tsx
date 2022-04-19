@@ -1,5 +1,5 @@
 import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
-import { renderHook } from '@testing-library/react-hooks/dom'
+import { renderHook, waitFor } from '@testing-library/react'
 import { expect } from 'chai'
 import React, { ReactNode, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -84,13 +84,12 @@ describe('usePendingIDSpecificOperation tests', function () {
       collection: 'foo',
       _id: 'someId',
     }
-    const { result, waitFor } = renderHook(
-      () => usePendingIDSpecificOperation(params),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
-    await waitFor(() => !!result.current.document, { timeout: 5000 })
+    const { result } = renderHook(() => usePendingIDSpecificOperation(params), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
+    await waitFor(() => expect(result.current.document).to.exist, {
+      timeout: 5000,
+    })
 
     expect(result.current.document._id).to.eq('someId')
     expect(result.current.document._value.document).to.eq(1)
@@ -105,13 +104,12 @@ describe('usePendingIDSpecificOperation tests', function () {
       _id: 'someId',
       localOnly: true,
     }
-    const { result, waitFor } = renderHook(
-      () => usePendingIDSpecificOperation(params),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
-    await waitFor(() => !!result.current.document, { timeout: 5000 })
+    const { result } = renderHook(() => usePendingIDSpecificOperation(params), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
+    await waitFor(() => expect(result.current.document).to.exist, {
+      timeout: 5000,
+    })
 
     expect(result.current.document._id).to.eq('someId')
     expect(result.current.document._value.document).to.eq(1)
@@ -125,13 +123,12 @@ describe('usePendingIDSpecificOperation tests', function () {
       collection: 'foo',
       _id: 'someId',
     }
-    const { result, waitFor } = renderHook(
-      () => usePendingIDSpecificOperation(params),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
-    await waitFor(() => !!result.current.document, { timeout: 5000 })
+    const { result } = renderHook(() => usePendingIDSpecificOperation(params), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
+    await waitFor(() => expect(result.current.document).to.exist, {
+      timeout: 5000,
+    })
 
     expect(result.current.collection).not.to.eq(undefined)
 

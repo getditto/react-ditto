@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
-import { renderHook } from '@testing-library/react-hooks/dom'
+import { renderHook, waitFor } from '@testing-library/react'
 import { expect } from 'chai'
 import React, { ReactNode } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -48,13 +48,13 @@ describe('useMutations tests', function () {
     )
 
     const params = { path: testConfiguration.path, collection }
-    const { result: mutations, waitFor: waitForMutations } = renderHook(
+    const { result: mutations } = renderHook(
       () => useMutations<unknown>(params),
       {
         wrapper,
       },
     )
-    await waitForMutations(() => !!mutations.current.ditto)
+    await waitFor(() => expect(mutations.current.ditto).to.exist)
 
     const insertResult = await mutations.current.insert({
       value: { foo: 'bar' },
@@ -95,14 +95,14 @@ describe('useMutations tests', function () {
     )
 
     const params = { path: testConfiguration.path, collection }
-    const { result: mutations, waitFor: waitForMutations } = renderHook(
+    const { result: mutations } = renderHook(
       () => useMutations<unknown>(params),
       {
         wrapper,
       },
     )
 
-    await waitForMutations(() => !!mutations.current.ditto)
+    await waitFor(() => expect(mutations.current.ditto).to.exist)
 
     await mutations.current.insert({
       value: { type: 'car', wheels: 4 },

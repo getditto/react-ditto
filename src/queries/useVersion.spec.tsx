@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks/dom'
+import { renderHook } from '@testing-library/react'
 import { expect } from 'chai'
 
 import { useVersion } from './useVersion'
@@ -18,7 +18,7 @@ describe('useVersion helper hook', () => {
   })
 
   it('should correctly bump up the version number each time the hook value changes', async function () {
-    const { result, rerender } = renderHook<unknown, number>(
+    const { result, rerender } = renderHook<number, unknown>(
       (hookProps) => useVersion(hookProps),
       {
         initialProps: {
@@ -48,7 +48,7 @@ describe('useVersion helper hook', () => {
   })
 
   it('should not bump up the hook version when the hook is rendered with params that are deeply equal', async () => {
-    const { result, rerender } = renderHook<unknown, number>(
+    const { result, rerender } = renderHook<number, unknown>(
       (hookProps) => useVersion(hookProps),
       {
         initialProps: {

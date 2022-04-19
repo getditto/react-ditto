@@ -1,5 +1,5 @@
 import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
-import { renderHook } from '@testing-library/react-hooks/dom'
+import { renderHook, waitFor } from '@testing-library/react'
 import { expect } from 'chai'
 import React, { ReactNode, useEffect } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -65,10 +65,12 @@ describe('useCollections tests', function () {
     )
 
     const params = { path: testConfiguration.path }
-    const { result, waitFor } = renderHook(() => useCollections(params), {
+    const { result } = renderHook(() => useCollections(params), {
       wrapper,
     })
-    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+    await waitFor(() => expect(result.current.documents).not.to.be.empty, {
+      timeout: 5000,
+    })
 
     expect(result.current.documents.length).to.eq(1)
 
