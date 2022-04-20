@@ -1,7 +1,11 @@
-import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
+import dittoPackage, {
+  Ditto,
+  IdentityOfflinePlayground,
+} from '@dittolive/ditto'
 import { expect } from 'chai'
 import React from 'react'
-import { render, unmountComponentAtNode } from 'react-dom'
+import { createRoot, Root } from 'react-dom/client'
+import sinon from 'sinon'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useDittoContext } from './DittoContext'
@@ -21,23 +25,29 @@ const testIdentity: () => {
 })
 
 describe('Ditto Lazy Provider Tests', () => {
+  let root: Root
   let container: HTMLDivElement
 
   beforeEach(() => {
     container = document.createElement('div')
     document.body.appendChild(container)
+    root = createRoot(container)
   })
 
   afterEach(() => {
-    unmountComponentAtNode(container)
+    root.unmount()
     container.remove()
-    container = null
+    sinon.restore()
   })
+
+  const initOptions = {
+    webAssemblyModule: '/base/node_modules/@dittolive/ditto/web/ditto.wasm',
+  }
 
   it('should load ditto wasm from the CDN', async function () {
     const config = testIdentity()
 
-    render(
+    root.render(
       <DittoLazyProvider
         setup={() => {
           return Promise.resolve(new Ditto(config.identity, config.path))
@@ -52,7 +62,6 @@ describe('Ditto Lazy Provider Tests', () => {
           )
         }}
       </DittoLazyProvider>,
-      container,
     )
 
     await waitFor(
@@ -68,11 +77,8 @@ describe('Ditto Lazy Provider Tests', () => {
 
   it('should load ditto wasm from a locally served ditto.wasm file', async function () {
     const config = testIdentity()
-    const initOptions = {
-      webAssemblyModule: '/base/node_modules/@dittolive/ditto/web/ditto.wasm',
-    }
 
-    render(
+    root.render(
       <DittoLazyProvider
         initOptions={initOptions}
         setup={() => {
@@ -83,12 +89,11 @@ describe('Ditto Lazy Provider Tests', () => {
           return (
             <>
               <div data-testid="loading">{`${loading}`}</div>
-              <div data-testid="error">{error}</div>
+              <div data-testid="error">{error?.message}</div>
             </>
           )
         }}
       </DittoLazyProvider>,
-      container,
     )
     await waitFor(
       () =>
@@ -108,7 +113,7 @@ describe('Ditto Lazy Provider Tests', () => {
         '/base/node_modules/@dittolive/ditto/web/ditto-that-does-not-exist.wasm',
     }
 
-    render(
+    root.render(
       <DittoLazyProvider
         initOptions={initOptions}
         setup={() => {
@@ -119,12 +124,11 @@ describe('Ditto Lazy Provider Tests', () => {
           return (
             <>
               <div data-testid="loading">{`${loading}`}</div>
-              <div data-testid="error">{error}</div>
+              <div data-testid="error">{error?.message}</div>
             </>
           )
         }}
       </DittoLazyProvider>,
-      container,
     )
 
     await waitFor(
@@ -151,7 +155,7 @@ describe('Ditto Lazy Provider Tests', () => {
       )
     }
 
-    render(
+    root.render(
       <DittoLazyProvider
         setup={() => {
           return Promise.resolve(new Ditto(config.identity, config.path))
@@ -159,7 +163,6 @@ describe('Ditto Lazy Provider Tests', () => {
       >
         {() => <TesterChildComponent />}
       </DittoLazyProvider>,
-      container,
     )
 
     await waitFor(() => {
@@ -168,5 +171,21 @@ describe('Ditto Lazy Provider Tests', () => {
         `[]`
       )
     })
+  })
+
+  it("should call Ditto's init only once in strict mode", async () => {
+    const init = sinon.fake()
+    sinon.replace(dittoPackage, 'init', init)
+
+    root.render(
+      <React.StrictMode>
+        <DittoLazyProvider setup={sinon.fake()} initOptions={initOptions}>
+          {({ loading }) => !loading && 'loaded'}
+        </DittoLazyProvider>
+      </React.StrictMode>,
+    )
+
+    await waitFor(() => container.textContent === 'loaded', 600)
+    expect(init).to.have.been.calledOnce
   })
 })

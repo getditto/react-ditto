@@ -1,12 +1,12 @@
 import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
-import { renderHook } from '@testing-library/react-hooks/dom'
+import { renderHook, waitFor } from '@testing-library/react'
 import { expect } from 'chai'
 import React, { ReactNode, useEffect } from 'react'
-import { unmountComponentAtNode } from 'react-dom'
 import { v4 as uuidv4 } from 'uuid'
 
 import { DittoProvider } from '../DittoProvider'
 import { useMutations } from '../mutations'
+import { waitForNextUpdate } from '../utils.spec'
 import { useLazyPendingIDSpecificOperation } from './useLazyPendingIDSpecificOperation'
 import { UsePendingIDSpecificOperationParams } from './usePendingIDSpecificOperation'
 
@@ -75,19 +75,6 @@ const wrapper =
     )
 
 describe('useLazyPendingIDSpecificOperation tests', function () {
-  let container: HTMLDivElement
-
-  beforeEach(() => {
-    container = document.createElement('div')
-    document.body.appendChild(container)
-  })
-
-  afterEach(() => {
-    unmountComponentAtNode(container)
-    container.remove()
-    container = null
-  })
-
   it('should load a document by ID correctly when the exec function is called', async () => {
     const testConfiguration = testIdentity()
 
@@ -96,15 +83,12 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
       collection: 'foo',
       _id: 'someId',
     }
-    const { result, waitFor, waitForNextUpdate } = renderHook(
-      () => useLazyPendingIDSpecificOperation(),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
+    const { result } = renderHook(() => useLazyPendingIDSpecificOperation(), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
 
     // we wait for the Ditto instance to load.
-    await waitForNextUpdate()
+    await waitForNextUpdate(result)
 
     expect(result.current.document).to.eq(undefined)
     expect(result.current.ditto).to.eq(undefined)
@@ -112,7 +96,9 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
     expect(result.current.event).to.eq(undefined)
 
     await result.current.exec(params)
-    await waitFor(() => !!result.current.document, { timeout: 5000 })
+    await waitFor(() => expect(result.current.document).to.exist, {
+      timeout: 5000,
+    })
 
     expect(result.current.document._id).to.eq('someId')
     expect(result.current.document._value.document).to.eq(1)
@@ -131,17 +117,17 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
       _id: 'someId',
       localOnly: true,
     }
-    const { result, waitFor, waitForNextUpdate } = renderHook(
-      () => useLazyPendingIDSpecificOperation(),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
+    const { result } = renderHook(() => useLazyPendingIDSpecificOperation(), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
 
     // we wait for the Ditto instance to load.
-    await waitForNextUpdate()
+    await waitForNextUpdate(result)
+
     await result.current.exec(params)
-    await waitFor(() => !!result.current.document, { timeout: 5000 })
+    await waitFor(() => expect(result.current.document).to.exist, {
+      timeout: 5000,
+    })
 
     expect(result.current.document._id).to.eq('someId')
     expect(result.current.document._value.document).to.eq(1)
@@ -159,18 +145,17 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
       collection: 'foo',
       _id: 'someId',
     }
-    const { result, waitFor, waitForNextUpdate } = renderHook(
-      () => useLazyPendingIDSpecificOperation(),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
+    const { result } = renderHook(() => useLazyPendingIDSpecificOperation(), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
 
     // we wait for the Ditto instance to load.
-    await waitForNextUpdate()
+    await waitForNextUpdate(result)
 
     await result.current.exec(params)
-    await waitFor(() => !!result.current.document, { timeout: 5000 })
+    await waitFor(() => expect(result.current.document).to.exist, {
+      timeout: 5000,
+    })
 
     const allDocs = await result.current.collection.findAll().exec()
 

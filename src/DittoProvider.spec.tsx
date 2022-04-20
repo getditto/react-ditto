@@ -1,8 +1,11 @@
-import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
-// import { waitFor } from '@testing-library/react'
+import dittoPackage, {
+  Ditto,
+  IdentityOfflinePlayground,
+} from '@dittolive/ditto'
 import { expect } from 'chai'
 import React from 'react'
-import { render, unmountComponentAtNode } from 'react-dom'
+import { createRoot, Root } from 'react-dom/client'
+import sinon from 'sinon'
 import { v4 as uuidv4 } from 'uuid'
 
 import { useDittoContext } from './DittoContext'
@@ -22,17 +25,19 @@ const testIdentity: () => {
 })
 
 describe('Ditto Provider Tests', () => {
+  let root: Root
   let container: HTMLDivElement
 
   beforeEach(() => {
     container = document.createElement('div')
     document.body.appendChild(container)
+    root = createRoot(container)
   })
 
   afterEach(() => {
-    unmountComponentAtNode(container)
+    root.unmount()
     container.remove()
-    container = null
+    sinon.restore()
   })
 
   const initOptions = {
@@ -42,7 +47,7 @@ describe('Ditto Provider Tests', () => {
   it('should load ditto wasm from the CDN', async function () {
     const config = testIdentity()
 
-    render(
+    root.render(
       <DittoProvider
         setup={() => {
           const ditto = new Ditto(config.identity, config.path)
@@ -53,12 +58,11 @@ describe('Ditto Provider Tests', () => {
           return (
             <>
               <div data-testid="loading">{`${loading}`}</div>
-              <div data-testid="error">{error}</div>
+              <div data-testid="error">{error?.message}</div>
             </>
           )
         }}
       </DittoProvider>,
-      container,
     )
 
     await waitFor(
@@ -75,7 +79,7 @@ describe('Ditto Provider Tests', () => {
   it('should load ditto wasm from a locally served ditto.wasm file', async function () {
     const config = testIdentity()
 
-    render(
+    root.render(
       <DittoProvider
         initOptions={initOptions}
         setup={() => {
@@ -87,12 +91,11 @@ describe('Ditto Provider Tests', () => {
           return (
             <>
               <div data-testid="loading">{`${loading}`}</div>
-              <div data-testid="error">{error}</div>
+              <div data-testid="error">{error?.message}</div>
             </>
           )
         }}
       </DittoProvider>,
-      container,
     )
 
     await waitFor(
@@ -114,7 +117,7 @@ describe('Ditto Provider Tests', () => {
         '/base/node_modules/@dittolive/ditto/web/ditto-that-does-not-exist.wasm',
     }
 
-    render(
+    root.render(
       <DittoProvider
         initOptions={initOptions}
         setup={() => {
@@ -131,7 +134,6 @@ describe('Ditto Provider Tests', () => {
           )
         }}
       </DittoProvider>,
-      container,
     )
 
     await waitFor(
@@ -158,7 +160,7 @@ describe('Ditto Provider Tests', () => {
       )
     }
 
-    render(
+    root.render(
       <DittoProvider
         setup={() => {
           return new Ditto(config.identity, config.path)
@@ -167,7 +169,6 @@ describe('Ditto Provider Tests', () => {
       >
         {() => <TesterChildComponent />}
       </DittoProvider>,
-      container,
     )
 
     await waitFor(() => {
@@ -180,57 +181,63 @@ describe('Ditto Provider Tests', () => {
 
   it('should pass the loading state to the child component when the provider is initialized as a single instance', async () => {
     const config = testIdentity()
+    const renderFn = sinon.stub()
+    renderFn.withArgs(sinon.match({ loading: false })).returns('loaded')
 
-    render(
+    root.render(
       <DittoProvider
-        setup={() => {
-          return new Ditto(config.identity, config.path)
-        }}
+        setup={() => new Ditto(config.identity, config.path)}
         initOptions={initOptions}
       >
-        {({ loading }) => <div data-testid="loading">{`${loading}`}</div>}
+        {renderFn}
       </DittoProvider>,
-      container,
     )
 
-    expect(
-      container.querySelector("div[data-testid='loading']").innerHTML,
-    ).to.eq('true')
-
-    await waitFor(
-      () =>
-        container.querySelector("div[data-testid='loading']").innerHTML ===
-        'false',
-    )
+    await waitFor(() => container.textContent === 'loaded')
+    expect(renderFn).to.have.been.calledTwice
+    expect(renderFn.getCall(0)).to.have.been.calledWithMatch({ loading: true })
+    expect(renderFn.getCall(1)).to.have.been.calledWithMatch({ loading: false })
   })
 
   it('should pass the loading state to the child component when the provider is initialized as an array of instances', async () => {
     const config = testIdentity()
     const config2 = testIdentity()
+    const renderFn = sinon.stub()
+    renderFn.withArgs(sinon.match({ loading: false })).returns('loaded')
 
-    render(
+    root.render(
       <DittoProvider
-        setup={() => {
-          return [
-            new Ditto(config.identity, config.path),
-            new Ditto(config2.identity, config2.path),
-          ]
-        }}
+        setup={() => [
+          new Ditto(config.identity, config.path),
+          new Ditto(config2.identity, config2.path),
+        ]}
         initOptions={initOptions}
       >
-        {({ loading }) => <div data-testid="loading">{`${loading}`}</div>}
+        {renderFn}
       </DittoProvider>,
-      container,
     )
 
-    expect(
-      container.querySelector("div[data-testid='loading']").innerHTML,
-    ).to.eq('true')
+    await waitFor(() => container.textContent === 'loaded')
+    expect(renderFn).to.have.been.calledTwice
+    expect(renderFn.getCall(0)).to.have.been.calledWithMatch({ loading: true })
+    expect(renderFn.getCall(1)).to.have.been.calledWithMatch({ loading: false })
+  })
 
-    await waitFor(
-      () =>
-        container.querySelector("div[data-testid='loading']").innerHTML ===
-        'false',
+  it("should call setup and Ditto's init only once in strict mode", async () => {
+    const setup = sinon.fake()
+    const init = sinon.fake()
+    sinon.replace(dittoPackage, 'init', init)
+
+    root.render(
+      <React.StrictMode>
+        <DittoProvider setup={setup} initOptions={initOptions}>
+          {({ loading }) => !loading && 'loaded'}
+        </DittoProvider>
+      </React.StrictMode>,
     )
+
+    await waitFor(() => container.textContent === 'loaded', 600)
+    expect(setup).to.have.been.calledOnce
+    expect(init).to.have.been.calledOnce
   })
 })

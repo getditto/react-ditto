@@ -1,8 +1,7 @@
 import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
-import { renderHook } from '@testing-library/react-hooks/dom'
+import { renderHook, waitFor } from '@testing-library/react'
 import { expect } from 'chai'
 import React, { ReactNode, useEffect } from 'react'
-import { unmountComponentAtNode } from 'react-dom'
 import { v4 as uuidv4 } from 'uuid'
 
 import { DittoProvider } from '../DittoProvider'
@@ -22,19 +21,6 @@ const testIdentity: () => {
 })
 
 describe('useCollections tests', function () {
-  let container: HTMLDivElement
-
-  beforeEach(() => {
-    container = document.createElement('div')
-    document.body.appendChild(container)
-  })
-
-  afterEach(() => {
-    unmountComponentAtNode(container)
-    container.remove()
-    container = null
-  })
-
   it('should load all collections correctly', async () => {
     const testConfiguration = testIdentity()
     const initOptions = {
@@ -79,10 +65,12 @@ describe('useCollections tests', function () {
     )
 
     const params = { path: testConfiguration.path }
-    const { result, waitFor } = renderHook(() => useCollections(params), {
+    const { result } = renderHook(() => useCollections(params), {
       wrapper,
     })
-    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+    await waitFor(() => expect(result.current.documents).not.to.be.empty, {
+      timeout: 5000,
+    })
 
     expect(result.current.documents.length).to.eq(1)
 

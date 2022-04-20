@@ -1,6 +1,5 @@
 import { Ditto } from '@dittolive/ditto'
-import { render, screen, waitFor } from '@testing-library/react'
-import { renderHook } from '@testing-library/react-hooks/dom'
+import { render, renderHook, screen, waitFor } from '@testing-library/react'
 import { expect } from 'chai'
 import React from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -50,8 +49,12 @@ describe('Ditto useOnlineIdentity hook tests', () => {
       </DittoProvider>,
     )
 
-    await waitFor(() => !!screen.queryAllByTestId('loaded').length)
-    await waitFor(() => !!result.current.getAuthenticationRequired('app'))
+    await waitFor(
+      () => expect(screen.queryAllByTestId('loaded')).not.to.be.empty,
+    )
+    await waitFor(
+      () => expect(result.current.getAuthenticationRequired('app')).to.be.true,
+    )
     await waitFor(unmount)
   })
 })

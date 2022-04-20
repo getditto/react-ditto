@@ -1,11 +1,11 @@
 import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
-import { renderHook } from '@testing-library/react-hooks/dom'
+import { renderHook, waitFor } from '@testing-library/react'
 import { expect } from 'chai'
 import React, { ReactNode } from 'react'
-import { unmountComponentAtNode } from 'react-dom'
 import { v4 as uuidv4 } from 'uuid'
 
 import { DittoProvider } from '../DittoProvider'
+import { waitForNextUpdate } from '../utils.spec'
 import { useLazyPendingCursorOperation } from './useLazyPendingCursorOperation'
 import { LiveQueryParams } from './usePendingCursorOperation'
 import { DocumentInserter } from './usePendingCursorOperation.spec'
@@ -51,19 +51,6 @@ const wrapper =
     )
 
 describe('useLazyPendingCursorOperation tests', function () {
-  let container: HTMLDivElement
-
-  beforeEach(() => {
-    container = document.createElement('div')
-    document.body.appendChild(container)
-  })
-
-  afterEach(() => {
-    unmountComponentAtNode(container)
-    container.remove()
-    container = null
-  })
-
   it('should not load any values until a query is executed with the exec function', async () => {
     const testConfiguration = testIdentity()
 
@@ -71,15 +58,12 @@ describe('useLazyPendingCursorOperation tests', function () {
       path: testConfiguration.path,
       collection: 'foo',
     }
-    const { result, waitFor, waitForNextUpdate } = renderHook(
-      () => useLazyPendingCursorOperation(),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
+    const { result } = renderHook(() => useLazyPendingCursorOperation(), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
 
     // we wait for the Ditto instance to load.
-    await waitForNextUpdate()
+    await waitForNextUpdate(result)
 
     expect(result.current.documents).to.eql([])
     expect(result.current.liveQuery).to.eq(undefined)
@@ -88,7 +72,7 @@ describe('useLazyPendingCursorOperation tests', function () {
 
     await result.current.exec(params)
 
-    await waitFor(() => result.current.documents.length !== 0, {
+    await waitFor(() => expect(result.current.documents).not.to.be.empty, {
       timeout: 5000,
     })
 
@@ -105,18 +89,17 @@ describe('useLazyPendingCursorOperation tests', function () {
       path: testConfiguration.path,
       collection: 'foo',
     }
-    const { result, waitFor, waitForNextUpdate } = renderHook(
-      () => useLazyPendingCursorOperation(),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
+    const { result } = renderHook(() => useLazyPendingCursorOperation(), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
 
     // we wait for the Ditto instance to load.
-    await waitForNextUpdate()
+    await waitForNextUpdate(result)
     await result.current.exec(params)
 
-    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+    await waitFor(() => expect(result.current.documents).not.to.be.empty, {
+      timeout: 5000,
+    })
 
     expect(result.current.documents.length).to.eq(5)
 
@@ -135,18 +118,17 @@ describe('useLazyPendingCursorOperation tests', function () {
       collection: 'foo',
       localOnly: true,
     }
-    const { result, waitFor, waitForNextUpdate } = renderHook(
-      () => useLazyPendingCursorOperation(),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
+    const { result } = renderHook(() => useLazyPendingCursorOperation(), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
 
     // we wait for the Ditto instance to load.
-    await waitForNextUpdate()
+    await waitForNextUpdate(result)
     await result.current.exec(params)
 
-    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+    await waitFor(() => expect(result.current.documents).not.to.be.empty, {
+      timeout: 5000,
+    })
 
     expect(result.current.documents.length).to.eq(5)
 
@@ -166,18 +148,17 @@ describe('useLazyPendingCursorOperation tests', function () {
       query: 'document > 3',
     }
 
-    const { result, waitFor, waitForNextUpdate } = renderHook(
-      () => useLazyPendingCursorOperation(),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
+    const { result } = renderHook(() => useLazyPendingCursorOperation(), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
 
     // we wait for the Ditto instance to load.
-    await waitForNextUpdate()
+    await waitForNextUpdate(result)
     await result.current.exec(params)
 
-    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+    await waitFor(() => expect(result.current.documents).not.to.be.empty, {
+      timeout: 5000,
+    })
 
     expect(result.current.documents.length).to.eq(2)
 
@@ -197,18 +178,17 @@ describe('useLazyPendingCursorOperation tests', function () {
       query: 'document > 3',
     }
 
-    const { result, waitFor, waitForNextUpdate } = renderHook(
-      () => useLazyPendingCursorOperation(),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
+    const { result } = renderHook(() => useLazyPendingCursorOperation(), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
 
     // we wait for the Ditto instance to load.
-    await waitForNextUpdate()
+    await waitForNextUpdate(result)
     await result.current.exec(params)
 
-    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+    await waitFor(() => expect(result.current.documents).not.to.be.empty, {
+      timeout: 5000,
+    })
 
     expect(result.current.documents.length).to.eq(2)
     const liveQuery = result.current.liveQuery
@@ -218,7 +198,7 @@ describe('useLazyPendingCursorOperation tests', function () {
       collection: 'foo',
     })
 
-    await waitFor(() => result.current.documents.length === 5, {
+    await waitFor(() => expect(result.current.documents).to.have.lengthOf(5), {
       timeout: 5000,
     })
 
@@ -232,18 +212,17 @@ describe('useLazyPendingCursorOperation tests', function () {
       path: testConfiguration.path,
       collection: 'foo',
     }
-    const { result, waitFor, waitForNextUpdate } = renderHook(
-      () => useLazyPendingCursorOperation(),
-      {
-        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
-      },
-    )
+    const { result } = renderHook(() => useLazyPendingCursorOperation(), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
 
     // we wait for the Ditto instance to load.
-    await waitForNextUpdate()
+    await waitForNextUpdate(result)
     await result.current.exec(params)
 
-    await waitFor(() => !!result.current.documents?.length, { timeout: 5000 })
+    await waitFor(() => expect(result.current.documents).not.to.be.empty, {
+      timeout: 5000,
+    })
 
     expect(result.current.documents.length).to.eq(5)
 

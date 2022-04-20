@@ -1,5 +1,5 @@
 import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
-import { renderHook } from '@testing-library/react-hooks/dom'
+import { renderHook, waitFor } from '@testing-library/react'
 import { expect } from 'chai'
 import React, { ReactNode } from 'react'
 import { v4 as uuidv4 } from 'uuid'
@@ -40,15 +40,14 @@ describe('useDittoSpec tests', function () {
         }}
       </DittoProvider>
     )
-    const { result, waitFor } = renderHook(
-      () => useDitto(testConfiguration.path),
-      {
-        wrapper,
-      },
-    )
+    const { result } = renderHook(() => useDitto(testConfiguration.path), {
+      wrapper,
+    })
 
-    await waitFor(() => !!result.current.ditto, { timeout: 5000 })
-    expect(result.current?.ditto.path).to.eq(testConfiguration.path)
+    await waitFor(() => expect(result.current.ditto).to.exist, {
+      timeout: 5000,
+    })
+    expect(result.current.ditto.path).to.eq(testConfiguration.path)
   })
 
   it('should return a ditto instance with a matching path variable, and a loading state, when a lazy provider is used.', async function () {
@@ -73,16 +72,21 @@ describe('useDittoSpec tests', function () {
         }}
       </DittoLazyProvider>
     )
-    const { result, waitFor } = renderHook(
+    const { result, rerender } = renderHook(
       () => useDitto(testConfiguration.path),
       {
         wrapper,
       },
     )
 
-    await waitFor(() => !result.current.loading && !!result.current?.ditto, {
-      timeout: 5000,
-    })
+    await waitFor(
+      () => {
+        rerender()
+        expect(result.current.loading).to.be.false
+        expect(result.current.ditto).to.exist
+      },
+      { timeout: 5000 },
+    )
 
     expect(result.current?.ditto.path).to.eq(testConfiguration.path)
     expect(result.current?.loading).to.eq(false)

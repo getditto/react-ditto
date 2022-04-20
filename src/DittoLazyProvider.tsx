@@ -9,8 +9,7 @@ import {
 } from './DittoContext'
 import { ProviderState, RenderFunction } from './DittoProvider'
 
-export interface DittoLazyProviderProps
-  extends React.PropsWithChildren<unknown> {
+export interface DittoLazyProviderProps {
   initOptions?: InitOptions
   /**
    * This function is called whenever a child component uses a Ditto instance through the useDitto hook
@@ -39,9 +38,16 @@ export const DittoLazyProvider: React.FunctionComponent<DittoLazyProviderProps> 
       loading: true,
       error: undefined,
     })
+    const hasMountEffectStarted = useRef(false)
 
     useEffect(() => {
+      if (hasMountEffectStarted.current) {
+        return
+      }
+
       ;(async function () {
+        hasMountEffectStarted.current = true
+
         try {
           await init(initOptions)
 
