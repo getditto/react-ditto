@@ -1,6 +1,6 @@
 {
   "name": "@dittolive/react-ditto",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "React wrappers for Ditto",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -15,6 +15,10 @@
   },
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/getditto/react-ditto.git"
+  },
   "peerDependencies": {
     "@dittolive/ditto": "^1.0.17",
     "react": ">=16.0.0",
