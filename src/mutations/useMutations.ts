@@ -10,6 +10,7 @@ import {
   UpdateResult,
   UpdateResultsMap,
 } from '@dittolive/ditto'
+import { useCallback } from 'react'
 
 import { useDitto } from '../useDitto'
 
@@ -95,67 +96,78 @@ export function useMutations<T = DocumentLike>(
 } {
   const { ditto } = useDitto(useMutationParams.path)
 
-  const update: UpdateFunction<T> = (params) => {
-    let cursor: PendingCursorOperation
-    if (params.query) {
-      if (params.args) {
-        cursor = ditto.store
-          .collection(useMutationParams.collection)
-          .find(params.query, params.args)
+  const update: UpdateFunction<T> = useCallback(
+    (params) => {
+      let cursor: PendingCursorOperation
+      if (params.query) {
+        if (params.args) {
+          cursor = ditto.store
+            .collection(useMutationParams.collection)
+            .find(params.query, params.args)
+        } else {
+          cursor = ditto.store
+            .collection(useMutationParams.collection)
+            .find(params.query)
+        }
       } else {
-        cursor = ditto.store
-          .collection(useMutationParams.collection)
-          .find(params.query)
+        cursor = ditto.store.collection(useMutationParams.collection).findAll()
       }
-    } else {
-      cursor = ditto.store.collection(useMutationParams.collection).findAll()
-    }
-    return cursor.update(params.updateClosure)
-  }
+      return cursor.update(params.updateClosure)
+    },
+    [ditto, useMutationParams.collection],
+  )
 
-  const updateByID: UpdateByIDFunction<T> = (params) => {
-    const pendingIDSpecificOperation: PendingIDSpecificOperation = ditto.store
-      .collection(useMutationParams.collection)
-      .findByID(params._id)
-    return pendingIDSpecificOperation.update((mutableDoc: T) => {
-      params.updateClosure(mutableDoc)
-    })
-  }
+  const updateByID: UpdateByIDFunction<T> = useCallback(
+    (params) => {
+      const pendingIDSpecificOperation: PendingIDSpecificOperation = ditto.store
+        .collection(useMutationParams.collection)
+        .findByID(params._id)
+      return pendingIDSpecificOperation.update((mutableDoc: T) => {
+        params.updateClosure(mutableDoc)
+      })
+    },
+    [ditto, useMutationParams.collection],
+  )
 
-  const insert: InsertFunction<T> = (params) => {
-    return ditto.store
-      .collection(useMutationParams.collection)
-      .insert(params.value as unknown as DocumentValue, params.insertOptions)
-  }
+  const insert: InsertFunction<T> = useCallback(
+    (params) => {
+      return ditto.store
+        .collection(useMutationParams.collection)
+        .insert(params.value as unknown as DocumentValue, params.insertOptions)
+    },
+    [ditto, useMutationParams.collection],
+  )
 
-  const remove: RemoveFunction = (
-    params: RemoveParams,
-  ): Promise<DocumentIDValue[]> => {
-    let cursor: PendingCursorOperation
-    if (params.query) {
-      if (params.args) {
-        cursor = ditto.store
-          .collection(useMutationParams.collection)
-          .find(params.query, params.args)
+  const remove: RemoveFunction = useCallback(
+    (params: RemoveParams): Promise<DocumentIDValue[]> => {
+      let cursor: PendingCursorOperation
+      if (params.query) {
+        if (params.args) {
+          cursor = ditto.store
+            .collection(useMutationParams.collection)
+            .find(params.query, params.args)
+        } else {
+          cursor = ditto.store
+            .collection(useMutationParams.collection)
+            .find(params.query)
+        }
       } else {
-        cursor = ditto.store
-          .collection(useMutationParams.collection)
-          .find(params.query)
+        cursor = ditto.store.collection(useMutationParams.collection).findAll()
       }
-    } else {
-      cursor = ditto.store.collection(useMutationParams.collection).findAll()
-    }
-    return cursor.remove()
-  }
+      return cursor.remove()
+    },
+    [ditto, useMutationParams.collection],
+  )
 
-  const removeByID: RemoveByIDFunction = (
-    params: RemoveByIDParams,
-  ): Promise<boolean> => {
-    return ditto.store
-      .collection(useMutationParams.collection)
-      .findByID(params._id)
-      .remove()
-  }
+  const removeByID: RemoveByIDFunction = useCallback(
+    (params: RemoveByIDParams): Promise<boolean> => {
+      return ditto.store
+        .collection(useMutationParams.collection)
+        .findByID(params._id)
+        .remove()
+    },
+    [ditto, useMutationParams.collection],
+  )
 
   return {
     ditto,
