@@ -15,7 +15,6 @@ describe('Ditto useOnlineIdentity hook tests', () => {
     expect(result.current.create).to.exist
     expect(result.current.getAuthenticationRequired).to.exist
     expect(result.current.getTokenExpiresInSeconds).to.exist
-    expect(result.current.authenticate).to.exist
 
     const identity = result.current.create({ appID }, 'app')
 

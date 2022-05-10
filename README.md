@@ -121,7 +121,7 @@ const createDittoInstance = (forPath: string) => {
 ```
 
 ```ts
-const { create, getAuthenticationRequired, getTokenExpiresInSeconds, authenticate } = useOnlineIdentity()
+const { create, getAuthenticationRequired, getTokenExpiresInSeconds } = useOnlineIdentity()
 
 const createDittoInstance = (forPath: string) => {
   // Example of how to create an online instance with authentication enabled
@@ -251,29 +251,40 @@ Using the [Portal](http://portal.ditto.live) you can create apps that sync to th
 
 ```tsx
 /** Example of a React root component setting up a single ditto instance that uses a development connection */
+import { useEffect } from 'react'
+
 const RootComponent = () => {
-  const { create, getAuthenticationRequired, getTokenExpiresInSeconds, authenticate } = useOnlineIdentity()
-  
+  const { create, getAuthenticationRequired, getTokenExpiresInSeconds } = useOnlineIdentity()
+
   return (
     <>
-        <DittoProvider 
-          setup={() => new Ditto(create({ appID: 'your-app-id', path: '/my-online-path' }, '/my-online-path'))} 
-          /*initOptions={initOptions} */
-        >
-          {({ loading, error, ditto }) => {
-            if (loading) return <p>Loading</p>;
-            if (error) return <p>{error.message}</p>;
-            return <App />;
-          }}
-        </DittoProvider>
-        {getAuthenticationRequired('/my-online-path') && (
-          <div>
-            <div>You need to authenticate!</div>
-            <button onClick={() => authenticate('/my-online-path', 'provider', 'some token')}>Authenticate</button>
-          </div>
-        )}
+      <DittoProvider
+        setup={() => new Ditto(create({ appID: 'your-app-id', path: '/my-online-path' }, '/my-online-path'))}
+        /*initOptions={initOptions} */
+      >
+        {({ loading, error, ditto }) => {
+          if (loading) return <p>Loading</p>;
+          if (error) return <p>{error.message}</p>;
+          return <App />;
+        }}
+      </DittoProvider>
     </>
   )
+}
+
+const App = () => {
+  const ditto = useDitto()
+
+  useEffect(() => {
+    if(ditto) {
+      ditto
+        .auth
+        .loginWithToken('token', 'provider')
+        .then(() => console.log("Login successful"))
+    }
+  }, [ditto])
+  
+  return (<div>Hello world!</div>)
 }
 
 ```
@@ -283,7 +294,6 @@ For Online apps, the `useOnlineIdentity` hook returns the following set of prope
 * `create`: Creates an `onlineWithAuthentication` object preconfigured such that the hook can manage the authentication flow using the exposed `authenticate` function.
 * `getAuthenticationRequired`: Is a function that takes in the app path for which to check the authentication required state, and will return true if your Ditto instance is requiring the current user to authenticate with the app. You can configure authentication webhooks on the [Portal](http://portal.ditto.live), from your app settings area, in order to provide your own set of validation services for your app.
 * `getTokenExpiresInSeconds`: Is a function that takes in the app path for which to check the token expiry second, and returns the number of seconds in which your current token expires if this has been reported by the Ditto SDK.
-* `authenticate`: Function that can be used to make an authentication request for an app given the app path. Requires you to provide the token and the provider name (taken from the list of the configured token validation providers) that you want to validate the token against.
 
 ## Building this library and running tests
 
