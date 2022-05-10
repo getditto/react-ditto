@@ -1,7 +1,4 @@
-import {
-  Authenticator,
-  IdentityOnlineWithAuthentication,
-} from '@dittolive/ditto'
+import { IdentityOnlineWithAuthentication } from '@dittolive/ditto'
 import { useState } from 'react'
 
 export interface CreateOnlineIdentityParams {
@@ -28,13 +25,6 @@ export interface useOnlineIdentityProps {
    * the hook.
    * */
   getTokenExpiresInSeconds: (forPath: string) => number | null
-  /** Function used to authenticate for any identity created with the hook where authentication is required. Updates
-   * the internal authentication required state if auth succeeds. */
-  authenticate: (
-    forPath: string,
-    provider: string,
-    token: string,
-  ) => Promise<void>
 }
 
 /**
@@ -42,7 +32,7 @@ export interface useOnlineIdentityProps {
 
  * ```js
  **
- * const { create, authenticate, isAuthenticationRequired, tokenExpiresInSeconds } = useOnlineIdentity();
+ * const { create, isAuthenticationRequired, tokenExpiresInSeconds } = useOnlineIdentity();
  *
  * const onlineIdentity = create({appID: uuid(), enableDittoCloudSync: true});
  * const ditto = new Ditto(onlineIdentity, '/path');
@@ -50,7 +40,7 @@ export interface useOnlineIdentityProps {
  * ...
  * ...
  *
- * return <button onClick={() => authenticate('my-token', 'my-provider')}>Authenticate</button>
+ * return <button onClick={() => ditto.auth.loginWithToken('my-token', 'my-provider')}>Authenticate</button>
  *
  * A hook for creating OnlineDitto identity objects.
  * @returns useOnlineIdentityProps
@@ -58,14 +48,11 @@ export interface useOnlineIdentityProps {
 export const useOnlineIdentity = (): useOnlineIdentityProps => {
   // Auth required booleans, indexed by the instance paths
   const [authenticationRequired, setAuthenticationRequired] = useState<{
-    [path: string]: Authenticator
+    [path: string]: boolean
   }>({})
   // Auth expiring booleans, indexed by the instance paths
   const [authenticationExpiringSoon, setAuthenticationExpiringSoon] = useState<{
-    [path: string]: {
-      authenticator: Authenticator
-      tokenExpiresInSeconds: number
-    }
+    [path: string]: number
   }>({})
 
   const create = (
@@ -78,16 +65,16 @@ export const useOnlineIdentity = (): useOnlineIdentityProps => {
       enableDittoCloudSync,
       customAuthURL,
       authHandler: {
-        authenticationRequired: (authenticator) => {
+        authenticationRequired: () => {
           setAuthenticationRequired((currentAuthRequired) => ({
             ...currentAuthRequired,
-            [path]: authenticator,
+            [path]: true,
           }))
         },
         authenticationExpiringSoon: (authenticator, tokenExpiresInSeconds) => {
           setAuthenticationExpiringSoon((currentAuthExpiringSoon) => ({
             ...currentAuthExpiringSoon,
-            [path]: { authenticator, tokenExpiresInSeconds },
+            [path]: tokenExpiresInSeconds,
           }))
         },
       },
@@ -100,43 +87,13 @@ export const useOnlineIdentity = (): useOnlineIdentityProps => {
 
   const getTokenExpiresInSeconds = (forPath: string) => {
     return forPath in authenticationExpiringSoon
-      ? authenticationExpiringSoon[forPath].tokenExpiresInSeconds
+      ? authenticationExpiringSoon[forPath]
       : null
-  }
-
-  const authenticate = (
-    forPath: string,
-    provider: string,
-    token: string,
-  ): Promise<void> => {
-    if (forPath in authenticationRequired) {
-      const authenticator = authenticationRequired[forPath]
-
-      return authenticator.loginWithToken(token, provider).then(() =>
-        setAuthenticationRequired((currentAuthRequired) => {
-          const nextAuthRequired = Object.keys(currentAuthRequired).reduce(
-            (acc, path) => {
-              if (path === forPath) {
-                return acc
-              }
-
-              return { ...acc, [path]: currentAuthRequired[path] }
-            },
-            {},
-          )
-
-          return nextAuthRequired
-        }),
-      )
-    }
-
-    return Promise.resolve()
   }
 
   return {
     create,
     getAuthenticationRequired,
     getTokenExpiresInSeconds,
-    authenticate,
   }
 }

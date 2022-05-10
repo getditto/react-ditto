@@ -25,15 +25,11 @@ const options: IdentityOption[] = [
  * */
 const AppContainer: React.FC = () => {
   const { create: createDevelopment } = useOfflinePlaygroundIdentity()
-  const {
-    create: createOnline,
-    getAuthenticationRequired,
-    authenticate,
-  } = useOnlineIdentity()
+  const { create: createOnline, getAuthenticationRequired } =
+    useOnlineIdentity()
   const [currentPath, setCurrentPath] = useState('/path-development')
 
   const handleCreateDittoInstances = () => {
-    console.log('CREATING INSTANCES')
     // Example of how to create a development instance
     const dittoDevelopment = new Ditto(
       createDevelopment({ appName: 'live.ditto.example', siteID: 1234 }),
@@ -87,16 +83,17 @@ const AppContainer: React.FC = () => {
             return <h1>Error: {JSON.stringify(error)}</h1>
           }
 
-          return <App path={currentPath} />
+          return (
+            <>
+              <App path={currentPath} />
+              <AuthenticationPanel
+                path={currentPath}
+                isAuthRequired={getAuthenticationRequired(currentPath)}
+              />
+            </>
+          )
         }}
       </DittoProvider>
-      {getAuthenticationRequired(currentPath) && (
-        <AuthenticationPanel
-          onSubmit={(token, provider) =>
-            authenticate(currentPath, provider, token)
-          }
-        />
-      )}
     </>
   )
 }

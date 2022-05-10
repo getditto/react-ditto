@@ -1,20 +1,27 @@
+import { useDitto } from '@dittolive/react-ditto'
 import React, { useState } from 'react'
 
 type Props = {
-  /** Callback used to submit the current token and the name of the provider to
-   * authenticate agains.
-   * @param token
-   * @param provider
-   */
-  onSubmit: (token: string, provider: string) => Promise<void>
+  /** True if authentication is required */
+  isAuthRequired: boolean
+  /** Current active path */
+  path: string
 }
 
 /** Simple authenticate panel for the user to input a token and a token provider.
  */
-const AuthenticationPanel: React.FC<Props> = ({ onSubmit }) => {
+const AuthenticationPanel: React.FC<Props> = ({ path, isAuthRequired }) => {
   const [token, setToken] = useState('')
   const [provider, setProvider] = useState('')
   const [authError, setAuthError] = useState<Error>()
+  const { ditto } = useDitto(path)
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!ditto?.auth.status.isAuthenticated,
+  )
+
+  if (!ditto || !isAuthRequired || isAuthenticated) {
+    return null
+  }
 
   return (
     <div
@@ -31,9 +38,12 @@ const AuthenticationPanel: React.FC<Props> = ({ onSubmit }) => {
       <form
         onSubmit={(evt) => {
           evt.preventDefault()
-          onSubmit(token, provider).catch((err) => {
-            setAuthError(err)
-          })
+          ditto.auth
+            .loginWithToken(token, provider)
+            .then(() => setIsAuthenticated(ditto.auth.status.isAuthenticated))
+            .catch((err) => {
+              setAuthError(err)
+            })
         }}
       >
         <h3>Authentication required</h3>
