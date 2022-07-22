@@ -52,7 +52,7 @@ It is important to highlight that choosing one provider or the other has no effe
 
 ```tsx
 const createDittoInstance = () => {
-  return new Ditto(createIdentity(), "some-path")
+  return new Ditto(createIdentity(), 'some-path')
 }
 
 <DittoProvider setup={createDittoInstance}>
@@ -166,7 +166,7 @@ import { DittoProvider, useOfflinePlaygroundIdentity } from '@dittolive/react-di
  * the wasm will be loaded from our CDN.
  **/
 const initOptions = {
-  webAssemblyModule: "/ditto.wasm",
+  webAssemblyModule: '/ditto.wasm',
 }
 
 /** Example of a React root component setting up a single ditto instance that uses a development connection */
@@ -193,14 +193,14 @@ ReactDOM.render(
   <React.StrictMode>
     <RootComponent />
   </React.StrictMode>,
-  document.getElementById("root")
+  document.getElementById('root')
 );
 ```
 
 3. In your `App` component, you can now use hooks like `usePendingCursorOperation` or `usePendingIDSpecificOperation` to get your documents like so:
 
 ```tsx
-import { usePendingCursorOperation, useMutations } from "@dittolive/react-ditto";
+import { usePendingCursorOperation, useMutations } from '@dittolive/react-ditto';
 
 export default function App() {
   const { documents, ditto } = usePendingCursorOperation({
@@ -224,7 +224,7 @@ export default function App() {
 Alternatively, you can also choose to go with the lazy variants of these hooks (`useLazyPendingCursorOperation` and `useLazyPendingIDSpecificOperation`), ir order to launch queries on the data store as a response to a user event:
 
 ```tsx
-import { usePendingCursorOperation, useMutations } from "@dittolive/react-ditto";
+import { usePendingCursorOperation, useMutations } from '@dittolive/react-ditto';
 
 export default function App() {
   const { documents, ditto, exec } = useLazyPendingCursorOperation();
@@ -280,7 +280,7 @@ const App = () => {
       ditto
         .auth
         .loginWithToken('token', 'provider')
-        .then(() => console.log("Login successful"))
+        .then(() => console.log('Login successful'))
     }
   }, [ditto])
   
