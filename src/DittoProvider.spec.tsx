@@ -45,6 +45,7 @@ describe('Ditto Provider Tests', () => {
   }
 
   it('should load ditto wasm from the CDN', async function () {
+    this.timeout(10_000)
     const config = testIdentity()
 
     root.render(
