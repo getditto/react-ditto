@@ -28,16 +28,16 @@ describe('useCollections tests', function () {
     }
 
     const TestComponent: React.FC = () => {
-      const { ditto, insert } = useMutations<unknown>({
+      const { ditto, upsert } = useMutations<unknown>({
         path: testConfiguration.path,
         collection: 'foo',
       })
 
       useEffect(() => {
         if (ditto) {
-          insert({ value: { document: 1 } })
+          upsert({ value: { document: 1 } })
         }
-      }, [ditto, insert])
+      }, [ditto, upsert])
 
       return <></>
     }

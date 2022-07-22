@@ -23,19 +23,19 @@ const testIdentity: () => {
   path: uuidv4(),
 })
 
-export const DocumentInserter: React.FC<{ path: string }> = ({ path }) => {
-  const { ditto, insert } = useMutations<unknown>({
+export const DocumentUpserter: React.FC<{ path: string }> = ({ path }) => {
+  const { ditto, upsert } = useMutations<unknown>({
     path,
     collection: 'foo',
   })
 
   useEffect(() => {
     if (ditto) {
-      insert({ value: { document: 1 } })
-      insert({ value: { document: 2 } })
-      insert({ value: { document: 3 } })
-      insert({ value: { document: 4 } })
-      insert({ value: { document: 5 } })
+      upsert({ value: { document: 1 } })
+      upsert({ value: { document: 2 } })
+      upsert({ value: { document: 3 } })
+      upsert({ value: { document: 4 } })
+      upsert({ value: { document: 5 } })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ditto])
@@ -63,7 +63,7 @@ const wrapper =
         {() => {
           return (
             <>
-              <DocumentInserter path={path} />
+              <DocumentUpserter path={path} />
               {children}
             </>
           )

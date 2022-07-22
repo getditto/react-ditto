@@ -207,7 +207,7 @@ export default function App() {
     collection: 'tasks',
   });
 
-  const { updateByID, insert } = useMutations({ collection: 'tasks' })
+  const { updateByID, upsert } = useMutations({ collection: 'tasks' })
 
   return (
     <ul>

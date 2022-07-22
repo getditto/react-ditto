@@ -3,12 +3,12 @@ import {
   DocumentIDValue,
   DocumentLike,
   DocumentValue,
-  InsertOptions,
   PendingCursorOperation,
   PendingIDSpecificOperation,
   QueryArguments,
   UpdateResult,
   UpdateResultsMap,
+  UpsertOptions,
 } from '@dittolive/ditto'
 import { useCallback } from 'react'
 
@@ -49,13 +49,13 @@ export type UpdateByIDFunction<T> = (
   params: UpdateByIDParams<T>,
 ) => Promise<UpdateResult[]>
 
-export interface InsertParams<T> {
+export interface UpsertParams<T> {
   value: T
-  insertOptions?: InsertOptions
+  upsertOptions?: UpsertOptions
 }
 
-export type InsertFunction<T> = (
-  params: InsertParams<T>,
+export type UpsertFunction<T> = (
+  params: UpsertParams<T>,
 ) => Promise<DocumentIDValue>
 
 export interface RemoveParams {
@@ -90,7 +90,7 @@ export function useMutations<T = DocumentLike>(
   ditto: Ditto
   update: UpdateFunction<T>
   updateByID: UpdateByIDFunction<T>
-  insert: InsertFunction<T>
+  upsert: UpsertFunction<T>
   remove: RemoveFunction
   removeByID: RemoveByIDFunction
 } {
@@ -129,11 +129,11 @@ export function useMutations<T = DocumentLike>(
     [ditto, useMutationParams.collection],
   )
 
-  const insert: InsertFunction<T> = useCallback(
+  const upsert: UpsertFunction<T> = useCallback(
     (params) => {
       return ditto.store
         .collection(useMutationParams.collection)
-        .insert(params.value as unknown as DocumentValue, params.insertOptions)
+        .upsert(params.value as unknown as DocumentValue, params.upsertOptions)
     },
     [ditto, useMutationParams.collection],
   )
@@ -173,7 +173,7 @@ export function useMutations<T = DocumentLike>(
     ditto,
     update,
     updateByID,
-    insert,
+    upsert,
     remove,
     removeByID,
   }
