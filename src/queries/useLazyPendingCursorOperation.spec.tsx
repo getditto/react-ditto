@@ -8,7 +8,7 @@ import { DittoProvider } from '../DittoProvider'
 import { waitForNextUpdate } from '../utils.spec'
 import { useLazyPendingCursorOperation } from './useLazyPendingCursorOperation'
 import { LiveQueryParams } from './usePendingCursorOperation'
-import { DocumentInserter } from './usePendingCursorOperation.spec'
+import { DocumentUpserter } from './usePendingCursorOperation.spec'
 
 const testIdentity: () => {
   identity: IdentityOfflinePlayground
@@ -42,7 +42,7 @@ const wrapper =
         {() => {
           return (
             <>
-              <DocumentInserter path={path} />
+              <DocumentUpserter path={path} />
               {children}
             </>
           )

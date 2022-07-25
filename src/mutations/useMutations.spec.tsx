@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
 import { renderHook, waitFor } from '@testing-library/react'
@@ -56,13 +55,11 @@ describe('useMutations tests', function () {
     )
     await waitFor(() => expect(mutations.current.ditto).to.exist)
 
-    const insertResult = await mutations.current.insert({
-      value: { foo: 'bar' },
-      insertOptions: { id: 'some_id' },
+    const upsertResult = await mutations.current.upsert({
+      value: { _id: 'some_id', foo: 'bar' },
     })
 
-    // @ts-ignore
-    expect(insertResult).to.eql('some_id')
+    expect(upsertResult).to.eql('some_id')
 
     const updateResult = await mutations.current.updateByID({
       _id: 'some_id',
@@ -104,17 +101,14 @@ describe('useMutations tests', function () {
 
     await waitFor(() => expect(mutations.current.ditto).to.exist)
 
-    await mutations.current.insert({
-      value: { type: 'car', wheels: 4 },
-      insertOptions: { id: 'car' },
+    await mutations.current.upsert({
+      value: { _id: 'car', type: 'car', wheels: 4 },
     })
-    await mutations.current.insert({
-      value: { type: 'skate', wheels: 4 },
-      insertOptions: { id: 'skate' },
+    await mutations.current.upsert({
+      value: { _id: 'skate', type: 'skate', wheels: 4 },
     })
-    await mutations.current.insert({
-      value: { type: 'bike', wheels: 2 },
-      insertOptions: { id: 'bike' },
+    await mutations.current.upsert({
+      value: { _id: 'bike', type: 'bike', wheels: 2 },
     })
 
     const updateResult = await mutations.current.update({

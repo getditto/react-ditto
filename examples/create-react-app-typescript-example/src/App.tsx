@@ -24,7 +24,7 @@ const App: React.FC<Props> = ({ path }) => {
     [path],
   )
   const { documents: tasks } = usePendingCursorOperation<Task>(params)
-  const { insert, removeByID, updateByID } = useMutations<Task>({
+  const { upsert, removeByID, updateByID } = useMutations<Task>({
     collection: 'tasks',
     path: path,
   })
@@ -44,7 +44,7 @@ const App: React.FC<Props> = ({ path }) => {
         <button
           type="button"
           onClick={() => {
-            insert({
+            upsert({
               value: {
                 body: newBodyText,
                 isCompleted: false,
