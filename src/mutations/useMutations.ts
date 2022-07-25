@@ -1,8 +1,9 @@
 import {
   Ditto,
+  Document,
   DocumentIDValue,
-  DocumentLike,
   DocumentValue,
+  MutableDocument,
   PendingCursorOperation,
   PendingIDSpecificOperation,
   QueryArguments,
@@ -14,7 +15,7 @@ import { useCallback } from 'react'
 
 import { useDitto } from '../useDitto'
 
-export interface UpdateParams<T> {
+export interface UpdateParams {
   /**
    * A Ditto query that specifies the documents to update. If this is omitted, then the `updateClosure` will
    * apply to _all documents_.
@@ -27,14 +28,12 @@ export interface UpdateParams<T> {
   /**
    * A function used to update all the documents
    */
-  updateClosure: (mutableDocuments: T[]) => void
+  updateClosure: (mutableDocuments: MutableDocument[]) => void
 }
 
-export type UpdateFunction<T> = (
-  params: UpdateParams<T>,
-) => Promise<UpdateResultsMap>
+export type UpdateFunction = (params: UpdateParams) => Promise<UpdateResultsMap>
 
-export interface UpdateByIDParams<T> {
+export interface UpdateByIDParams {
   /**
    * The _id of the document to remove
    */
@@ -42,11 +41,11 @@ export interface UpdateByIDParams<T> {
   /**
    * The update function to perform on the specified document
    */
-  updateClosure: (mutableDocument: T) => void
+  updateClosure: (mutableDocument: MutableDocument) => void
 }
 
-export type UpdateByIDFunction<T> = (
-  params: UpdateByIDParams<T>,
+export type UpdateByIDFunction = (
+  params: UpdateByIDParams,
 ) => Promise<UpdateResult[]>
 
 export interface UpsertParams<T> {
@@ -84,19 +83,19 @@ export interface UseMutationParams {
   collection: string
 }
 
-export function useMutations<T = DocumentLike>(
+export function useMutations<T = Document>(
   useMutationParams: UseMutationParams,
 ): {
   ditto: Ditto
-  update: UpdateFunction<T>
-  updateByID: UpdateByIDFunction<T>
+  update: UpdateFunction
+  updateByID: UpdateByIDFunction
   upsert: UpsertFunction<T>
   remove: RemoveFunction
   removeByID: RemoveByIDFunction
 } {
   const { ditto } = useDitto(useMutationParams.path)
 
-  const update: UpdateFunction<T> = useCallback(
+  const update: UpdateFunction = useCallback(
     (params) => {
       let cursor: PendingCursorOperation
       if (params.query) {
@@ -117,12 +116,12 @@ export function useMutations<T = DocumentLike>(
     [ditto, useMutationParams.collection],
   )
 
-  const updateByID: UpdateByIDFunction<T> = useCallback(
+  const updateByID: UpdateByIDFunction = useCallback(
     (params) => {
       const pendingIDSpecificOperation: PendingIDSpecificOperation = ditto.store
         .collection(useMutationParams.collection)
         .findByID(params._id)
-      return pendingIDSpecificOperation.update((mutableDoc: T) => {
+      return pendingIDSpecificOperation.update((mutableDoc) => {
         params.updateClosure(mutableDoc)
       })
     },

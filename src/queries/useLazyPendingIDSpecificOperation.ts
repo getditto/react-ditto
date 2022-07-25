@@ -1,7 +1,7 @@
 import {
   Collection,
   Ditto,
-  DocumentLike,
+  Document,
   LiveQuery,
   SingleDocumentLiveQueryEvent,
 } from '@dittolive/ditto'
@@ -10,11 +10,11 @@ import { useRef, useState } from 'react'
 import { useDittoContext } from '../DittoContext'
 import { UsePendingIDSpecificOperationParams } from './usePendingIDSpecificOperation'
 
-export interface LazyPendingIDSpecificOperationReturn<T> {
+export interface LazyPendingIDSpecificOperationReturn {
   /** The initialized Ditto instance if one could be found for the provided path. */
   ditto: Ditto | null
-  /** The documents found for the current query. */
-  document: T | undefined
+  /** The document found for the current query. */
+  document: Document | undefined
   /** The last SingleDocumentLiveQueryEvent received by the query observer. */
   event?: SingleDocumentLiveQueryEvent
   /** Currently active live query. */
@@ -45,13 +45,11 @@ export interface LazyPendingIDSpecificOperationReturn<T> {
  * @param params live query parameters.
  * @returns LazyPendingIDSpecificOperationReturn
  */
-export function useLazyPendingIDSpecificOperation<
-  T = DocumentLike,
->(): LazyPendingIDSpecificOperationReturn<T> {
+export function useLazyPendingIDSpecificOperation(): LazyPendingIDSpecificOperationReturn {
   const { dittoHash, isLazy, load } = useDittoContext()
   const liveQueryRef = useRef<LiveQuery>()
   const [ditto, setDitto] = useState<Ditto>()
-  const [document, setDocument] = useState<T>()
+  const [document, setDocument] = useState<Document>()
   const [collection, setCollection] = useState<Collection>()
   const [event, setEvent] = useState<SingleDocumentLiveQueryEvent>()
 
@@ -74,14 +72,14 @@ export function useLazyPendingIDSpecificOperation<
       if (!!params.localOnly) {
         liveQueryRef.current = nextCollection
           .findByID(params._id)
-          .observeLocal((doc: T, e) => {
+          .observeLocal((doc, e) => {
             setEvent(e)
             setDocument(doc)
           })
       } else {
         liveQueryRef.current = nextCollection
           .findByID(params._id)
-          .observe((doc: T, e) => {
+          .observe((doc, e) => {
             setEvent(e)
             setDocument(doc)
           })

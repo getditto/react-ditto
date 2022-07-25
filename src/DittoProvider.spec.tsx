@@ -17,7 +17,7 @@ const testIdentity: () => {
   path: string
 } = () => ({
   identity: {
-    appName: 'dittoProviderSpec',
+    appID: 'dittoProviderSpec',
     siteID: 100,
     type: 'offlinePlayground',
   },

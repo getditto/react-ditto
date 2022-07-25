@@ -903,10 +903,10 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
-"@dittolive/ditto@^1.1.10":
-  version "1.1.10"
-  resolved "https://registry.yarnpkg.com/@dittolive/ditto/-/ditto-1.1.10.tgz#2a0e5a1a1d1ec556ebc5c18d628da008f5775a3b"
-  integrity sha512-7PVPb5wxaEHYBCiO2GV2lrcrJ/ijtk3zGgoQ7wyM0+9mH2KbT1fzPf0xKfOlwKULwhYQ1+pQSxajxFN/4WLB2Q==
+"@dittolive/ditto@^2.0.0-alpha1":
+  version "2.0.0-alpha1"
+  resolved "https://registry.yarnpkg.com/@dittolive/ditto/-/ditto-2.0.0-alpha1.tgz#882c82e146ae9834131f99fb307aadfcef2695b4"
+  integrity sha512-FJ7I0u11RjrGAMhyMc76ftdjI1J6wrN7v0QOsQXEpEN0Dw3vvD5TyJIO2he6sivRxOxCfCGZW4rerFw+w9BqjQ==
 
 "@eslint/eslintrc@^0.4.3":
   version "0.4.3"

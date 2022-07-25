@@ -96,7 +96,7 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
     })
 
     expect(result.current.document._id).to.eq('someId')
-    expect(result.current.document._value.document).to.eq(1)
+    expect(result.current.document.value.document).to.eq(1)
 
     expect(result.current.ditto).not.to.eq(undefined)
     expect(result.current.liveQuery).not.to.eq(undefined)
@@ -125,7 +125,7 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
     })
 
     expect(result.current.document._id).to.eq('someId')
-    expect(result.current.document._value.document).to.eq(1)
+    expect(result.current.document.value.document).to.eq(1)
 
     expect(result.current.ditto).not.to.eq(undefined)
     expect(result.current.liveQuery).not.to.eq(undefined)

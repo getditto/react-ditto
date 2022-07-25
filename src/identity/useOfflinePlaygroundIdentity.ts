@@ -1,7 +1,7 @@
 import { IdentityOfflinePlayground } from '@dittolive/ditto'
 
 export interface CreateOfflinePlaygroundIdentityParams {
-  appName: string
+  appID: string
   siteID: number | BigInt
 }
 
@@ -24,14 +24,14 @@ export const useOfflinePlaygroundIdentity = (): {
 } => {
   return {
     create: ({
-      appName,
+      appID,
       siteID,
     }: CreateOfflinePlaygroundIdentityParams): IdentityOfflinePlayground => {
       return {
-        appName,
+        appID,
         siteID,
         type: 'offlinePlayground',
-      } as IdentityOfflinePlayground
+      }
     },
   }
 }
