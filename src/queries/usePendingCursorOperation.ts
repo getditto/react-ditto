@@ -1,7 +1,7 @@
 import {
   Collection,
   Ditto,
-  DocumentLike,
+  Document,
   LiveQuery,
   LiveQueryEvent,
   PendingCursorOperation,
@@ -71,11 +71,11 @@ export interface LiveQueryParams {
   localOnly?: boolean
 }
 
-export interface PendingCursorOperationReturn<T> {
+export interface PendingCursorOperationReturn {
   /** The initialized Ditto instance if one could be found for the provided path. */
   ditto: Ditto | null
   /** The set of documents found for the current query. */
-  documents: T[]
+  documents: Document[]
   /** The last LiveQueryEvent received by the query observer. */
   liveQueryEvent: LiveQueryEvent | undefined
   /** Currently active live query. */
@@ -104,11 +104,11 @@ export interface PendingCursorOperationReturn<T> {
  * @param params live query parameters.
  * @returns
  */
-export function usePendingCursorOperation<T = DocumentLike>(
+export function usePendingCursorOperation(
   params: LiveQueryParams,
-): PendingCursorOperationReturn<T> {
+): PendingCursorOperationReturn {
   const { ditto } = useDitto(params.path)
-  const [documents, setDocuments] = useState<T[]>([])
+  const [documents, setDocuments] = useState<Document[]>([])
   const [liveQueryEvent, setLiveQueryEvent] = useState<
     LiveQueryEvent | undefined
   >()

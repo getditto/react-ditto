@@ -87,7 +87,7 @@ describe('usePendingIDSpecificOperation tests', function () {
     })
 
     expect(result.current.document._id).to.eq('someId')
-    expect(result.current.document._value.document).to.eq(1)
+    expect(result.current.document.value.document).to.eq(1)
   })
 
   it('should load a document by ID correctly observing only the local store', async () => {
@@ -107,7 +107,7 @@ describe('usePendingIDSpecificOperation tests', function () {
     })
 
     expect(result.current.document._id).to.eq('someId')
-    expect(result.current.document._value.document).to.eq(1)
+    expect(result.current.document.value.document).to.eq(1)
   })
 
   it('should return the loaded Ditto collection so developers can launch queries on the store with it', async function () {

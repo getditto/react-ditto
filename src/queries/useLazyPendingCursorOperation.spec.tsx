@@ -105,7 +105,7 @@ describe('useLazyPendingCursorOperation tests', function () {
 
     for (let i = 1; i < 6; i++) {
       expect(
-        !!result.current.documents.find((doc) => doc._value.document === i),
+        !!result.current.documents.find((doc) => doc.value.document === i),
       ).to.eq(true)
     }
   })
@@ -134,7 +134,7 @@ describe('useLazyPendingCursorOperation tests', function () {
 
     for (let i = 1; i < 6; i++) {
       expect(
-        !!result.current.documents.find((doc) => doc._value.document === i),
+        !!result.current.documents.find((doc) => doc.value.document === i),
       ).to.eq(true)
     }
   })
@@ -164,7 +164,7 @@ describe('useLazyPendingCursorOperation tests', function () {
 
     for (let i = 4; i < 6; i++) {
       expect(
-        !!result.current.documents.find((doc) => doc._value.document === i),
+        !!result.current.documents.find((doc) => doc.value.document === i),
       ).to.eq(true)
     }
   })

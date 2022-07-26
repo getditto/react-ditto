@@ -1,8 +1,8 @@
 import {
   Collection,
   Ditto,
+  Document,
   DocumentIDValue,
-  DocumentLike,
   LiveQuery,
   SingleDocumentLiveQueryEvent,
 } from '@dittolive/ditto'
@@ -29,11 +29,11 @@ export interface UsePendingIDSpecificOperationParams {
   localOnly?: boolean
 }
 
-export interface PendingIDSpecificOperationReturn<T> {
+export interface PendingIDSpecificOperationReturn {
   /** The initialized Ditto instance if one could be found for the provided path. */
   ditto: Ditto | null
-  /** The documents found for the current query. */
-  document: T | undefined
+  /** The document found for the current query. */
+  document: Document | undefined
   /** The last SingleDocumentLiveQueryEvent received by the query observer. */
   event?: SingleDocumentLiveQueryEvent
   /** Currently active live query. */
@@ -57,12 +57,12 @@ export interface PendingIDSpecificOperationReturn<T> {
  * @param params live query parameters.
  * @returns PendingIDSpecificOperationReturn
  */
-export function usePendingIDSpecificOperation<T = DocumentLike>(
+export function usePendingIDSpecificOperation(
   params: UsePendingIDSpecificOperationParams,
-): PendingIDSpecificOperationReturn<T> {
+): PendingIDSpecificOperationReturn {
   const liveQueryRef = useRef<LiveQuery>()
   const { ditto } = useDitto(params.path)
-  const [document, setDocument] = useState<T>()
+  const [document, setDocument] = useState<Document>()
   const [collection, setCollection] = useState<Collection>()
   const [event, setEvent] = useState<SingleDocumentLiveQueryEvent>()
 
@@ -73,14 +73,14 @@ export function usePendingIDSpecificOperation<T = DocumentLike>(
       if (!!params.localOnly) {
         liveQueryRef.current = nextCollection
           .findByID(params._id)
-          .observeLocal((doc: T, e) => {
+          .observeLocal((doc, e) => {
             setEvent(e)
             setDocument(doc)
           })
       } else {
         liveQueryRef.current = nextCollection
           .findByID(params._id)
-          .observe((doc: T, e) => {
+          .observe((doc, e) => {
             setEvent(e)
             setDocument(doc)
           })

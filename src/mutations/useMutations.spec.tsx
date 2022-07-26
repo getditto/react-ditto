@@ -13,7 +13,7 @@ const testIdentity: () => {
   path: string
 } = () => ({
   identity: {
-    appName: 'useMutationsSpec',
+    appID: 'useMutationsSpec',
     siteID: 100,
     type: 'offlinePlayground',
   },
@@ -63,7 +63,7 @@ describe('useMutations tests', function () {
 
     const updateResult = await mutations.current.updateByID({
       _id: 'some_id',
-      updateClosure: (doc: any) => (doc.foo = 'updated'),
+      updateClosure: (doc) => doc.at('foo').set('updated'),
     })
 
     expect(updateResult.length).to.eq(1)

@@ -9,11 +9,11 @@ describe('Ditto useDevelopmentIdentity hook tests', () => {
 
     expect(result.current.create).to.exist
 
-    const identity = result.current.create({ appName: 'my-app', siteID: 1234 })
+    const identity = result.current.create({ appID: 'my-app', siteID: 1234 })
 
     expect(identity).to.eql({
       type: 'offlinePlayground',
-      appName: 'my-app',
+      appID: 'my-app',
       siteID: 1234,
     })
   })
