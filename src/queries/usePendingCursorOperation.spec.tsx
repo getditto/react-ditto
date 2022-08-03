@@ -24,7 +24,7 @@ const testIdentity: () => {
 })
 
 export const DocumentUpserter: React.FC<{ path: string }> = ({ path }) => {
-  const { ditto, upsert } = useMutations<unknown>({
+  const { ditto, upsert } = useMutations({
     path,
     collection: 'foo',
   })

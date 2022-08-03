@@ -28,7 +28,7 @@ describe('useCollections tests', function () {
     }
 
     const TestComponent: React.FC = () => {
-      const { ditto, upsert } = useMutations<unknown>({
+      const { ditto, upsert } = useMutations({
         path: testConfiguration.path,
         collection: 'foo',
       })

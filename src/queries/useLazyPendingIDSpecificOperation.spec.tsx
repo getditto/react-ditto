@@ -23,7 +23,7 @@ const testIdentity: () => {
 })
 
 const DocumentUpserter: React.FC<{ path: string }> = ({ path }) => {
-  const { ditto, upsert } = useMutations<unknown>({
+  const { ditto, upsert } = useMutations({
     path,
     collection: 'foo',
   })
@@ -95,7 +95,7 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
       timeout: 5000,
     })
 
-    expect(result.current.document._id).to.eq('someId')
+    expect(result.current.document.id.value).to.eq('someId')
     expect(result.current.document.value.document).to.eq(1)
 
     expect(result.current.ditto).not.to.eq(undefined)
@@ -124,7 +124,7 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
       timeout: 5000,
     })
 
-    expect(result.current.document._id).to.eq('someId')
+    expect(result.current.document.id.value).to.eq('someId')
     expect(result.current.document.value.document).to.eq(1)
 
     expect(result.current.ditto).not.to.eq(undefined)
