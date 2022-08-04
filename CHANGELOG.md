@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.9.0](https://github.com/getditto/react-ditto/compare/v0.9.0-alpha.0...v0.9.0) (2022-08-04)
+
+
+### Features
+
+* upgrade `@dittolive/ditto` to v2.0.0 ([d87a378](https://github.com/getditto/react-ditto/commit/d87a37893b376971e37c67ab47742acb69c1d285))
+
+
+### Bug Fixes
+
+* use `DocumentID` as ID type instead of `DocumentIDValue` ([7748d45](https://github.com/getditto/react-ditto/commit/7748d4512277ebbb7c4bfce355dbb0340d19c30d))
+
 ## [0.9.0-alpha.0](https://github.com/getditto/react-ditto/compare/v0.8.0...v0.9.0-alpha.0) (2022-07-26)
 
 
