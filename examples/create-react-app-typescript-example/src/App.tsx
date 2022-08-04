@@ -1,14 +1,7 @@
 import './App.css'
 
-import { DocumentIDValue } from '@dittolive/ditto'
 import { useMutations, usePendingCursorOperation } from '@dittolive/react-ditto'
 import React, { useMemo, useState } from 'react'
-
-interface Task {
-  _id?: DocumentIDValue
-  body: string
-  isCompleted: boolean
-}
 
 type Props = {
   path: string
@@ -23,8 +16,8 @@ const App: React.FC<Props> = ({ path }) => {
     }),
     [path],
   )
-  const { documents: tasks } = usePendingCursorOperation<Task>(params)
-  const { upsert, removeByID, updateByID } = useMutations<Task>({
+  const { documents: tasks } = usePendingCursorOperation(params)
+  const { upsert, removeByID, updateByID } = useMutations({
     collection: 'tasks',
     path: path,
   })
@@ -59,15 +52,16 @@ const App: React.FC<Props> = ({ path }) => {
       <ul className="no-bullets">
         {tasks.map((task) => {
           return (
-            <li key={task._id}>
-              <p>DocumentId: {task._id}</p>
-              <p>Body: {task.body}</p>
+            <li key={task.id.value}>
+              <p>DocumentId: {task.id.value}</p>
+              <p>Body: {task.value.body}</p>
               <p>
-                Is Completed: {task.isCompleted ? 'Completed' : 'Not Completed'}
+                Is Completed:{' '}
+                {task.value.isCompleted ? 'Completed' : 'Not Completed'}
               </p>
               <button
                 onClick={() => {
-                  removeByID({ _id: task._id })
+                  removeByID({ _id: task.id })
                 }}
               >
                 Remove
@@ -75,11 +69,11 @@ const App: React.FC<Props> = ({ path }) => {
               <button
                 onClick={() => {
                   updateByID({
-                    _id: task._id,
+                    _id: task.id,
                     updateClosure: (mutableDoc) => {
-                      if (mutableDoc) {
-                        mutableDoc.isCompleted = !mutableDoc.isCompleted
-                      }
+                      mutableDoc
+                        .at('isCompleted')
+                        .set(!mutableDoc.value.isCompleted)
                     },
                   })
                 }}

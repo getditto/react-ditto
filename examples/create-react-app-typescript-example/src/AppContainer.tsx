@@ -32,7 +32,7 @@ const AppContainer: React.FC = () => {
   const handleCreateDittoInstances = () => {
     // Example of how to create a development instance
     const dittoDevelopment = new Ditto(
-      createDevelopment({ appName: 'live.ditto.example', siteID: 1234 }),
+      createDevelopment({ appID: 'live.ditto.example', siteID: 1234 }),
       '/path-development',
     )
 
