@@ -47,19 +47,16 @@ describe('useMutations tests', function () {
     )
 
     const params = { path: testConfiguration.path, collection }
-    const { result: mutations } = renderHook(
-      () => useMutations<unknown>(params),
-      {
-        wrapper,
-      },
-    )
+    const { result: mutations } = renderHook(() => useMutations(params), {
+      wrapper,
+    })
     await waitFor(() => expect(mutations.current.ditto).to.exist)
 
     const upsertResult = await mutations.current.upsert({
       value: { _id: 'some_id', foo: 'bar' },
     })
 
-    expect(upsertResult).to.eql('some_id')
+    expect(upsertResult.value).to.eql('some_id')
 
     const updateResult = await mutations.current.updateByID({
       _id: 'some_id',
@@ -92,12 +89,9 @@ describe('useMutations tests', function () {
     )
 
     const params = { path: testConfiguration.path, collection }
-    const { result: mutations } = renderHook(
-      () => useMutations<unknown>(params),
-      {
-        wrapper,
-      },
-    )
+    const { result: mutations } = renderHook(() => useMutations(params), {
+      wrapper,
+    })
 
     await waitFor(() => expect(mutations.current.ditto).to.exist)
 
