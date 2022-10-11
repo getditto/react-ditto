@@ -4,6 +4,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
+**Note: on newer versions of Node, you may run into `ERR_OSSL_EVP_UNSUPPORTED` errors. You may pass the command-line option of `--openssl-legacy-provider` to work around this. Refer to [Node v17 release notes](https://nodejs.org/es/blog/release/v17.0.0/#openssl-3-0).**
+
 In the project directory, you can run:
 
 ### `yarn start`
