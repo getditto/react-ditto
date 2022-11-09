@@ -20,12 +20,12 @@
     "url": "https://github.com/getditto/react-ditto.git"
   },
   "peerDependencies": {
-    "@dittolive/ditto": "^2.0.0",
+    "@dittolive/ditto": "^2.1.0",
     "react": ">=16.0.0",
     "react-dom": ">=16.0.0"
   },
   "devDependencies": {
-    "@dittolive/ditto": "^2.0.0",
+    "@dittolive/ditto": "^2.1.0",
     "@testing-library/react": "^13.0.1",
     "@types/chai": "^4.2.21",
     "@types/lodash": "^4.14.172",

@@ -896,10 +896,12 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     to-fast-properties "^2.0.0"
 
-"@dittolive/ditto@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@dittolive/ditto/-/ditto-2.0.0.tgz#7587f7ef25c8762c421364da6cc76269ec2862db"
-  integrity sha512-tmIOiI2XzV85ISJlprR6k94vB5FenvwnKNDMIsCrgMdILzunRHsyHOZMPB+PZLT96u087SplC3abvNtaB5jMXg==
+"@dittolive/ditto@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@dittolive/ditto/-/ditto-2.1.0.tgz#1a2ec2cf5720337110b4693b6bf935104cae6837"
+  integrity sha512-zUyWuyXXnABLCIxMkOCmaciM4TNTCeiewMyJltoQHB55yrszWT399vJJw/jBsNkqv7BrVCPeYuz7+fCPi+PIuw==
+  dependencies:
+    cbor-redux "^0.4.0"
 
 "@eslint/eslintrc@^1.3.3":
   version "1.3.3"
@@ -1818,6 +1820,11 @@ caniuse-lite@^1.0.30001259:
   integrity sha512-Fhjc/k8725ItmrvW5QomzxLeojewxvqiYCKeFcfFEhut28IVLdpHU19dneOmltZQIE5HNbawj1HYD+1f2bM1Dg==
   dependencies:
     nanocolors "^0.1.0"
+
+cbor-redux@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/cbor-redux/-/cbor-redux-0.4.0.tgz#c1f1ccdbe8242506ed7fb2b7e89e389491fa2846"
+  integrity sha512-jP8BB9zF2uVTwbNXe7kRNIQRmKFMNKZcx0A+TCc6v3kJHoIKzKexQ+DjvXP/G5HuPF88myDdVE2grBOizsbMxg==
 
 chai@^4.3.4:
   version "4.3.4"
