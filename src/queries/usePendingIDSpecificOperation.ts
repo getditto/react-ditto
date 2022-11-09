@@ -70,7 +70,7 @@ export function usePendingIDSpecificOperation(
     if (params._id && params.collection && ditto) {
       const nextCollection = ditto.store.collection(params.collection)
 
-      if (!!params.localOnly) {
+      if (params.localOnly) {
         liveQueryRef.current = nextCollection
           .findByID(params._id)
           .observeLocal((doc, e) => {

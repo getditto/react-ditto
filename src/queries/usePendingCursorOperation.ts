@@ -135,7 +135,7 @@ export function usePendingCursorOperation(
         cursor = cursor.offset(params.offset)
       }
 
-      if (!!params.localOnly) {
+      if (params.localOnly) {
         liveQueryRef.current = cursor.observeLocal((docs, event) => {
           setDocuments(docs)
           setLiveQueryEvent(event)

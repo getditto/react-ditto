@@ -68,13 +68,13 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
         const setupReturnValue: Ditto | Ditto[] = props.setup()
         if (Array.isArray(setupReturnValue)) {
           const dittoHash: DittoHash = {}
-          const dittos: Ditto[] = setupReturnValue as Ditto[]
+          const dittos: Ditto[] = setupReturnValue
           for (const ditto of dittos) {
             dittoHash[ditto.path] = ditto
           }
           setDittoHash(dittoHash)
         } else {
-          const ditto = setupReturnValue as Ditto
+          const ditto = setupReturnValue
           const dittoHash: DittoHash = {}
           dittoHash[ditto.path] = ditto
           setDittoHash(dittoHash)
@@ -83,9 +83,9 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
           error: undefined,
           loading: false,
         })
-      } catch (err) {
+      } catch (err: unknown) {
         setProviderState({
-          error: err,
+          error: err instanceof Error ? err : undefined,
           loading: false,
         })
         setDittoHash({})

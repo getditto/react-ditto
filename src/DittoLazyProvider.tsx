@@ -56,9 +56,9 @@ export const DittoLazyProvider: React.FunctionComponent<
           error: undefined,
           loading: false,
         })
-      } catch (err) {
+      } catch (err: unknown) {
         setProviderState({
-          error: err,
+          error: err instanceof Error ? err : undefined,
           loading: false,
         })
       }

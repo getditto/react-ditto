@@ -65,7 +65,7 @@ export function useLazyPendingCursorOperation(): LazyPendingCursorOperationRetur
     if (isLazy) {
       nextDitto = await load(params.path)
     } else {
-      nextDitto = !!params.path
+      nextDitto = params.path
         ? dittoHash[params.path]
         : Object.values(dittoHash)[0]
     }

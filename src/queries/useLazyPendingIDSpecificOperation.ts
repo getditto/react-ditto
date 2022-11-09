@@ -61,7 +61,7 @@ export function useLazyPendingIDSpecificOperation(): LazyPendingIDSpecificOperat
     if (isLazy) {
       nextDitto = await load(params.path)
     } else {
-      nextDitto = !!params.path
+      nextDitto = params.path
         ? dittoHash[params.path]
         : Object.values(dittoHash)[0]
     }
@@ -69,7 +69,7 @@ export function useLazyPendingIDSpecificOperation(): LazyPendingIDSpecificOperat
     if (nextDitto) {
       const nextCollection = nextDitto.store.collection(params.collection)
 
-      if (!!params.localOnly) {
+      if (params.localOnly) {
         liveQueryRef.current = nextCollection
           .findByID(params._id)
           .observeLocal((doc, e) => {
