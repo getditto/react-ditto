@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.1](https://github.com/getditto/react-ditto/compare/v0.9.0...v0.9.1) (2022-11-10)
+
+
+### Features
+
+* replace deprecated usages of `observe` with `subscribe` and `observeLocal` ([54b7dcf](https://github.com/getditto/react-ditto/commit/54b7dcf80c9886f018a550b25c2ce570261fcc12))
+* upgrade `@dittolive/ditto` to v2.1.0 ([4c16cf7](https://github.com/getditto/react-ditto/commit/4c16cf7b2b91212370e8dd64483780e4034337fa))
+
 ## [0.9.0](https://github.com/getditto/react-ditto/compare/v0.9.0-alpha.0...v0.9.0) (2022-08-04)
 
 
