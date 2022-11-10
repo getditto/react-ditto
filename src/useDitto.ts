@@ -13,7 +13,7 @@ export const useDitto = (path: string | null | undefined): DittoHookProps => {
   const { dittoHash, isLazy, load } = useDittoContext()
   const [loading, setLoading] = useState(isLazy && !(path in dittoHash))
   const [error, setError] = useState<Error>()
-  const ditto = !!path ? dittoHash[path] : Object.values(dittoHash)[0]
+  const ditto = path ? dittoHash[path] : Object.values(dittoHash)[0]
 
   useEffect(() => {
     async function lazyLoadDitto() {
@@ -21,8 +21,12 @@ export const useDitto = (path: string | null | undefined): DittoHookProps => {
         setLoading(true)
         try {
           await load(path)
-        } catch (loadError) {
-          setError(loadError)
+        } catch (loadError: unknown) {
+          if (loadError instanceof Error) {
+            setError(loadError)
+          } else {
+            throw loadError
+          }
         } finally {
           setLoading(false)
         }

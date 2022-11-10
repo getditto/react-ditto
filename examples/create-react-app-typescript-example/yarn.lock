@@ -3354,6 +3354,11 @@ case-sensitive-paths-webpack-plugin@2.3.0:
   resolved "https://registry.yarnpkg.com/case-sensitive-paths-webpack-plugin/-/case-sensitive-paths-webpack-plugin-2.3.0.tgz#23ac613cc9a856e4f88ff8bb73bbb5e989825cf7"
   integrity sha512-/4YgnZS8y1UXXmC02xD5rRrBEu6T5ub+mQHLNRj0fzTRbgdBYhsNo2V5EqwgqrExjxsjtF/OpAKAMkKsxbD5XQ==
 
+cbor-redux@^0.4.0:
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/cbor-redux/-/cbor-redux-0.4.0.tgz#c1f1ccdbe8242506ed7fb2b7e89e389491fa2846"
+  integrity sha512-jP8BB9zF2uVTwbNXe7kRNIQRmKFMNKZcx0A+TCc6v3kJHoIKzKexQ+DjvXP/G5HuPF88myDdVE2grBOizsbMxg==
+
 chalk@2.4.2, chalk@^2.0.0, chalk@^2.4.1, chalk@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"

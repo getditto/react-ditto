@@ -2,7 +2,7 @@ import { IdentityOfflinePlayground } from '@dittolive/ditto'
 
 export interface CreateOfflinePlaygroundIdentityParams {
   appID: string
-  siteID: number | BigInt
+  siteID: number | bigint
 }
 
 /**

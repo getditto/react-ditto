@@ -17,7 +17,7 @@ describe('useVersion helper hook', () => {
     expect(result.current).to.eq(0)
   })
 
-  it('should correctly bump up the version number each time the hook value changes', async function () {
+  it('should correctly bump up the version number each time the hook value changes', function () {
     const { result, rerender } = renderHook<number, unknown>(
       (hookProps) => useVersion(hookProps),
       {
@@ -47,7 +47,7 @@ describe('useVersion helper hook', () => {
     expect(result.current).to.eq(2)
   })
 
-  it('should not bump up the hook version when the hook is rendered with params that are deeply equal', async () => {
+  it('should not bump up the hook version when the hook is rendered with params that are deeply equal', () => {
     const { result, rerender } = renderHook<number, unknown>(
       (hookProps) => useVersion(hookProps),
       {

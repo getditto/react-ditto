@@ -67,6 +67,7 @@ describe('useLazyPendingCursorOperation tests', function () {
 
     expect(result.current.documents).to.eql([])
     expect(result.current.liveQuery).to.eq(undefined)
+    expect(result.current.subscription).to.eq(undefined)
     expect(result.current.liveQueryEvent).to.eq(undefined)
     expect(result.current.ditto).to.eq(undefined)
 
@@ -78,6 +79,7 @@ describe('useLazyPendingCursorOperation tests', function () {
 
     expect(result.current.documents.length).to.eql(5)
     expect(result.current.liveQuery).not.to.eq(undefined)
+    expect(result.current.subscription).not.to.eq(undefined)
     expect(result.current.liveQueryEvent).not.to.eq(undefined)
     expect(result.current.ditto).not.to.eq(undefined)
   })
@@ -130,6 +132,7 @@ describe('useLazyPendingCursorOperation tests', function () {
       timeout: 5000,
     })
 
+    expect(result.current.subscription).to.be.undefined
     expect(result.current.documents.length).to.eq(5)
 
     for (let i = 1; i < 6; i++) {
@@ -228,5 +231,28 @@ describe('useLazyPendingCursorOperation tests', function () {
 
     const collectionDocuments = await result.current.collection.findAll().exec()
     expect(collectionDocuments.length).to.eq(5)
+  })
+
+  it('should cancel the subscription on unmount', async () => {
+    const testConfiguration = testIdentity()
+    const params: LiveQueryParams = {
+      path: testConfiguration.path,
+      collection: 'foo',
+    }
+    const { result, unmount } = renderHook(
+      () => useLazyPendingCursorOperation(),
+      {
+        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+      },
+    )
+    await waitForNextUpdate(result)
+    await result.current.exec(params)
+    await waitFor(() => expect(result.current.documents).not.to.be.empty)
+
+    unmount()
+
+    await waitFor(
+      () => expect(result.current.subscription.isCancelled).to.be.true,
+    )
   })
 })

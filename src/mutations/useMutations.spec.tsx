@@ -107,7 +107,7 @@ describe('useMutations tests', function () {
 
     const updateResult = await mutations.current.update({
       query: 'wheels > 2',
-      updateClosure: (doc: any) => (doc.wheels = 0),
+      updateClosure: (docs) => docs[0].at('wheels').set(0),
     })
 
     expect(updateResult.keys().length).to.eq(2)

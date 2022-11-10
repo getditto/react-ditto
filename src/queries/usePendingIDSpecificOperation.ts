@@ -5,6 +5,7 @@ import {
   DocumentIDValue,
   LiveQuery,
   SingleDocumentLiveQueryEvent,
+  Subscription,
 } from '@dittolive/ditto'
 import { useEffect, useRef, useState } from 'react'
 
@@ -38,6 +39,8 @@ export interface PendingIDSpecificOperationReturn {
   event?: SingleDocumentLiveQueryEvent
   /** Currently active live query. */
   liveQuery: LiveQuery | undefined
+  /** Currently active subscription. */
+  subscription: Subscription | undefined
   /** Current Ditto collection instance. */
   collection: Collection | undefined
 }
@@ -61,6 +64,7 @@ export function usePendingIDSpecificOperation(
   params: UsePendingIDSpecificOperationParams,
 ): PendingIDSpecificOperationReturn {
   const liveQueryRef = useRef<LiveQuery>()
+  const subscriptionRef = useRef<Subscription>()
   const { ditto } = useDitto(params.path)
   const [document, setDocument] = useState<Document>()
   const [collection, setCollection] = useState<Collection>()
@@ -69,30 +73,26 @@ export function usePendingIDSpecificOperation(
   useEffect(() => {
     if (params._id && params.collection && ditto) {
       const nextCollection = ditto.store.collection(params.collection)
+      const pendingOperation = nextCollection.findByID(params._id)
 
-      if (!!params.localOnly) {
-        liveQueryRef.current = nextCollection
-          .findByID(params._id)
-          .observeLocal((doc, e) => {
-            setEvent(e)
-            setDocument(doc)
-          })
-      } else {
-        liveQueryRef.current = nextCollection
-          .findByID(params._id)
-          .observe((doc, e) => {
-            setEvent(e)
-            setDocument(doc)
-          })
+      if (!params.localOnly) {
+        subscriptionRef.current = pendingOperation.subscribe()
       }
+
+      liveQueryRef.current = pendingOperation.observeLocal((doc, e) => {
+        setEvent(e)
+        setDocument(doc)
+      })
       setCollection(nextCollection)
     } else {
       setDocument(undefined)
       setCollection(undefined)
       setEvent(undefined)
     }
+
     return () => {
       liveQueryRef.current?.stop()
+      subscriptionRef.current?.cancel()
     }
     /** We need to serialize the _id in order for React's dependency array comparison to work. */
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -104,5 +104,6 @@ export function usePendingIDSpecificOperation(
     document,
     event,
     liveQuery: liveQueryRef.current,
+    subscription: subscriptionRef.current,
   }
 }

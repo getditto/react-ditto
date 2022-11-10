@@ -86,6 +86,7 @@ describe('usePendingCursorOperation tests', function () {
       timeout: 5000,
     })
 
+    expect(result.current.subscription).to.exist
     expect(result.current.documents.length).to.eq(5)
 
     for (let i = 1; i < 6; i++) {
@@ -110,6 +111,7 @@ describe('usePendingCursorOperation tests', function () {
       timeout: 5000,
     })
 
+    expect(result.current.subscription).to.be.undefined
     expect(result.current.documents.length).to.eq(5)
 
     for (let i = 1; i < 6; i++) {
@@ -171,6 +173,24 @@ describe('usePendingCursorOperation tests', function () {
       },
       { timeout: 5000 },
     )
+  })
+
+  it('should cancel the current subscription when the reset function is called.', async () => {
+    const testConfiguration = testIdentity()
+    const params: LiveQueryParams = {
+      path: testConfiguration.path,
+      collection: 'foo',
+      query: 'document > 3',
+    }
+    const { result } = renderHook(() => usePendingCursorOperation(params), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
+    await waitFor(() => expect(result.current.documents).to.have.lengthOf(2))
+    const subscriptionBeforeReset = result.current.subscription
+
+    result.current.reset()
+
+    await waitFor(() => expect(subscriptionBeforeReset.isCancelled).to.be.true)
   })
 
   it('should return the Ditto collection as an alternative way for developers to query the collection', async () => {
