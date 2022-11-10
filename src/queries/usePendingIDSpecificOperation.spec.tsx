@@ -86,6 +86,7 @@ describe('usePendingIDSpecificOperation tests', function () {
       timeout: 5000,
     })
 
+    expect(result.current.subscription).to.exist
     expect(result.current.document.id.value).to.eq('someId')
     expect(result.current.document.value.document).to.eq(1)
   })
@@ -106,6 +107,7 @@ describe('usePendingIDSpecificOperation tests', function () {
       timeout: 5000,
     })
 
+    expect(result.current.subscription).to.be.undefined
     expect(result.current.document.id.value).to.eq('someId')
     expect(result.current.document.value.document).to.eq(1)
   })
@@ -130,5 +132,27 @@ describe('usePendingIDSpecificOperation tests', function () {
     const allDocs = await result.current.collection.findAll().exec()
 
     expect(allDocs.length).to.eq(5)
+  })
+
+  it('should cancel the subscription on unmount', async () => {
+    const testConfiguration = testIdentity()
+    const params: UsePendingIDSpecificOperationParams = {
+      path: testConfiguration.path,
+      collection: 'foo',
+      _id: 'someId',
+    }
+    const { result, unmount } = renderHook(
+      () => usePendingIDSpecificOperation(params),
+      {
+        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+      },
+    )
+    await waitFor(() => expect(result.current.document).to.exist)
+
+    unmount()
+
+    await waitFor(
+      () => expect(result.current.subscription.isCancelled).to.be.true,
+    )
   })
 })

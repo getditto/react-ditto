@@ -88,6 +88,7 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
     expect(result.current.document).to.eq(undefined)
     expect(result.current.ditto).to.eq(undefined)
     expect(result.current.liveQuery).to.eq(undefined)
+    expect(result.current.subscription).to.eq(undefined)
     expect(result.current.event).to.eq(undefined)
 
     await result.current.exec(params)
@@ -100,6 +101,7 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
 
     expect(result.current.ditto).not.to.eq(undefined)
     expect(result.current.liveQuery).not.to.eq(undefined)
+    expect(result.current.subscription).not.to.eq(undefined)
     expect(result.current.event).not.to.eq(undefined)
   })
 
@@ -127,6 +129,7 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
     expect(result.current.document.id.value).to.eq('someId')
     expect(result.current.document.value.document).to.eq(1)
 
+    expect(result.current.subscription).to.eq(undefined)
     expect(result.current.ditto).not.to.eq(undefined)
     expect(result.current.liveQuery).not.to.eq(undefined)
     expect(result.current.event).not.to.eq(undefined)
@@ -155,5 +158,29 @@ describe('useLazyPendingIDSpecificOperation tests', function () {
     const allDocs = await result.current.collection.findAll().exec()
 
     expect(allDocs.length).to.eq(5)
+  })
+
+  it('should cancel the subscription on unmount', async () => {
+    const testConfiguration = testIdentity()
+    const params: UsePendingIDSpecificOperationParams = {
+      path: testConfiguration.path,
+      collection: 'foo',
+      _id: 'someId',
+    }
+    const { result, unmount } = renderHook(
+      () => useLazyPendingIDSpecificOperation(),
+      {
+        wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+      },
+    )
+    await waitForNextUpdate(result)
+    await result.current.exec(params)
+    await waitFor(() => expect(result.current.document).to.exist)
+
+    unmount()
+
+    await waitFor(
+      () => expect(result.current.subscription.isCancelled).to.be.true,
+    )
   })
 })

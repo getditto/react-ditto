@@ -4,6 +4,7 @@ import {
   Ditto,
   LiveQuery,
   SortDirection,
+  Subscription,
 } from '@dittolive/ditto'
 import { useEffect, useRef, useState } from 'react'
 
@@ -65,6 +66,7 @@ export function useCollections(params: CollectionsQueryParams): {
   documents: Collection[]
   collectionsEvent: CollectionsEvent | undefined // TODO use CollectionsEvent once it's exposed by the SDK
   liveQuery: LiveQuery | undefined
+  subscription: Subscription | undefined
 } {
   const { ditto } = useDitto(params.path)
   const [documents, setDocuments] = useState<Collection[]>([])
@@ -72,6 +74,7 @@ export function useCollections(params: CollectionsQueryParams): {
     CollectionsEvent | undefined
   >()
   const liveQueryRef = useRef<LiveQuery>()
+  const subscriptionRef = useRef<Subscription>()
 
   useEffect(() => {
     if (ditto) {
@@ -83,17 +86,20 @@ export function useCollections(params: CollectionsQueryParams): {
       if (params.limit) {
         cursor = cursor.limit(params.limit)
       }
-      liveQueryRef.current = cursor.observe((event) => {
+
+      subscriptionRef.current = cursor.subscribe()
+      liveQueryRef.current = cursor.observeLocal((event) => {
         setDocuments(event.collections || [])
         setCollectionsEvent(event)
       })
     } else {
-      if (liveQueryRef.current) {
-        liveQueryRef.current?.stop()
-      }
-    }
-    return (): void => {
       liveQueryRef.current?.stop()
+      subscriptionRef.current?.cancel()
+    }
+
+    return () => {
+      liveQueryRef.current?.stop()
+      subscriptionRef.current?.cancel()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -109,5 +115,6 @@ export function useCollections(params: CollectionsQueryParams): {
     documents,
     collectionsEvent,
     liveQuery: liveQueryRef.current,
+    subscription: subscriptionRef.current,
   }
 }

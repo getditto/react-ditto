@@ -7,6 +7,7 @@ import {
   PendingCursorOperation,
   QueryArguments,
   SortDirection,
+  Subscription,
 } from '@dittolive/ditto'
 import { useEffect, useRef, useState } from 'react'
 
@@ -80,6 +81,8 @@ export interface PendingCursorOperationReturn {
   liveQueryEvent: LiveQueryEvent | undefined
   /** Currently active live query. */
   liveQuery: LiveQuery | undefined
+  /** Currently active subscription. */
+  subscription: Subscription | undefined
   /** A function used to stop the currect live query and create a new one using the current input params.*/
   reset: () => void
   /** Current Ditto collection instance. */
@@ -114,6 +117,7 @@ export function usePendingCursorOperation(
   >()
   const [collection, setCollection] = useState<Collection>()
   const liveQueryRef = useRef<LiveQuery>()
+  const subscriptionRef = useRef<Subscription>()
   const paramsVersion = useVersion(params)
 
   const createLiveQuery = () => {
@@ -134,28 +138,23 @@ export function usePendingCursorOperation(
       if (params.offset) {
         cursor = cursor.offset(params.offset)
       }
-
-      if (params.localOnly) {
-        liveQueryRef.current = cursor.observeLocal((docs, event) => {
-          setDocuments(docs)
-          setLiveQueryEvent(event)
-        })
-      } else {
-        liveQueryRef.current = cursor.observe((docs, event) => {
-          setDocuments(docs)
-          setLiveQueryEvent(event)
-        })
+      if (!params.localOnly) {
+        subscriptionRef.current = cursor.subscribe()
       }
 
+      liveQueryRef.current = cursor.observeLocal((docs, event) => {
+        setDocuments(docs)
+        setLiveQueryEvent(event)
+      })
       setCollection(nextCollection)
     }
   }
 
   const handleResetLiveQuery = () => {
-    if (liveQueryRef.current) {
-      liveQueryRef.current.stop()
-      liveQueryRef.current = null
-    }
+    liveQueryRef.current?.stop()
+    liveQueryRef.current = undefined
+    subscriptionRef.current?.cancel()
+    subscriptionRef.current = undefined
 
     setCollection(null)
     setLiveQueryEvent(null)
@@ -167,9 +166,11 @@ export function usePendingCursorOperation(
   useEffect(() => {
     createLiveQuery()
 
-    return (): void => {
+    return () => {
       liveQueryRef.current?.stop()
-      liveQueryRef.current = null
+      liveQueryRef.current = undefined
+      subscriptionRef.current?.cancel()
+      subscriptionRef.current = undefined
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ditto, paramsVersion])
@@ -180,6 +181,7 @@ export function usePendingCursorOperation(
     documents,
     liveQueryEvent,
     liveQuery: liveQueryRef.current,
+    subscription: subscriptionRef.current,
     reset: handleResetLiveQuery,
   }
 }

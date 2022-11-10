@@ -8,6 +8,10 @@ import { DittoProvider } from '../DittoProvider'
 import { useMutations } from '../mutations'
 import { useCollections } from './useCollections'
 
+const initOptions = {
+  webAssemblyModule: '/base/node_modules/@dittolive/ditto/web/ditto.wasm',
+}
+
 const testIdentity: () => {
   identity: IdentityOfflinePlayground
   path: string
@@ -20,43 +24,31 @@ const testIdentity: () => {
   path: uuidv4(),
 })
 
-describe('useCollections tests', function () {
-  it('should load all collections correctly', async () => {
-    const testConfiguration = testIdentity()
-    const initOptions = {
-      webAssemblyModule: '/base/node_modules/@dittolive/ditto/web/ditto.wasm',
+const TestComponent = ({ path }: { path: string }) => {
+  const { ditto, upsert } = useMutations({ path: path, collection: 'foo' })
+
+  useEffect(() => {
+    if (ditto) {
+      upsert({ value: { document: 1 } })
     }
+  }, [ditto, upsert])
 
-    const TestComponent: React.FC = () => {
-      const { ditto, upsert } = useMutations({
-        path: testConfiguration.path,
-        collection: 'foo',
-      })
+  return <></>
+}
 
-      useEffect(() => {
-        if (ditto) {
-          upsert({ value: { document: 1 } })
-        }
-      }, [ditto, upsert])
-
-      return <></>
-    }
-
-    const wrapper = ({ children }: { children: ReactNode }) => (
+const wrapper =
+  (identity: IdentityOfflinePlayground, path: string) =>
+  // eslint-disable-next-line react/display-name
+  ({ children }: { children: ReactNode }) =>
+    (
       <DittoProvider
-        setup={() => {
-          const ditto = new Ditto(
-            testConfiguration.identity,
-            testConfiguration.path,
-          )
-          return ditto
-        }}
+        setup={() => new Ditto(identity, path)}
         initOptions={initOptions}
       >
         {() => {
           return (
             <>
-              <TestComponent />
+              <TestComponent path={path} />
               {children}
             </>
           )
@@ -64,9 +56,12 @@ describe('useCollections tests', function () {
       </DittoProvider>
     )
 
+describe('useCollections tests', function () {
+  it('should load all collections correctly', async () => {
+    const testConfiguration = testIdentity()
     const params = { path: testConfiguration.path }
     const { result } = renderHook(() => useCollections(params), {
-      wrapper,
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
     })
     await waitFor(() => expect(result.current.documents).not.to.be.empty, {
       timeout: 5000,
@@ -83,5 +78,20 @@ describe('useCollections tests', function () {
         (collection) => collection.name,
       ),
     ).to.eql(['foo'])
+  })
+
+  it('should cancel the subscription on unmount', async () => {
+    const testConfiguration = testIdentity()
+    const params = { path: testConfiguration.path }
+    const { result, unmount } = renderHook(() => useCollections(params), {
+      wrapper: wrapper(testConfiguration.identity, testConfiguration.path),
+    })
+    await waitFor(() => expect(result.current.documents).not.to.be.empty)
+
+    unmount()
+
+    await waitFor(
+      () => expect(result.current.subscription.isCancelled).to.be.true,
+    )
   })
 })

@@ -5,8 +5,9 @@ import {
   LiveQuery,
   LiveQueryEvent,
   PendingCursorOperation,
+  Subscription,
 } from '@dittolive/ditto'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { useDittoContext } from '../DittoContext'
 import { LiveQueryParams } from './usePendingCursorOperation'
@@ -20,6 +21,8 @@ export interface LazyPendingCursorOperationReturn {
   liveQueryEvent: LiveQueryEvent | undefined
   /** Currently active live query. */
   liveQuery: LiveQuery | undefined
+  /** Currently active subscription. */
+  subscription: Subscription | undefined
   /** Function used to trigger a query on a collection */
   exec: (params: LiveQueryParams) => Promise<void>
   /** Current Ditto collection instance. */
@@ -56,6 +59,7 @@ export function useLazyPendingCursorOperation(): LazyPendingCursorOperationRetur
     LiveQueryEvent | undefined
   >()
   const liveQueryRef = useRef<LiveQuery>()
+  const subscriptionRef = useRef<Subscription>()
   const [ditto, setDitto] = useState<Ditto>()
   const [collection, setCollection] = useState<Collection>()
 
@@ -87,19 +91,14 @@ export function useLazyPendingCursorOperation(): LazyPendingCursorOperationRetur
       if (params.offset) {
         cursor = cursor.offset(params.offset)
       }
-
-      if (params.localOnly) {
-        liveQueryRef.current = cursor.observeLocal((docs, event) => {
-          setDocuments(docs)
-          setLiveQueryEvent(event)
-        })
-      } else {
-        liveQueryRef.current = cursor.observe((docs, event) => {
-          setDocuments(docs)
-          setLiveQueryEvent(event)
-        })
+      if (!params.localOnly) {
+        subscriptionRef.current = cursor.subscribe()
       }
 
+      liveQueryRef.current = cursor.observeLocal((docs, event) => {
+        setDocuments(docs)
+        setLiveQueryEvent(event)
+      })
       setCollection(nextCollection)
       setDitto(nextDitto)
     } else {
@@ -118,10 +117,10 @@ export function useLazyPendingCursorOperation(): LazyPendingCursorOperationRetur
   }
 
   const exec = async (params: LiveQueryParams) => {
-    if (liveQueryRef.current) {
-      liveQueryRef.current.stop()
-      liveQueryRef.current = null
-    }
+    liveQueryRef.current?.stop()
+    liveQueryRef.current = undefined
+    subscriptionRef.current?.cancel()
+    subscriptionRef.current = undefined
 
     setDocuments([])
     setDitto(undefined)
@@ -131,12 +130,20 @@ export function useLazyPendingCursorOperation(): LazyPendingCursorOperationRetur
     return createLiveQuery(params)
   }
 
+  useEffect(() => {
+    return () => {
+      liveQueryRef.current?.stop()
+      subscriptionRef.current?.cancel()
+    }
+  }, [])
+
   return {
     collection,
     ditto,
     documents,
     liveQueryEvent,
-    liveQuery: liveQueryRef.current,
     exec,
+    liveQuery: liveQueryRef.current,
+    subscription: subscriptionRef.current,
   }
 }

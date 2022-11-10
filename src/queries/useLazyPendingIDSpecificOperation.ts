@@ -4,8 +4,9 @@ import {
   Document,
   LiveQuery,
   SingleDocumentLiveQueryEvent,
+  Subscription,
 } from '@dittolive/ditto'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { useDittoContext } from '../DittoContext'
 import { UsePendingIDSpecificOperationParams } from './usePendingIDSpecificOperation'
@@ -19,6 +20,8 @@ export interface LazyPendingIDSpecificOperationReturn {
   event?: SingleDocumentLiveQueryEvent
   /** Currently active live query. */
   liveQuery: LiveQuery | undefined
+  /** Currently active live query. */
+  subscription: Subscription | undefined
   /** Current Ditto collection instance. */
   collection: Collection | undefined
   /** Function used to trigger a query on a collection */
@@ -48,6 +51,7 @@ export interface LazyPendingIDSpecificOperationReturn {
 export function useLazyPendingIDSpecificOperation(): LazyPendingIDSpecificOperationReturn {
   const { dittoHash, isLazy, load } = useDittoContext()
   const liveQueryRef = useRef<LiveQuery>()
+  const subscriptionRef = useRef<Subscription>()
   const [ditto, setDitto] = useState<Ditto>()
   const [document, setDocument] = useState<Document>()
   const [collection, setCollection] = useState<Collection>()
@@ -68,23 +72,16 @@ export function useLazyPendingIDSpecificOperation(): LazyPendingIDSpecificOperat
 
     if (nextDitto) {
       const nextCollection = nextDitto.store.collection(params.collection)
+      const pendingOperation = nextCollection.findByID(params._id)
 
-      if (params.localOnly) {
-        liveQueryRef.current = nextCollection
-          .findByID(params._id)
-          .observeLocal((doc, e) => {
-            setEvent(e)
-            setDocument(doc)
-          })
-      } else {
-        liveQueryRef.current = nextCollection
-          .findByID(params._id)
-          .observe((doc, e) => {
-            setEvent(e)
-            setDocument(doc)
-          })
+      if (!params.localOnly) {
+        subscriptionRef.current = pendingOperation.subscribe()
       }
 
+      liveQueryRef.current = pendingOperation.observeLocal((doc, e) => {
+        setEvent(e)
+        setDocument(doc)
+      })
       setDitto(nextDitto)
       setCollection(nextCollection)
     } else {
@@ -103,10 +100,11 @@ export function useLazyPendingIDSpecificOperation(): LazyPendingIDSpecificOperat
   }
 
   const exec = async (params: UsePendingIDSpecificOperationParams) => {
-    if (liveQueryRef.current) {
-      liveQueryRef.current.stop()
-      liveQueryRef.current = null
-    }
+    liveQueryRef.current?.stop()
+    liveQueryRef.current = undefined
+    subscriptionRef.current?.cancel()
+    subscriptionRef.current = undefined
+
     setDocument(undefined)
     setDitto(undefined)
     setEvent(undefined)
@@ -115,12 +113,20 @@ export function useLazyPendingIDSpecificOperation(): LazyPendingIDSpecificOperat
     return createLiveQuery(params)
   }
 
+  useEffect(() => {
+    return () => {
+      liveQueryRef.current?.stop()
+      subscriptionRef.current?.cancel()
+    }
+  }, [])
+
   return {
     collection,
     ditto,
     document,
     event,
-    liveQuery: liveQueryRef.current,
     exec,
+    liveQuery: liveQueryRef.current,
+    subscription: subscriptionRef.current,
   }
 }
