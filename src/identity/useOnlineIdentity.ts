@@ -31,7 +31,6 @@ export interface useOnlineIdentityProps {
  * @example
 
  * ```js
- **
  * const { create, isAuthenticationRequired, tokenExpiresInSeconds } = useOnlineIdentity();
  *
  * const onlineIdentity = create({appID: uuid(), enableDittoCloudSync: true});
@@ -41,8 +40,10 @@ export interface useOnlineIdentityProps {
  * ...
  *
  * return <button onClick={() => ditto.auth.loginWithToken('my-token', 'my-provider')}>Authenticate</button>
- *
- * A hook for creating OnlineDitto identity objects.
+ * ```
+ * 
+ * A hook for creating OnlineDitto identity objects. For creating OnlinePlayground identities, 
+ * use `{@link useOnlinePlaygroundIdentity}` instead.
  * @returns useOnlineIdentityProps
  */
 export const useOnlineIdentity = (): useOnlineIdentityProps => {

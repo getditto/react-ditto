@@ -100,8 +100,10 @@ const createDittoInstance = async (path) => {
 ## Creating Identities
 
 Ditto instances are created by providing an `Identity` object to the Ditto constructor. Identities can be of several different types,
-and can be created manually as JS objects, or using the identity hooks (`useOfflinePlaygroundIdentity`, `useOnlineIdentity`), which also makes it easier to configure authentication for your
+and can be created manually as JS objects, or using the identity hooks (`useOfflinePlaygroundIdentity`, `useOnlineIdentity`, `useOnlinePlaygroundIdentity`), which also makes it easier to configure authentication for your
 apps:
+
+### Offline Identities
 
 ```ts
 const { create } = useOfflinePlaygroundIdentity()
@@ -110,8 +112,8 @@ const createDittoInstance = (forPath: string) => {
   // Example of how to create an offline playground instance
   const dittoPlaygroundIdentity = new Ditto(
     create({
-      // If you're using the Ditto cloud this ID should be the app ID shown on your app settings page, on the portal.
-      appName: 'my-app',
+      // If you're using the Ditto cloud, this ID should be the app ID shown on your app settings page on the portal.
+      appID: uuidv4(),
       siteID: 123,
     }),
     forPath,
@@ -120,6 +122,8 @@ const createDittoInstance = (forPath: string) => {
 }
 ```
 
+### Online Identities
+
 ```ts
 const { create, getAuthenticationRequired, getTokenExpiresInSeconds } = useOnlineIdentity()
 
@@ -127,10 +131,28 @@ const createDittoInstance = (forPath: string) => {
   // Example of how to create an online instance with authentication enabled
   const dittoOnline = new Ditto(
     create({
-      // If you're using the Ditto cloud this ID should be the app ID shown on your app settings page, on the portal.
+      // If you're using the Ditto cloud, this ID should be the app ID shown on your app settings page on the portal.
       appID: uuidv4(),
       enableDittoCloudSync: true,
     }, forPath),
+    forPath,
+  )
+  return dittoOnline
+}
+```
+
+```ts
+const { create } = useOnlinePlaygroundIdentity()
+
+const createDittoInstance = (forPath: string) => {
+  // Example of how to create an online playground instance
+  const dittoOnline = new Ditto(
+    create({
+      // If you're using the Ditto cloud, this ID should be the app ID shown on your app settings page on the portal.
+      appID: uuidv4(),
+      // If you're using the Ditto cloud, this token should be the Online Playground Authentication Token shown on your app settings page on the portal. 
+      token: 'my-token'
+    }),
     forPath,
   )
   return dittoOnline
@@ -155,7 +177,7 @@ or with yarn
 yarn add @dittolive/ditto @dittolive/react-ditto
 ```
 
-2. In `./src/index.js` or if you're using typescript `./src/index.tsx` setup Ditto with the `DittoProvider` like so:
+2. In `./src/index.js`, or `./src/index.tsx` if you're using typescript, setup Ditto with the `DittoProvider` like so:
 
 ```tsx
 import { DittoProvider, useOfflinePlaygroundIdentity } from '@dittolive/react-ditto'
@@ -221,7 +243,7 @@ export default function App() {
 }
 ```
 
-Alternatively, you can also choose to go with the lazy variants of these hooks (`useLazyPendingCursorOperation` and `useLazyPendingIDSpecificOperation`), ir order to launch queries on the data store as a response to a user event:
+Alternatively, you can also choose to go with the lazy variants of these hooks (`useLazyPendingCursorOperation` and `useLazyPendingIDSpecificOperation`), in order to launch queries on the data store as a response to a user event:
 
 ```tsx
 import { usePendingCursorOperation, useMutations } from '@dittolive/react-ditto';
@@ -247,7 +269,7 @@ export default function App() {
 
 ## Working with Online apps
 
-Using the [Portal](http://portal.ditto.live) you can create apps that sync to the cloud. These apps must be created with an `onlineWithAuthentication` identity type, for which the `useOnlineIdentity` hook can be used. The `useOnlineIdentity` hook helps you create online Ditto instances that sync with the cloud, following these steps:
+Using the [Portal](http://portal.ditto.live) you can create apps that sync to the cloud. If you're just getting started with Ditto and want to experiment without authentication, you may use the `useOnlinePlaygroundIdentity` hook to create an `onlinePlayground` identity type. This **should not** be used in production environments. Otherwise, online apps must be created with an `onlineWithAuthentication` identity type, for which the `useOnlineIdentity` hook can be used. The `useOnlineIdentity` hook helps you create online Ditto instances that sync with the cloud, following these steps:
 
 ```tsx
 /** Example of a React root component setting up a single ditto instance that uses a development connection */
