@@ -9,11 +9,11 @@ export interface CreateOfflinePlaygroundIdentityParams {
  * @example
 
  * ```js
- *
  * const { create } = useOfflinePlaygroundIdentity();
  *
- * const myIdentity = create({appName: 'my-app', siteID: 1234});
+ * const myIdentity = create({appId: uuid(), siteID: 1234});
  * const ditto = new Ditto(myIdentity, '/path');
+ * ```
  *
  * A hook for creating Development Ditto identity objects.
  */
