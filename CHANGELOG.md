@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.9.3](https://github.com/getditto/react-ditto/compare/v0.9.2...v0.9.3) (2022-11-23)
+
+### Features
+
+* added hook for creating onlinePlayground identities ([2ae0aed](https://github.com/getditto/react-ditto/commit/2ae0aedc607d9d336571eb1c5765790aff52d968))
+
 ### [0.9.2](https://github.com/getditto/react-ditto/compare/v0.9.1...v0.9.2) (2022-11-10)
 
 ### [0.9.1](https://github.com/getditto/react-ditto/compare/v0.9.0...v0.9.1) (2022-11-10)
