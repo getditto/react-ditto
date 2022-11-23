@@ -1,6 +1,6 @@
 {
   "name": "@dittolive/react-ditto",
-  "version": "0.9.2",
+  "version": "0.9.3",
   "description": "React wrappers for Ditto",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
