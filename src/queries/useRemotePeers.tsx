@@ -1,4 +1,4 @@
-import { Ditto, Observer, RemotePeer } from '@dittolive/ditto'
+import { Ditto, Observer, Peer } from '@dittolive/ditto'
 import { useEffect, useState } from 'react'
 
 import { useDitto } from '../useDitto'
@@ -17,15 +17,15 @@ export interface UsePeersParams {
  */
 export function useRemotePeers(params: UsePeersParams = {}): {
   ditto: Ditto
-  remotePeers: RemotePeer[]
+  remotePeers: Peer[]
 } {
   const { ditto } = useDitto(params.path)
-  const [remotePeers, setRemotePeers] = useState<RemotePeer[]>([])
+  const [remotePeers, setRemotePeers] = useState<Peer[]>([])
 
   useEffect(() => {
     let observer: Observer | undefined
     if (ditto) {
-      observer = ditto.observePeers((peers: RemotePeer[]) => {
+      observer = ditto.presence.observe(({ remotePeers: peers }) => {
         setRemotePeers(peers)
       })
     } else {

@@ -1,4 +1,4 @@
-import { Observer, PresenceConnectionType, RemotePeer } from '@dittolive/ditto'
+import { ConnectionType, Observer } from '@dittolive/ditto'
 import { useEffect, useRef, useState } from 'react'
 
 import { useDitto } from '../useDitto'
@@ -9,7 +9,7 @@ export interface ConnectionStatusParams {
    */
   path?: string
   /** Transport for which the connection status is retrieved. */
-  forTransport: 'WebSocket' | 'WiFi'
+  forTransport: ConnectionType
 }
 
 /** Hook used to retrieve the connection status over a given transport.
@@ -25,17 +25,12 @@ export const useConnectionStatus = (
 
   useEffect(() => {
     if (ditto) {
-      peersObserverRef.current = ditto.observePeers((peers) => {
-        const nextActiveConnections = peers.reduce(
-          (acc: Set<PresenceConnectionType>, peer: RemotePeer) => {
-            peer.connections.forEach((connectionType) =>
-              acc.add(connectionType),
-            )
+      peersObserverRef.current = ditto.presence.observe(({ remotePeers }) => {
+        const nextActiveConnections = remotePeers.reduce((acc, peer) => {
+          peer.connections.forEach((connection) => acc.add(connection.type))
 
-            return acc
-          },
-          new Set(),
-        )
+          return acc
+        }, new Set<ConnectionType>())
         if (Array.from(nextActiveConnections).includes(params.forTransport)) {
           setIsConnected(true)
         } else {
