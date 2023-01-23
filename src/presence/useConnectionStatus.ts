@@ -1,4 +1,4 @@
-import { ConnectionType, Observer, Peer } from '@dittolive/ditto'
+import { ConnectionType, Observer } from '@dittolive/ditto'
 import { useEffect, useRef, useState } from 'react'
 
 import { useDitto } from '../useDitto'
@@ -25,23 +25,18 @@ export const useConnectionStatus = (
 
   useEffect(() => {
     if (ditto) {
-      peersObserverRef.current = ditto.presence.observe(
-        ({ remotePeers }: { remotePeers: Peer[] }) => {
-          const nextActiveConnections = remotePeers.reduce(
-            (acc: Set<ConnectionType>, peer: Peer) => {
-              peer.connections.forEach((connection) => acc.add(connection.type))
+      peersObserverRef.current = ditto.presence.observe(({ remotePeers }) => {
+        const nextActiveConnections = remotePeers.reduce((acc, peer) => {
+          peer.connections.forEach((connection) => acc.add(connection.type))
 
-              return acc
-            },
-            new Set(),
-          )
-          if (Array.from(nextActiveConnections).includes(params.forTransport)) {
-            setIsConnected(true)
-          } else {
-            setIsConnected(false)
-          }
-        },
-      )
+          return acc
+        }, new Set<ConnectionType>())
+        if (Array.from(nextActiveConnections).includes(params.forTransport)) {
+          setIsConnected(true)
+        } else {
+          setIsConnected(false)
+        }
+      })
 
       return function disconnect() {
         if (peersObserverRef.current) {

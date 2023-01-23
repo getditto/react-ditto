@@ -25,11 +25,9 @@ export function useRemotePeers(params: UsePeersParams = {}): {
   useEffect(() => {
     let observer: Observer | undefined
     if (ditto) {
-      observer = ditto.presence.observe(
-        ({ remotePeers: peers }: { remotePeers: Peer[] }) => {
-          setRemotePeers(peers)
-        },
-      )
+      observer = ditto.presence.observe(({ remotePeers: peers }) => {
+        setRemotePeers(peers)
+      })
     } else {
       setRemotePeers([])
       observer = undefined
