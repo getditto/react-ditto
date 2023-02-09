@@ -52,7 +52,9 @@ It is important to highlight that choosing one provider or the other has no effe
 
 ```tsx
 const createDittoInstance = () => {
-  return new Ditto(createIdentity(), 'some-path')
+  const ditto = new Ditto(createIdentity(), 'some-path')
+  ditto.startSync()
+  return ditto
 }
 
 <DittoProvider setup={createDittoInstance}>
@@ -74,12 +76,14 @@ const createDittoInstance = async (path) => {
   let identity
   if (path === 'path-1') {
     identity = await getIdentityForPath1()
-  } else if (path === 'path-1') {
-    identity = await getIdentityForPath1()
+  } else if (path === 'path-2') {
+    identity = await getIdentityForPath2()
   }
-  
+
   if (identity) {
-    return new Ditto(createIdentity(), path)
+    const ditto = new Ditto(createIdentity(), path)
+    ditto.startSync()
+    return ditto
   } else {
     return Promise.resolve(null)
   }
@@ -118,6 +122,7 @@ const createDittoInstance = (forPath: string) => {
     }),
     forPath,
   )
+  dittoPlaygroundIdentity.startSync()
   return dittoPlaygroundIdentity
 }
 ```
@@ -137,6 +142,7 @@ const createDittoInstance = (forPath: string) => {
     }, forPath),
     forPath,
   )
+  dittoOnline.startSync()
   return dittoOnline
 }
 ```
@@ -155,6 +161,7 @@ const createDittoInstance = (forPath: string) => {
     }),
     forPath,
   )
+  dittoOnline.startSync()
   return dittoOnline
 }
 ```
@@ -194,10 +201,14 @@ const initOptions = {
 /** Example of a React root component setting up a single ditto instance that uses a development connection */
 const RootComponent = () => {
   const { create } = useOfflinePlaygroundIdentity()
-  
+
   return (
-    <DittoProvider 
-      setup={() => new Ditto(create({ appName: 'my app', siteID: 1234 }, '/foo'))} 
+    <DittoProvider
+      setup={() => {
+          const ditto = new Ditto(create({ appName: 'my app', siteID: 1234 }, '/foo'))
+          ditto.startSync()
+          return ditto
+      }}
       /*initOptions={initOptions} */
     >
       {({ loading, error }) => {
@@ -281,7 +292,11 @@ const RootComponent = () => {
   return (
     <>
       <DittoProvider
-        setup={() => new Ditto(create({ appID: 'your-app-id', path: '/my-online-path' }, '/my-online-path'))}
+        setup={() => {
+          const ditto = new Ditto(create({ appID: 'your-app-id', path: '/my-online-path' }, '/my-online-path'))
+          ditto.startSync()
+          return ditto
+        }}
         /*initOptions={initOptions} */
       >
         {({ loading, error, ditto }) => {
