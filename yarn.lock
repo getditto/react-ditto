@@ -905,10 +905,10 @@
   resolved "https://registry.yarnpkg.com/@colors/colors/-/colors-1.5.0.tgz#bb504579c1cae923e6576a4f5da43d25f97bdbd9"
   integrity sha512-ooWCrlZP11i8GImSjTHYHLkvFDP48nS4+204nGb1RiX/WXYHmJA2III9/e2DWVabCESdW7hBAEzHRqUn9OUVvQ==
 
-"@dittolive/ditto@^4.0.0-alpha2":
-  version "4.0.0-alpha2"
-  resolved "https://registry.yarnpkg.com/@dittolive/ditto/-/ditto-4.0.0-alpha2.tgz#ff74c894ea6635655911170c546deae8368c8ff7"
-  integrity sha512-81Z9ctMITz4WplyLtaoShvEo8UL1gturmCaSZ7ubZ/XURr4V67/zF754VvFCpagEAXUbo5q2FXN5z3OdeUu+eA==
+"@dittolive/ditto@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@dittolive/ditto/-/ditto-4.0.0.tgz#439dbb6b883dc60a8707ff4f9f6bf49c07e3ab70"
+  integrity sha512-fQc4zcF+NCacGaWxOtDg+lCKI463VAe9BMvaMCFSw+NARLLU9oyM7NsVziKkDQhOjrdbfRWsjuwJmLFy+bRCvw==
   dependencies:
     cbor-redux "^0.4.0"
 
