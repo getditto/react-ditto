@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0](https://github.com/getditto/react-ditto/compare/v0.11.0-alpha.0...v0.11.0) (2023-03-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* upgrade `@dittolive/ditto` peer dependency to ^4.0.0
+
+### Features
+
+* upgrade `@dittolive/ditto` peer dependency to ^4.0.0 ([8dd7043](https://github.com/getditto/react-ditto/commit/8dd7043d8c5b07b151415577415947b7348be082))
+
 ## [0.11.0-alpha.0](https://github.com/getditto/react-ditto/compare/v0.10.0...v0.11.0-alpha.0) (2023-01-23)
 
 
