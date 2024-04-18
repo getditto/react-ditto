@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [0.11.0](https://github.com/getditto/react-ditto/compare/v0.11.0-alpha.0...v0.11.0) (2023-03-22)
 
+### Unreleased
+
+## Changed
+
+- browser support now matches the `@dittolive/ditto` package. see [Ditto's
+  documentation](https://docs.ditto.live/compatibility/js-web)
+  ([#56](https://github.com/getditto/react-ditto/pull/56))
+
 
 ### ⚠ BREAKING CHANGES
 
