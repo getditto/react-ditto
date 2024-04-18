@@ -6,7 +6,7 @@ export interface DittoHash {
 }
 
 export type RegisterDitto = (ditto: Ditto) => void
-export type UnregisterDitto = (path: string) => void
+export type UnregisterDitto = (persistenceDirectory: string) => void
 
 export interface DittoContextProps {
   dittoHash: DittoHash

@@ -70,13 +70,13 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
           const dittoHash: DittoHash = {}
           const dittos: Ditto[] = setupReturnValue
           for (const ditto of dittos) {
-            dittoHash[ditto.path] = ditto
+            dittoHash[ditto.persistenceDirectory] = ditto
           }
           setDittoHash(dittoHash)
         } else {
           const ditto = setupReturnValue
           const dittoHash: DittoHash = {}
-          dittoHash[ditto.path] = ditto
+          dittoHash[ditto.persistenceDirectory] = ditto
           setDittoHash(dittoHash)
         }
         setProviderState({
@@ -103,13 +103,13 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
 
   const registerDitto: RegisterDitto = (ditto) => {
     const hash = { ...dittoHash }
-    hash[ditto.path] = ditto
+    hash[ditto.persistenceDirectory] = ditto
     setDittoHash(hash)
   }
 
-  const unregisterDitto: UnregisterDitto = (path) => {
+  const unregisterDitto: UnregisterDitto = (persistenceDirectory) => {
     const hash = { ...dittoHash }
-    delete hash[path]
+    delete hash[persistenceDirectory]
     setDittoHash(hash)
   }
 

@@ -103,7 +103,7 @@ export const DittoLazyProvider: React.FunctionComponent<
   }
 
   const registerDitto: RegisterDitto = (ditto) => {
-    if (ditto.path in dittoHash) {
+    if (ditto.persistenceDirectory in dittoHash) {
       throw new Error(
         'The instance path is already being used by a Ditto instance.',
       )
@@ -111,7 +111,7 @@ export const DittoLazyProvider: React.FunctionComponent<
 
     setDittoHash((currentHash) => ({
       ...currentHash,
-      [ditto.path]: ditto,
+      [ditto.persistenceDirectory]: ditto,
     }))
   }
 
