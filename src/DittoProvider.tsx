@@ -70,11 +70,25 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
           const dittoHash: DittoHash = {}
           const dittos: Ditto[] = setupReturnValue
           for (const ditto of dittos) {
+            if (!(ditto instanceof Ditto)) {
+              throw new Error(
+                // Type is `never` because correct use never reaches this point
+                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+                `expected an array of Ditto instances to be returned by the setup function, but at least one element is not a Ditto instance (got ${ditto})`,
+              )
+            }
             dittoHash[ditto.persistenceDirectory] = ditto
           }
           setDittoHash(dittoHash)
         } else {
           const ditto = setupReturnValue
+          if (!(ditto instanceof Ditto)) {
+            throw new Error(
+              // Type is `never` because correct use never reaches this point
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+              `expected a Ditto instance to be returned by the setup function, but got ${ditto}`,
+            )
+          }
           const dittoHash: DittoHash = {}
           dittoHash[ditto.persistenceDirectory] = ditto
           setDittoHash(dittoHash)
