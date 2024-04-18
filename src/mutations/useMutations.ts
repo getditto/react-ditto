@@ -37,6 +37,8 @@ export interface UpdateByIDParams {
   /**
    * The _id of the document to remove
    */
+  // The `DocumentIDValue` type needs to be narrowed in @dittolive/ditto
+  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
   _id: DocumentID | DocumentIDValue
   /**
    * The update function to perform on the specified document
@@ -63,7 +65,7 @@ export interface RemoveParams {
 export type RemoveFunction = (params: RemoveParams) => Promise<DocumentID[]>
 
 export interface RemoveByIDParams {
-  _id: unknown | DocumentID
+  _id?: DocumentID
 }
 
 export type RemoveByIDFunction = (params: RemoveByIDParams) => Promise<boolean>
