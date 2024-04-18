@@ -49,25 +49,24 @@ const initOptions = {
 const wrapper =
   (identity: IdentityOfflinePlayground, path: string) =>
   // eslint-disable-next-line react/display-name
-  ({ children }: { children: ReactNode }) =>
-    (
-      <DittoProvider
-        setup={() => {
-          const ditto = new Ditto(identity, path)
-          return ditto
-        }}
-        initOptions={initOptions}
-      >
-        {() => {
-          return (
-            <>
-              <DocumentUpserter path={path} />
-              {children}
-            </>
-          )
-        }}
-      </DittoProvider>
-    )
+  ({ children }: { children: ReactNode }) => (
+    <DittoProvider
+      setup={() => {
+        const ditto = new Ditto(identity, path)
+        return ditto
+      }}
+      initOptions={initOptions}
+    >
+      {() => {
+        return (
+          <>
+            <DocumentUpserter path={path} />
+            {children}
+          </>
+        )
+      }}
+    </DittoProvider>
+  )
 
 describe('useLazyPendingIDSpecificOperation tests', function () {
   it('should load a document by ID correctly when the exec function is called', async () => {
