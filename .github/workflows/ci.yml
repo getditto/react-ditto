@@ -5,19 +5,17 @@ jobs:
     name: Continuous Deployment
     runs-on: ubuntu-latest
     steps:
-      # - name: 'Updating Upun'
-      #   run: sudo apt-get update && sudo apt-get install -y libgbm-dev
       - name: 'Checkout Repository'
-        uses: actions/checkout@v2
-        
+        uses: actions/checkout@v4
+
       - name: 'Setup Node'
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: '14'
-        
+          node-version: '20'
+
       - name: 'Setup Chrome'
         uses: browser-actions/setup-chrome@latest
-          
+
       - name: 'Install and Build'
         run: |
           yarn
@@ -27,13 +25,13 @@ jobs:
           yarn types
           yarn lint
           yarn build
-          
+
       - name: 'Run Tests'
         run: CHROMIUM_BIN=$(which chrome) yarn test
-        
+
       - name: 'Generate Documentation Website'
         run: yarn docs:generate
-        
+
       - name: Deploy Documentation Website 🚀
         if: github.ref == 'refs/heads/master'
         uses: JamesIves/github-pages-deploy-action@4.1.5
