@@ -20,7 +20,7 @@ export interface DittoProviderProps {
    *
    * Returns a single Ditto instance or an array of instances.
    */
-  setup: () => Ditto | Ditto[]
+  setup: () => Ditto | Ditto[] | Promise<Ditto | Ditto[]>
   render?: RenderFunction
   children?: RenderFunction
 }
@@ -65,7 +65,7 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
       hasMountEffectStarted.current = true
       try {
         await init(props.initOptions)
-        const setupReturnValue: Ditto | Ditto[] = props.setup()
+        const setupReturnValue: Ditto | Ditto[] = await props.setup()
         if (Array.isArray(setupReturnValue)) {
           const dittoHash: DittoHash = {}
           const dittos: Ditto[] = setupReturnValue
