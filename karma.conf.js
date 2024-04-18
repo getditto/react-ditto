@@ -37,11 +37,6 @@ module.exports = function (config) {
             presets: [
               [
                 '@babel/preset-env',
-                {
-                  targets: {
-                    chrome: '92',
-                  },
-                },
               ],
             ],
           }),
