@@ -4,12 +4,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [0.11.0](https://github.com/getditto/react-ditto/compare/v0.11.0-alpha.0...v0.11.0) (2023-03-22)
 
-### Unreleased
-
-### Changed
-
-- updated `create-react-app` example in Readme ([#59](https://github.com/getditto/react-ditto/pull/59))
-
 
 ### ⚠ BREAKING CHANGES
 
