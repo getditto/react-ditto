@@ -51,25 +51,24 @@ const initOptions = {
 const wrapper =
   (identity: IdentityOfflinePlayground, path: string) =>
   // eslint-disable-next-line react/display-name
-  ({ children }: { children: ReactNode }) =>
-    (
-      <DittoProvider
-        setup={() => {
-          const ditto = new Ditto(identity, path)
-          return ditto
-        }}
-        initOptions={initOptions}
-      >
-        {() => {
-          return (
-            <>
-              <DocumentUpserter path={path} />
-              {children}
-            </>
-          )
-        }}
-      </DittoProvider>
-    )
+  ({ children }: { children: ReactNode }) => (
+    <DittoProvider
+      setup={() => {
+        const ditto = new Ditto(identity, path)
+        return ditto
+      }}
+      initOptions={initOptions}
+    >
+      {() => {
+        return (
+          <>
+            <DocumentUpserter path={path} />
+            {children}
+          </>
+        )
+      }}
+    </DittoProvider>
+  )
 
 describe('usePendingCursorOperation tests', function () {
   it('should load all documents correctly', async () => {

@@ -4,7 +4,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 ## [0.11.0](https://github.com/getditto/react-ditto/compare/v0.11.0-alpha.0...v0.11.0) (2023-03-22)
 
-
 ### ⚠ BREAKING CHANGES
 
 * upgrade `@dittolive/ditto` peer dependency to ^4.0.0

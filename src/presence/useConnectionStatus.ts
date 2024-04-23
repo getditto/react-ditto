@@ -27,7 +27,9 @@ export const useConnectionStatus = (
     if (ditto) {
       peersObserverRef.current = ditto.presence.observe(({ remotePeers }) => {
         const nextActiveConnections = remotePeers.reduce((acc, peer) => {
-          peer.connections.forEach((connection) => acc.add(connection.type))
+          peer.connections.forEach((connection) =>
+            acc.add(connection.connectionType),
+          )
 
           return acc
         }, new Set<ConnectionType>())

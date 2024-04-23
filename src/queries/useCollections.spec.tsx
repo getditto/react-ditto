@@ -39,22 +39,21 @@ const TestComponent = ({ path }: { path: string }) => {
 const wrapper =
   (identity: IdentityOfflinePlayground, path: string) =>
   // eslint-disable-next-line react/display-name
-  ({ children }: { children: ReactNode }) =>
-    (
-      <DittoProvider
-        setup={() => new Ditto(identity, path)}
-        initOptions={initOptions}
-      >
-        {() => {
-          return (
-            <>
-              <TestComponent path={path} />
-              {children}
-            </>
-          )
-        }}
-      </DittoProvider>
-    )
+  ({ children }: { children: ReactNode }) => (
+    <DittoProvider
+      setup={() => new Ditto(identity, path)}
+      initOptions={initOptions}
+    >
+      {() => {
+        return (
+          <>
+            <TestComponent path={path} />
+            {children}
+          </>
+        )
+      }}
+    </DittoProvider>
+  )
 
 describe('useCollections tests', function () {
   it('should load all collections correctly', async () => {

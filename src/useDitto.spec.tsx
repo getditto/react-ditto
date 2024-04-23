@@ -8,23 +8,23 @@ import { DittoLazyProvider, DittoProvider, useDitto } from './'
 
 const testIdentity: () => {
   identity: IdentityOfflinePlayground
-  path: string
+  persistenceDirectory: string
 } = () => ({
   identity: {
     appID: 'useDittoSpec',
     siteID: 100,
     type: 'offlinePlayground',
   },
-  path: uuidv4(),
+  persistenceDirectory: uuidv4(),
 })
 
 describe('useDittoSpec tests', function () {
-  it('should return a ditto instance with a matching path variable when a non-lazy provider is used.', async function () {
+  it('should return a ditto instance with a matching persistence directory when a non-lazy provider is used.', async function () {
     const testConfiguration = testIdentity()
     const setup = (): Ditto => {
       const ditto = new Ditto(
         testConfiguration.identity,
-        testConfiguration.path,
+        testConfiguration.persistenceDirectory,
       )
       return ditto
     }
@@ -40,21 +40,29 @@ describe('useDittoSpec tests', function () {
         }}
       </DittoProvider>
     )
-    const { result } = renderHook(() => useDitto(testConfiguration.path), {
-      wrapper,
-    })
+    const { result } = renderHook(
+      () => useDitto(testConfiguration.persistenceDirectory),
+      {
+        wrapper,
+      },
+    )
 
     await waitFor(() => expect(result.current.ditto).to.exist, {
       timeout: 5000,
     })
-    expect(result.current.ditto.path).to.eq(testConfiguration.path)
+    expect(result.current.ditto.persistenceDirectory).to.eq(
+      testConfiguration.persistenceDirectory,
+    )
   })
 
-  it('should return a ditto instance with a matching path variable, and a loading state, when a lazy provider is used.', async function () {
+  it('should return a ditto instance with a matching persistenceDirectory, and a loading state, when a lazy provider is used.', async function () {
     const testConfiguration = testIdentity()
     const setup = (): Promise<Ditto> => {
       return Promise.resolve(
-        new Ditto(testConfiguration.identity, testConfiguration.path),
+        new Ditto(
+          testConfiguration.identity,
+          testConfiguration.persistenceDirectory,
+        ),
       )
     }
 
@@ -73,7 +81,7 @@ describe('useDittoSpec tests', function () {
       </DittoLazyProvider>
     )
     const { result, rerender } = renderHook(
-      () => useDitto(testConfiguration.path),
+      () => useDitto(testConfiguration.persistenceDirectory),
       {
         wrapper,
       },
@@ -88,7 +96,9 @@ describe('useDittoSpec tests', function () {
       { timeout: 5000 },
     )
 
-    expect(result.current?.ditto.path).to.eq(testConfiguration.path)
+    expect(result.current?.ditto.persistenceDirectory).to.eq(
+      testConfiguration.persistenceDirectory,
+    )
     expect(result.current?.loading).to.eq(false)
     expect(result.current?.error).to.eq(undefined)
   })

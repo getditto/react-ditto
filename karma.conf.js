@@ -28,16 +28,15 @@ module.exports = function (config) {
     karmaTypescriptConfig: {
       tsconfig: './tsconfig.json',
       bundlerOptions: {
+        // Explicitly configure Karma's parser to expect ES2020 syntax.
+        acornOptions: {
+          ecmaVersion: 2020,
+        },
         transforms: [
           require('karma-typescript-es6-transform')({
             presets: [
               [
                 '@babel/preset-env',
-                {
-                  targets: {
-                    chrome: '92',
-                  },
-                },
               ],
             ],
           }),
