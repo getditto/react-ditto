@@ -187,29 +187,48 @@ yarn add @dittolive/ditto @dittolive/react-ditto
 2. In `./src/index.js`, or `./src/index.tsx` if you're using typescript, setup Ditto with the `DittoProvider` like so:
 
 ```tsx
-import { DittoProvider, useOfflinePlaygroundIdentity } from '@dittolive/react-ditto'
+// ... other imports from create-react-app above
+import { Ditto } from "@dittolive/ditto";
+import {
+  DittoProvider,
+  useOnlinePlaygroundIdentity,
+} from "@dittolive/react-ditto";
 
 /**
- * This configuration is optional for web browser-based react applications.
- * This tells the `DittoProvider` where it should load the .wasm file. If no path is provided (ie. initOptions is undefined),
- * the wasm will be loaded from our CDN.
+ * This configuration is optional for web browser-based react applications. This
+ * tells the `DittoProvider` where it should load the .wasm file. If no path is
+ * provided (ie. initOptions is undefined), the wasm will be loaded from our
+ * CDN. If you enable this, make sure to serve the `ditto.wasm` file with the
+ * correct MIME type and CORS headers. See
+ * https://www.npmjs.com/package/@dittolive/ditto#browser-environments for
+ * details.
  **/
 const initOptions = {
-  webAssemblyModule: '/ditto.wasm',
-}
+  webAssemblyModule: "/ditto.wasm",
+};
 
 /** Example of a React root component setting up a single ditto instance that uses a development connection */
 const RootComponent = () => {
-  const { create } = useOfflinePlaygroundIdentity()
+  const { create } = useOnlinePlaygroundIdentity();
 
   return (
     <DittoProvider
-      setup={() => {
-          const ditto = new Ditto(create({ appName: 'my app', siteID: 1234 }, '/foo'))
-          ditto.startSync()
-          return ditto
+      setup={async () => {
+        const ditto = new Ditto(
+          create({
+            // Create an app on https://portal.ditto.live/ and follow the
+            // instructions to get your token. Replace the placeholders below
+            // with your app id and token.
+            appID: "your-app-id",
+            token: "your-online-playground-token",
+          }),
+          "testing"
+        );
+        await ditto.disableSyncWithV3();
+        ditto.startSync();
+        return ditto;
       }}
-      /*initOptions={initOptions} */
+      /* initOptions={initOptions} */
     >
       {({ loading, error }) => {
         if (loading) return <p>Loading</p>;
@@ -217,16 +236,14 @@ const RootComponent = () => {
         return <App />;
       }}
     </DittoProvider>
-  )
-}
+  );
+};
 
-
-
-ReactDOM.render(
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
   <React.StrictMode>
     <RootComponent />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
 ```
 
@@ -236,20 +253,26 @@ ReactDOM.render(
 import { usePendingCursorOperation, useMutations } from '@dittolive/react-ditto';
 
 export default function App() {
-  const { documents, ditto } = usePendingCursorOperation({
+  const { documents } = usePendingCursorOperation({
     collection: 'tasks',
   });
 
-  const { updateByID, upsert } = useMutations({ collection: 'tasks' })
+  const { removeByID, upsert } = useMutations({ collection: 'tasks' })
 
   return (
-    <ul>
-      {documents.map(doc => (
-        <li key={doc._id}>
-          {doc.body}
-        </li>
-      ))}
-    </ul>
+    <>
+      <button onClick={() => upsert({ value: { text: 'Hello' } })}>
+        Add Task
+      </button>
+      <ul>
+        {documents.map((doc) => (
+          <li key={doc._id}>
+            {JSON.stringify(doc.value)}
+            <button onClick={() => removeByID({ _id: doc.id })}>remove</button>
+          </li>
+        ))}
+      </ul>
+    </>
   )
 }
 ```
@@ -257,24 +280,26 @@ export default function App() {
 Alternatively, you can also choose to go with the lazy variants of these hooks (`useLazyPendingCursorOperation` and `useLazyPendingIDSpecificOperation`), in order to launch queries on the data store as a response to a user event:
 
 ```tsx
-import { usePendingCursorOperation, useMutations } from '@dittolive/react-ditto';
+import { useLazyPendingCursorOperation } from '@dittolive/react-ditto';
 
 export default function App() {
-  const { documents, ditto, exec } = useLazyPendingCursorOperation();
-  
-  if(!documents?.length) {
-    return <button onClick={() => exec({ collection: 'tasks' })}>Click to load!</button>
+  const { documents, exec } = useLazyPendingCursorOperation();
+
+  if (!documents?.length) {
+    return (
+      <button onClick={() => exec({ collection: "tasks" })}>
+        Click to load!
+      </button>
+    );
   }
   
   return (
     <ul>
-      {documents.map(doc => (
-        <li key={doc._id}>
-          {doc.body}
-        </li>
+      {documents.map((doc) => (
+        <li key={doc._id}>{JSON.stringify(doc.value)}</li>
       ))}
     </ul>
-  )
+  );
 }
 ```
 
