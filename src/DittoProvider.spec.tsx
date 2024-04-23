@@ -241,4 +241,56 @@ describe('Ditto Provider Tests', () => {
     expect(setup).to.have.been.calledOnce
     expect(init).to.have.been.calledOnce
   })
+
+  it('should work with an async setup function', async () => {
+    const config = testIdentity()
+    const renderFn = sinon.stub()
+    renderFn.withArgs(sinon.match({ loading: false })).returns('loaded')
+
+    root.render(
+      <DittoProvider
+        setup={async () => {
+          const ditto = new Ditto(config.identity, config.path)
+          await new Promise((resolve) => setTimeout(resolve, 10))
+          return ditto
+        }}
+      >
+        {renderFn}
+      </DittoProvider>,
+    )
+
+    await waitFor(() => container.textContent === 'loaded')
+    expect(renderFn).to.have.been.calledTwice
+  })
+
+  it(`should provide an error when the setup function doesn't return a ditto instance`, async () => {
+    const setup = sinon.stub().returns(null)
+
+    root.render(
+      <DittoProvider setup={setup}>
+        {({ loading, error }) => !loading && error?.message}
+      </DittoProvider>,
+    )
+
+    await waitFor(
+      () =>
+        container.textContent ===
+        'expected a Ditto instance to be returned by the setup function, but got null',
+    )
+  })
+
+  it('should provide an error when the setup function doesn’t return an array of ditto instances', async () => {
+    const setup = sinon.stub().returns([null])
+    root.render(
+      <DittoProvider setup={setup}>
+        {({ loading, error }) => !loading && error?.message}
+      </DittoProvider>,
+    )
+
+    await waitFor(
+      () =>
+        container.textContent ===
+        'expected an array of Ditto instances to be returned by the setup function, but at least one element is not a Ditto instance (got null)',
+    )
+  })
 })
