@@ -11,16 +11,12 @@
     "jsx": "react",
     "esModuleInterop": true,
     "declaration": true,
-    "declarationDir": "./dist",
+    "declarationDir": "./dist/cjs",
     "declarationMap": true,
-    "outDir": "./dist",
+    "outDir": "./dist/cjs",
     "sourceRoot": "./src"
   },
   "compileOnSave": false,
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "src"
-  ]
+  "exclude": ["node_modules"],
+  "include": ["src"]
 }
