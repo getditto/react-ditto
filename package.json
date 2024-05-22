@@ -5,18 +5,25 @@
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js",
+      "types": "./dist/esm/index.d.ts"
+    }
+  },
   "scripts": {
-    "build": "rimraf dist && npm run build:esm && npm run build:cjs",
+    "build": "rimraf dist && npm run build:esm && npm run build:cjs && ./fix-exports-type.sh",
     "build:esm": "tsc -p tsconfig.esm.json",
     "build:cjs": "tsc -p tsconfig.json",
     "test": "karma start",
-    "types": "tsc -p tsconfig.json",
+    "types": "tsc -p tsconfig.esm.json",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "docs:generate": "rimraf documentation-website/* && typedoc",
     "docs:serve": "live-server ./documentation-website"
   },
-  "author": "",
+  "author": "DittoLive Inc.",
   "license": "ISC",
   "repository": {
     "type": "git",
