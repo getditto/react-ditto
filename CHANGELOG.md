@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.1](https://github.com/getditto/react-ditto/compare/v0.11.0...v0.11.1) (2024-05-22)
+
+
+### Features
+
+* add support for async setup functions ([78a7509](https://github.com/getditto/react-ditto/commit/78a7509eb241155e410b9e9bfe20c54983a3af29))
+* match supported browsers with the `@dittolive/ditto` package. see [Ditto's documentation](https://docs.ditto.live/compatibility/js-web) for details. ([35c29d4](https://github.com/getditto/react-ditto/commit/35c29d476e6579f4dcf2527b9908849dc0b781f9)), closes [#48](https://github.com/getditto/react-ditto/issues/48)
+
+
+### Bug Fixes
+
+* remove implicit dependency on `lodash` ([9b56f93](https://github.com/getditto/react-ditto/commit/9b56f9331de4e5718478717d0c9527dca2764d15))
+* throw when setup closure does not return a `Ditto` instance ([36d7e58](https://github.com/getditto/react-ditto/commit/36d7e58ea62c719ff44265716c4d09a46c85bd5b))
+
 ## [0.11.0](https://github.com/getditto/react-ditto/compare/v0.11.0-alpha.0...v0.11.0) (2023-03-22)
 
 ### ⚠ BREAKING CHANGES
