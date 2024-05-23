@@ -13,6 +13,7 @@
     "plugin:react/recommended",
     "prettier"
   ],
+  "exclude": ["scripts/*.js"],
   "rules": {
     "deprecation/deprecation": "error",
     "react-hooks/rules-of-hooks": "error",
