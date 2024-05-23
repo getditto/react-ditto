@@ -8,13 +8,13 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
+    "inlineSources": true,
     "jsx": "react",
     "esModuleInterop": true,
     "declaration": true,
     "declarationDir": "./dist/cjs",
     "declarationMap": true,
-    "outDir": "./dist/cjs",
-    "sourceRoot": "./src"
+    "outDir": "./dist/cjs"
   },
   "compileOnSave": false,
   "exclude": ["node_modules"],
