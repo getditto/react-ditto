@@ -13,9 +13,10 @@
     }
   },
   "scripts": {
-    "build": "rimraf dist && npm run build:esm && npm run build:cjs && ./fix-exports-type.sh",
+    "build": "rimraf dist && npm run build:esm && npm run build:cjs && npm run build:static-files && scripts/fix-exports-type.js",
     "build:esm": "tsc -p tsconfig.esm.json",
     "build:cjs": "tsc -p tsconfig.json",
+    "build:static-files": "cp package.json CHANGELOG.md README.md dist/",
     "test": "karma start",
     "types": "tsc -p tsconfig.esm.json",
     "lint": "eslint . --ext .ts,.tsx",
