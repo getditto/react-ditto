@@ -7,8 +7,8 @@ import React, {
   useState,
 } from 'react'
 
-import { DittoHash, RegisterDitto, UnregisterDitto } from '.'
-import { DittoContext } from './DittoContext'
+import { DittoContext } from './DittoContext.js'
+import { DittoHash, RegisterDitto, UnregisterDitto } from './index.js'
 
 export type RenderFunction = (providerState: ProviderState) => ReactNode
 

@@ -1,7 +1,7 @@
 import { ConnectionType, Observer } from '@dittolive/ditto'
 import { useEffect, useRef, useState } from 'react'
 
-import { useDitto } from '../useDitto'
+import { useDitto } from '../useDitto.js'
 
 export interface ConnectionStatusParams {
   /**

@@ -1,3 +1,3 @@
-export * from './useOfflinePlaygroundIdentity'
-export * from './useOnlineIdentity'
-export * from './useOnlinePlaygroundIdentity'
+export * from './useOfflinePlaygroundIdentity.js'
+export * from './useOnlineIdentity.js'
+export * from './useOnlinePlaygroundIdentity.js'

@@ -13,7 +13,7 @@ import {
 } from '@dittolive/ditto'
 import { useCallback } from 'react'
 
-import { useDitto } from '../useDitto'
+import { useDitto } from '../useDitto.js'
 
 export interface UpdateParams {
   /**

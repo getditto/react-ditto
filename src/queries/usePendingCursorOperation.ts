@@ -11,8 +11,8 @@ import {
 } from '@dittolive/ditto'
 import { useEffect, useRef, useState } from 'react'
 
-import { useDitto } from '../useDitto'
-import { useVersion } from './useVersion'
+import { useDitto } from '../useDitto.js'
+import { useVersion } from './useVersion.js'
 
 export interface LiveQueryParams {
   collection: string

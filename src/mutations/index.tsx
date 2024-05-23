@@ -1,1 +1,1 @@
-export * from './useMutations'
+export * from './useMutations.js'

@@ -1,1 +1,1 @@
-export * from './useConnectionStatus'
+export * from './useConnectionStatus.js'
