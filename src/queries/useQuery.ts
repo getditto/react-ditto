@@ -45,6 +45,9 @@ export interface UseQueryParams<
 }
 
 export interface UseQueryReturn {
+  /**
+   * The Ditto instance used by this hook.
+   */
   ditto: Ditto
   /**
    * The most recent error that occurred while setting up the query.
