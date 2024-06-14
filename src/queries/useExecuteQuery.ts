@@ -1,7 +1,7 @@
 import {
   Ditto,
   DocumentID,
-  QueryArguments as DittoQueryArguments,
+  DQLQueryArguments,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   type QueryResult,
   QueryResultItem,
@@ -23,7 +23,7 @@ import { useVersion } from './useVersion.js'
  * @template T - The type of query arguments.
  */
 export interface UseExecuteQueryParams<
-  T extends DittoQueryArguments = DittoQueryArguments,
+  T extends DQLQueryArguments = DQLQueryArguments,
 > {
   /**
    * The arguments to pass to the query.
@@ -76,7 +76,7 @@ export type ExecutionFunction<T> = (
  */
 export type UseExecuteQueryReturn<
   T,
-  U extends DittoQueryArguments = DittoQueryArguments,
+  U extends DQLQueryArguments = DQLQueryArguments,
 > = [
   ExecutionFunction<U>,
   {
@@ -184,7 +184,7 @@ export function useExecuteQuery<
   // We want this to allow for any query arguments.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   T = any,
-  U extends DittoQueryArguments = DittoQueryArguments,
+  U extends DQLQueryArguments = DQLQueryArguments,
 >(
   query: string,
   params?: UseExecuteQueryParams<U>,
