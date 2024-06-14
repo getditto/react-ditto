@@ -1,4 +1,5 @@
 export * from './useCollections.js'
+export * from './useExecuteQuery.js'
 export * from './useLazyPendingCursorOperation.js'
 export * from './useLazyPendingIDSpecificOperation.js'
 export * from './usePendingCursorOperation.js'
