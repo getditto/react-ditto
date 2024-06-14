@@ -1,4 +1,4 @@
-import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
+import { Ditto, DittoError, IdentityOfflinePlayground } from '@dittolive/ditto'
 import { renderHook, waitFor } from '@testing-library/react'
 import { expect } from 'chai'
 import React, { ReactNode, useEffect } from 'react'
@@ -13,7 +13,7 @@ const testIdentity: () => {
   persistenceDirectory: string
 } = () => ({
   identity: {
-    appID: 'usePendingCursorOperationSpec',
+    appID: 'useQuerySpec',
     siteID: 100,
     type: 'offlinePlayground',
   },
@@ -231,5 +231,26 @@ describe('useQuery', function () {
     )
 
     await waitFor(() => expect(result.current.error).to.exist)
+  })
+
+  it('has the expected failure mode when used with a mutating query', async () => {
+    const config = testIdentity()
+
+    const { result } = renderHook(
+      () =>
+        useQuery('insert into foo documents (:value)', {
+          persistenceDirectory: config.persistenceDirectory,
+          queryArguments: { value: { document: 10 } },
+        }),
+      {
+        wrapper: wrapper(config.identity, config.persistenceDirectory),
+      },
+    )
+
+    await waitFor(() =>
+      expect((result.current.error as DittoError).code).to.equal(
+        'query/unsupported',
+      ),
+    )
   })
 })

@@ -1,25 +1,30 @@
 import {
   Ditto,
-  QueryArguments as DittoQueryArguments,
+  DQLQueryArguments,
   QueryResult,
   QueryResultItem,
   StoreObserver,
   SyncSubscription,
 } from '@dittolive/ditto'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { type DittoProvider } from '../DittoProvider.js'
 import { useDitto } from '../useDitto.js'
 import { useVersion } from './useVersion.js'
 
+/**
+ * Parameters for {@link useQuery}.
+ *
+ * @template T - The type of query arguments.
+ */
 export interface UseQueryParams<
-  QueryArguments extends DittoQueryArguments = DittoQueryArguments,
+  T extends DQLQueryArguments = DQLQueryArguments,
 > {
   /**
    * The arguments to pass to the query.
    */
-  queryArguments?: QueryArguments
+  queryArguments?: T
   /**
    * Whether to run the query locally only.
    *
@@ -44,7 +49,13 @@ export interface UseQueryParams<
   persistenceDirectory?: string
 }
 
-export interface UseQueryReturn {
+/**
+ * The return value of {@link useQuery}.
+ *
+ * @template T - The type of query result items.
+ * @template U - The type of query arguments.
+ */
+export interface UseQueryReturn<T, U extends DQLQueryArguments> {
   /**
    * The Ditto instance used by this hook.
    */
@@ -61,7 +72,7 @@ export interface UseQueryReturn {
    *
    * An empty array while `isLoading` is `true`.
    */
-  items: QueryResultItem[]
+  items: QueryResultItem<T>[]
   /**
    * `true` during the initial setup of the query. Resetting the query with
    * {@link UseQueryReturn.reset | `reset`} will not set this back to `true` to
@@ -83,7 +94,7 @@ export interface UseQueryReturn {
   /**
    * The underlying Ditto {@link StoreObserver}.
    */
-  storeObserver: StoreObserver
+  storeObserver: StoreObserver<T, U>
   /**
    * The underlying Ditto {@link SyncSubscription}. This is `undefined` when the
    * {@link UseQueryParams.localOnly | `localOnly`} parameter is set to `true`.
@@ -109,60 +120,70 @@ export interface UseQueryReturn {
  *
  * @param query - The query to run. Must be a non-mutating query.
  * @param params - Additional parameters to configure how the query is run.
+ * @template T - The type of query result items. Be aware that this is a
+ * convenience type that is not checked against the query being run.
+ * @template U - The type of query arguments.
  */
 export function useQuery<
-  QueryArguments extends DittoQueryArguments = DittoQueryArguments,
->(query: string, params?: UseQueryParams<QueryArguments>): UseQueryReturn {
+  // We default to any here and let the user specify the type if they want.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  T = any,
+  U extends DQLQueryArguments = DQLQueryArguments,
+>(query: string, params?: UseQueryParams<U>): UseQueryReturn<T, U> {
   const { ditto } = useDitto(params?.persistenceDirectory)
-  const [queryResult, setQueryResult] = useState<QueryResult>()
+  const [queryResult, setQueryResult] = useState<QueryResult<T>>()
   const [error, setError] = useState<Error | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const storeObserverRef = useRef<StoreObserver>()
+  const storeObserverRef = useRef<StoreObserver<T, U>>()
   const syncSubscriptionRef = useRef<SyncSubscription>()
   const paramsVersion = useVersion(params)
 
-  const configureQuery = (onCompletion: () => void) => {
-    if (!ditto) {
-      return
-    }
+  const reset = useCallback(async () => {
+    const configureQuery = (onCompletion: () => void) => {
+      if (!ditto) {
+        return
+      }
 
-    storeObserverRef.current?.cancel()
-    syncSubscriptionRef.current?.cancel()
+      storeObserverRef.current?.cancel()
+      syncSubscriptionRef.current?.cancel()
 
-    try {
-      storeObserverRef.current = ditto.store.registerObserver(
-        query,
-        (result) => {
-          setQueryResult(result)
-          onCompletion()
-        },
-        params?.queryArguments,
-      )
-    } catch (e: unknown) {
-      setError(e as Error)
-      params?.onError?.(e as Error)
-    }
-
-    if (!params?.localOnly) {
       try {
-        syncSubscriptionRef.current = ditto.sync.registerSubscription(
+        storeObserverRef.current = ditto.store.registerObserver<T, U>(
           query,
+          (result) => {
+            setQueryResult(result)
+            onCompletion()
+          },
           params?.queryArguments,
         )
       } catch (e: unknown) {
         setError(e as Error)
         params?.onError?.(e as Error)
       }
-    }
-  }
 
-  const reset = async () => {
+      if (!params?.localOnly) {
+        try {
+          syncSubscriptionRef.current = ditto.sync.registerSubscription(
+            query,
+            params?.queryArguments,
+          )
+        } catch (e: unknown) {
+          setError(e as Error)
+          params?.onError?.(e as Error)
+        }
+      }
+    }
+
     setQueryResult(null)
     setError(null)
     return new Promise<void>((resolve) => {
       configureQuery(resolve)
     })
-  }
+
+    // `paramsVersion` is not recognized by eslint as a required dependency but
+    // ensures that the hook is reset when deep changes occur in `params`.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ditto, params, paramsVersion, query])
 
   useEffect(() => {
     reset().then(() => setIsLoading(false))
@@ -170,10 +191,7 @@ export function useQuery<
       storeObserverRef.current?.cancel()
       syncSubscriptionRef.current?.cancel()
     }
-
-    // The dependency on params is captured by the useVersion hook.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ditto, paramsVersion])
+  }, [ditto, paramsVersion, reset])
 
   return {
     ditto,
