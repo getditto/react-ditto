@@ -95,7 +95,7 @@ const wrapper =
     )
   }
 
-describe.only('useExecuteQuery', function () {
+describe('useExecuteQuery', function () {
   it('should only load items once the execution function is called', async () => {
     const testConfiguration = testIdentity()
 
