@@ -18,6 +18,7 @@
     "build:cjs": "tsc -p tsconfig.json",
     "build:static-files": "cp package.json CHANGELOG.md README.md dist/",
     "test": "karma start",
+    "test:watch": "karma start --auto-watch --no-single-run",
     "types": "tsc -p tsconfig.esm.json",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
