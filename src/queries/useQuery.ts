@@ -39,7 +39,7 @@ export interface UseQueryParams<
    * @param error
    * @returns
    */
-  onError?: (error: Error) => void
+  onError?: (error: unknown) => void
   /**
    * Identifies the Ditto instance to use when multiple instances are registered
    * in the {@link DittoProvider}. Defaults to the first registered instance.
@@ -66,7 +66,7 @@ export interface UseQueryReturn<T, U extends DQLQueryArguments> {
    * Use the {@link UseQueryParams.onError | `onError`} callback parameter
    * to handle errors as they occur.
    */
-  error: Error | null
+  error: unknown
   /**
    * The items returned by the query.
    *
@@ -132,7 +132,7 @@ export function useQuery<
 >(query: string, params?: UseQueryParams<U>): UseQueryReturn<T, U> {
   const { ditto } = useDitto(params?.persistenceDirectory)
   const [queryResult, setQueryResult] = useState<QueryResult<T>>()
-  const [error, setError] = useState<Error | null>(null)
+  const [error, setError] = useState<unknown>(null)
   const [isLoading, setIsLoading] = useState(true)
   const storeObserverRef = useRef<StoreObserver<T, U>>()
   const syncSubscriptionRef = useRef<SyncSubscription>()
@@ -157,8 +157,8 @@ export function useQuery<
           params?.queryArguments,
         )
       } catch (e: unknown) {
-        setError(e as Error)
-        params?.onError?.(e as Error)
+        setError(e)
+        params?.onError?.(e)
       }
 
       if (!params?.localOnly) {
@@ -168,8 +168,8 @@ export function useQuery<
             params?.queryArguments,
           )
         } catch (e: unknown) {
-          setError(e as Error)
-          params?.onError?.(e as Error)
+          setError(e)
+          params?.onError?.(e)
         }
       }
     }
@@ -183,7 +183,7 @@ export function useQuery<
     // `paramsVersion` is not recognized by eslint as a required dependency but
     // ensures that the hook is reset when deep changes occur in `params`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ditto, params, paramsVersion, query])
+  }, [ditto, paramsVersion, query])
 
   useEffect(() => {
     reset().then(() => setIsLoading(false))
