@@ -31,6 +31,7 @@
     "simple-import-sort/exports": "error",
     "sort-imports": "off",
     "semi": 0,
+    "import/extensions": ["error", "ignorePackages"],
     "prettier/prettier": [
       "error",
       {
@@ -38,12 +39,19 @@
       }
     ]
   },
+  "overrides": [{
+    "files": ["*.spec.*"],
+    "rules": {
+      "import/extensions": "off",
+    }
+  }],
   "plugins": [
     "@typescript-eslint",
     "prettier",
     "simple-import-sort",
     "react-hooks",
-    "deprecation"
+    "deprecation",
+    "eslint-plugin-import"
   ],
   "settings": {
     "react": {
