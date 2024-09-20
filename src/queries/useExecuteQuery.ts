@@ -233,13 +233,16 @@ export function useExecuteQuery<
       }
       setDitto(nextDitto)
 
-      const finalQueryArguments: U = {} as U
+      let finalQueryArguments: U = {} as U
       if (queryArguments) {
-        Object.assign(finalQueryArguments, queryArguments)
+        finalQueryArguments = Object.assign(finalQueryArguments, queryArguments)
       }
 
       if (localQueryArguments) {
-        Object.assign(finalQueryArguments, localQueryArguments)
+        finalQueryArguments = Object.assign(
+          finalQueryArguments,
+          localQueryArguments,
+        )
       }
 
       try {
