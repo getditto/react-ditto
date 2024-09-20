@@ -368,7 +368,7 @@ describe('useExecuteQuery', function () {
     }
   })
 
-  describe.skip('using a lazy provider', function () {
+  describe('using a lazy provider', function () {
     it('should load all documents correctly', async () => {
       const testConfiguration = testIdentity()
 
@@ -382,7 +382,7 @@ describe('useExecuteQuery', function () {
           wrapper: wrapper(
             testConfiguration.identity,
             testConfiguration.persistenceDirectory,
-            true,
+            true, // isLazy
           ),
           baseElement: container,
         },
@@ -393,8 +393,6 @@ describe('useExecuteQuery', function () {
           container.querySelector("div[data-testid='loading']").innerHTML,
         ).to.eq('false'),
       )
-
-      console.log(`container: ${container.innerHTML}`)
 
       const [execute] = result.current
       await execute()
@@ -415,7 +413,7 @@ describe('useExecuteQuery', function () {
           wrapper: wrapper(
             testConfiguration.identity,
             testConfiguration.persistenceDirectory,
-            true,
+            true, // isLazy
           ),
         },
       )
