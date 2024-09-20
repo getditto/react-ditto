@@ -29,12 +29,16 @@ const AppContainer: React.FC = () => {
     useOnlineIdentity()
   const [currentPath, setCurrentPath] = useState('/path-development')
 
-  const handleCreateDittoInstances = () => {
+  const handleCreateDittoInstances = async () => {
     // Example of how to create a development instance
     const dittoDevelopment = new Ditto(
-      createDevelopment({ appID: 'live.ditto.example', siteID: 1234 }),
+      createDevelopment({
+        appID: '12e5e73c-68af-4af8-9322-5fd262ff5c7d',
+        siteID: 1234,
+      }),
       '/path-development',
     )
+    await dittoDevelopment.disableSyncWithV3()
 
     // Example of how to create an online instance with authentication enabled
     const dittoOnline = new Ditto(

@@ -1,7 +1,14 @@
 import './App.css'
 
-import { useMutations, useQuery } from '@dittolive/react-ditto'
+import { useExecuteQuery, useQuery } from '@dittolive/react-ditto'
 import React, { useState } from 'react'
+
+type Task = {
+  _id: string
+  body: string
+  isCompleted: boolean
+  isDeleted: boolean
+}
 
 const styles: Record<string, React.CSSProperties> = {
   app: {
@@ -22,17 +29,42 @@ type Props = {
   path: string
 }
 
-const App: React.FC<Props> = ({ path }) => {
+function isError(error: unknown): error is Error {
+  return error instanceof Error
+}
+
+const App: React.FC<Props> = ({ path: persistenceDirectory }) => {
   const [newBodyText, setNewBodyText] = useState<string>('')
   const {
     items: tasks,
     error,
     storeObserver,
     isLoading,
-  } = useQuery('select * from tasks')
-  const { upsert, removeByID, updateByID } = useMutations({
-    collection: 'tasks',
-    path: path,
+  } = useQuery<Task>('select * from tasks where isDeleted = false', {
+    queryArguments: { val: false },
+    persistenceDirectory,
+  })
+
+  const [upsert] = useExecuteQuery<unknown, { value: Partial<Task> }>(
+    'insert into tasks documents (:value) on id conflict do update',
+    {
+      queryArguments: { value: { isDeleted: false } },
+      persistenceDirectory,
+    },
+  )
+
+  const [removeByID] = useExecuteQuery<unknown, { id: string }>(
+    'update tasks set isDeleted = true where _id = :id',
+    {
+      persistenceDirectory,
+    },
+  )
+
+  const [setCompletedByID] = useExecuteQuery<
+    unknown,
+    Pick<Task, '_id' | 'isCompleted'>
+  >('update tasks set isCompleted = :isCompleted where _id = :_id', {
+    persistenceDirectory,
   })
 
   if (isLoading) {
@@ -43,12 +75,13 @@ const App: React.FC<Props> = ({ path }) => {
     <div className="App" style={styles.app}>
       <div className="header" style={styles.header}>
         <p>
-          Using Ditto with path &ldquo;{path}&ldquo; and query &ldquo;
+          Using Ditto with persistence directory &ldquo;{persistenceDirectory}
+          &ldquo; and query &ldquo;
           {storeObserver.queryString}&ldquo;
         </p>
         <span>Number of tasks {tasks?.length}</span>
 
-        {error && <p style={styles.error}>Error: {error.message}</p>}
+        {isError(error) && <p style={styles.error}>Error: {error.message}</p>}
 
         <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
           <input
@@ -64,6 +97,7 @@ const App: React.FC<Props> = ({ path }) => {
                 value: {
                   body: newBodyText,
                   isCompleted: false,
+                  isDeleted: false,
                 },
               })
               setNewBodyText('')
@@ -85,20 +119,16 @@ const App: React.FC<Props> = ({ path }) => {
               </p>
               <button
                 onClick={() => {
-                  removeByID({ _id: task.value._id })
+                  removeByID({ id: task.value._id })
                 }}
               >
                 Remove
               </button>
               <button
                 onClick={() => {
-                  updateByID({
+                  setCompletedByID({
                     _id: task.value._id,
-                    updateClosure: (mutableDoc) => {
-                      mutableDoc
-                        .at('isCompleted')
-                        .set(!mutableDoc.value.isCompleted)
-                    },
+                    isCompleted: !task.value.isCompleted,
                   })
                 }}
               >
