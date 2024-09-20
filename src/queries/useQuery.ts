@@ -128,7 +128,7 @@ export function useQuery<
   // We default to any here and let the user specify the type if they want.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   T = any,
-  U extends DQLQueryArguments = DQLQueryArguments,
+  U extends DQLQueryArguments | undefined | null = DQLQueryArguments,
 >(query: string, params?: UseQueryParams<U>): UseQueryReturn<T, U> {
   const { ditto } = useDitto(params?.persistenceDirectory)
   const [queryResult, setQueryResult] = useState<QueryResult<T>>()
@@ -136,7 +136,7 @@ export function useQuery<
   const [isLoading, setIsLoading] = useState(true)
   const storeObserverRef = useRef<StoreObserver<T, U>>()
   const syncSubscriptionRef = useRef<SyncSubscription>()
-  const paramsVersion = useVersion(params)
+  const queryArgumentsVersion = useVersion(params?.queryArguments)
 
   const reset = useCallback(async () => {
     const configureQuery = (onCompletion: () => void) => {
@@ -158,7 +158,8 @@ export function useQuery<
         )
       } catch (e: unknown) {
         setError(e)
-        params?.onError?.(e)
+        if (params?.onError) params.onError(e)
+        else console.error(e)
       }
 
       if (!params?.localOnly) {
@@ -169,7 +170,8 @@ export function useQuery<
           )
         } catch (e: unknown) {
           setError(e)
-          params?.onError?.(e)
+          if (params?.onError) params.onError(e)
+          else console.error(e)
         }
       }
     }
@@ -180,10 +182,11 @@ export function useQuery<
       configureQuery(resolve)
     })
 
-    // `paramsVersion` is not recognized by eslint as a required dependency but
-    // ensures that the hook is reset when deep changes occur in `params`.
+    // `queryArgumentsVersion` is not recognized by eslint as a required
+    // dependency but ensures that the hook is reset when deep changes occur in
+    // `queryArguments`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ditto, paramsVersion, query])
+  }, [ditto, queryArgumentsVersion, query])
 
   useEffect(() => {
     reset().then(() => setIsLoading(false))
@@ -191,7 +194,7 @@ export function useQuery<
       storeObserverRef.current?.cancel()
       syncSubscriptionRef.current?.cancel()
     }
-  }, [ditto, paramsVersion, reset])
+  }, [ditto, queryArgumentsVersion, reset])
 
   return {
     ditto,

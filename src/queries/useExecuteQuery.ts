@@ -191,7 +191,7 @@ export function useExecuteQuery<
 ): UseExecuteQueryReturn<T, U> {
   const { queryArguments, onError, persistenceDirectory } = params ?? {}
   const { dittoHash, isLazy, load } = useDittoContext()
-  const paramsVersion = useVersion(params)
+  const queryArgumentsVersion = useVersion(params?.queryArguments)
 
   const [ditto, setDitto] = useState<Ditto>()
   const [error, setError] = useState<unknown>(null)
@@ -209,10 +209,9 @@ export function useExecuteQuery<
       setIsLoading(true)
       setError(null)
 
-      let nextDitto: Ditto | undefined
+      let nextDitto: Ditto
       if (isLazy) {
         nextDitto = (await load(persistenceDirectory)) as Ditto
-        console.log(`nextDitto: ${nextDitto?.persistenceDirectory}`)
       } else {
         nextDitto = dittoHash[persistenceDirectory ?? Object.keys(dittoHash)[0]]
       }
@@ -251,23 +250,26 @@ export function useExecuteQuery<
         setMutatedDocumentIDs(result.mutatedDocumentIDs())
       } catch (e: unknown) {
         setError(e)
-        onError?.(e)
+        params?.onError?.(e)
         localOnError?.(e)
+        if (!params?.onError && !localOnError) {
+          console.error(e)
+        }
       } finally {
         setIsLoading(false)
       }
     },
 
-    // ESlint does not recognize `paramsVersion` as a dependency but it should
-    // be as it ensures that deep changes in `queryArguments` trigger a re-run
-    // of the hook.
+    // ESlint does not recognize `queryArgumentsVersion` as a dependency but it
+    // should be as it ensures that deep changes in `queryArguments` trigger a
+    // re-run of the hook.
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       dittoHash,
       isLazy,
       load,
       onError,
-      paramsVersion,
+      queryArgumentsVersion,
       persistenceDirectory,
       query,
       queryArguments,
