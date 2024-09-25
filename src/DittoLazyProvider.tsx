@@ -6,8 +6,8 @@ import {
   DittoHash,
   RegisterDitto,
   UnregisterDitto,
-} from './DittoContext'
-import { ProviderState, RenderFunction } from './DittoProvider'
+} from './DittoContext.js'
+import { ProviderState, RenderFunction } from './DittoProvider.js'
 
 export interface DittoLazyProviderProps {
   initOptions?: InitOptions

@@ -1,7 +1,7 @@
 import { Ditto } from '@dittolive/ditto'
 import { useEffect, useState } from 'react'
 
-import { useDittoContext } from '.'
+import { useDittoContext } from './index.js'
 
 export interface DittoHookProps {
   ditto: Ditto | null

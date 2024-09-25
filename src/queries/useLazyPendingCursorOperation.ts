@@ -9,8 +9,8 @@ import {
 } from '@dittolive/ditto'
 import { useEffect, useRef, useState } from 'react'
 
-import { useDittoContext } from '../DittoContext'
-import { LiveQueryParams } from './usePendingCursorOperation'
+import { useDittoContext } from '../DittoContext.js'
+import { LiveQueryParams } from './usePendingCursorOperation.js'
 
 export interface LazyPendingCursorOperationReturn {
   /** The initialized Ditto instance if one could be found for the provided path. */

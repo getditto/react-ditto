@@ -1,7 +1,7 @@
 import { Ditto, Observer, Peer } from '@dittolive/ditto'
 import { useEffect, useState } from 'react'
 
-import { useDitto } from '../useDitto'
+import { useDitto } from '../useDitto.js'
 
 export interface UsePeersParams {
   /**

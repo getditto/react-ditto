@@ -1,26 +1,22 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["es6", "dom"],
+    "target": "es6",
+    "lib": ["ESNext", "dom"],
     "allowJs": true,
     "module": "commonjs",
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,
     "sourceMap": true,
+    "inlineSources": true,
     "jsx": "react",
     "esModuleInterop": true,
     "declaration": true,
-    "declarationDir": "./dist",
+    "declarationDir": "./dist/cjs",
     "declarationMap": true,
-    "outDir": "./dist",
-    "sourceRoot": "./src"
+    "outDir": "./dist/cjs"
   },
   "compileOnSave": false,
-  "exclude": [
-    "node_modules"
-  ],
-  "include": [
-    "src"
-  ]
+  "exclude": ["node_modules"],
+  "include": ["src"]
 }

@@ -8,8 +8,8 @@ import {
 } from '@dittolive/ditto'
 import { useEffect, useRef, useState } from 'react'
 
-import { useDittoContext } from '../DittoContext'
-import { UsePendingIDSpecificOperationParams } from './usePendingIDSpecificOperation'
+import { useDittoContext } from '../DittoContext.js'
+import { UsePendingIDSpecificOperationParams } from './usePendingIDSpecificOperation.js'
 
 export interface LazyPendingIDSpecificOperationReturn {
   /** The initialized Ditto instance if one could be found for the provided path. */
