@@ -5,7 +5,9 @@
 
 This is a React wrapper library for [Ditto](https://www.ditto.live).
 
-Currently, this project works in a web browser, NodeJS and Electron environment. This project will soon have support for React Native environments. If you're interested in React Native please send us an email at [contact@ditto.live](contact@ditto.live)
+Currently, this project works in web browsers, Node.JS and Electron environments. This project will soon have support for React Native environments. Please reach out to us using the email address below if you are interested in support for React Native.
+
+If you have questions about this project or require any assistance, please get in touch via [contact@ditto.live](contact@ditto.live).
 
 ## Installation
 
