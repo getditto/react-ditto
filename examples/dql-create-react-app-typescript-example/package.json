@@ -1,0 +1,61 @@
+{
+  "name": "create-react-app-typescript-example",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@dittolive/ditto": "link:../../node_modules/@dittolive/ditto",
+    "@dittolive/react-ditto": "link:../..",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^15.0.2",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.12.7",
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
+    "react": "link:../../node_modules/react",
+    "react-dom": "link:../../node_modules/react-dom",
+    "react-scripts": "5.0.1",
+    "react-select": "^5.8.0",
+    "typescript": "^4.9",
+    "uuid": "^9.0.1",
+    "web-vitals": "^3.5.2"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/uuid": "^9.0.8",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "9.1.0",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-simple-import-sort": "^12.1.0",
+    "prettier": "3.2.5",
+    "prettier-eslint": "^16.3.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

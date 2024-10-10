@@ -121,6 +121,8 @@ export function usePendingCursorOperation(
   const paramsVersion = useVersion(params)
 
   const createLiveQuery = () => {
+    // It seems like this would not change the live query when params are
+    // updated unless `reset()` is called.
     if (ditto && !liveQueryRef.current) {
       const nextCollection = ditto.store.collection(params.collection)
       let cursor: PendingCursorOperation
