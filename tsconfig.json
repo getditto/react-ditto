@@ -9,7 +9,7 @@
     "preserveConstEnums": true,
     "sourceMap": true,
     "inlineSources": true,
-    "jsx": "react",
+    "jsx": "react-jsx",
     "esModuleInterop": true,
     "declaration": true,
     "declarationDir": "./dist/cjs",

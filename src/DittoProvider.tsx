@@ -73,7 +73,7 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
             if (!(ditto instanceof Ditto)) {
               throw new Error(
                 // Type is `never` because correct use never reaches this point
-                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+
                 `expected an array of Ditto instances to be returned by the setup function, but at least one element is not a Ditto instance (got ${ditto})`,
               )
             }
@@ -85,7 +85,7 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
           if (!(ditto instanceof Ditto)) {
             throw new Error(
               // Type is `never` because correct use never reaches this point
-              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+
               `expected a Ditto instance to be returned by the setup function, but got ${ditto}`,
             )
           }

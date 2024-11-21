@@ -1,4 +1,0 @@
-node_modules
-dist
-!.mocharc.js
-karma.conf.js
