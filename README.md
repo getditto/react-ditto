@@ -170,9 +170,9 @@ const createDittoInstance = (forPath: string) => {
 
 You can find more information on working with online apps [here](#working-with-online-apps)
 
-## Quick Start with `create-react-app`
+## Quick Start with `vite`
 
-This is a quick guide on using Ditto with `create-react-app` builds.
+This is a quick guide on using Ditto with `vite` builds.
 
 1. Install this library with npm or yarn
 
@@ -189,7 +189,7 @@ yarn add @dittolive/ditto @dittolive/react-ditto
 2. In `./src/index.js`, or `./src/index.tsx` if you're using typescript, setup Ditto with the `DittoProvider` like so:
 
 ```tsx
-// ... other imports from create-react-app above
+// ... other imports from vite above
 import { Ditto } from "@dittolive/ditto";
 import {
   DittoProvider,

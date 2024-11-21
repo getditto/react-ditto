@@ -19,10 +19,10 @@ jobs:
       - name: 'Install and Build'
         run: |
           yarn
-          cd examples/create-react-app-typescript-example
+          cd examples/vite-typescript-example
           yarn
           cd -
-          yarn types
+          yarn type-check
           yarn lint
           yarn build
 

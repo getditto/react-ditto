@@ -1,13 +1,13 @@
 import './App.css'
 
 import { useMutations, usePendingCursorOperation } from '@dittolive/react-ditto'
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 type Props = {
   path: string
 }
 
-const App: React.FC<Props> = ({ path }) => {
+const App = ({ path }: Props) => {
   const [newBodyText, setNewBodyText] = useState<string>('')
   const params = useMemo(
     () => ({

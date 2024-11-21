@@ -10,5 +10,5 @@ import '@testing-library/jest-dom'
 // cf. https://github.com/jsdom/jsdom/issues/2524
 import { TextEncoder, TextDecoder } from 'util'
 global.TextEncoder = TextEncoder
-// @ts-ignore
+// @ts-expect-error: The type mismatch is acceptable
 global.TextDecoder = TextDecoder
