@@ -87,10 +87,6 @@
     "typescript-eslint": "^8.15.0",
     "uuid": "^9.0.1"
   },
-  "resolutions": {
-    "cookie": ">=0.7.0",
-    "ws": ">=8.17.1"
-  },
   "browserslist": [
     "Chrome >= 84",
     "Edge >= 84",
