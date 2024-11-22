@@ -22,7 +22,7 @@ jobs:
           cd examples/vite-typescript-example
           yarn
           cd -
-          yarn type-check
+          yarn types
           yarn lint
           yarn build
 
