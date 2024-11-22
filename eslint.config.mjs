@@ -15,6 +15,7 @@ export default [
       '**/target/**',
       '**/node_modules/**',
       'karma.conf.js',
+      'documentation-website/**',
     ],
   },
   {
