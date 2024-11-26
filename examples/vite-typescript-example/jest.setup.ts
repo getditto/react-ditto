@@ -8,7 +8,7 @@ import '@testing-library/jest-dom'
 // even though they have broad support in modern browsers. This polyfill adds them to the global
 // object so that they can be used by @dittolive/ditto.
 // cf. https://github.com/jsdom/jsdom/issues/2524
-import { TextEncoder, TextDecoder } from 'util'
+import { TextDecoder, TextEncoder } from 'util'
 global.TextEncoder = TextEncoder
-// @ts-ignore
+// @ts-expect-error: The type mismatch is acceptable
 global.TextDecoder = TextDecoder

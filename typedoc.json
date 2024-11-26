@@ -1,6 +1,6 @@
 {
   "entryPoints": ["./src/index.tsx"],
-  "exclude": "./src/**/*.spec.(ts|tsx)",
+  "exclude": ["./src/**/*.spec.(ts|tsx)"],
   "out": "./documentation-website",
   "githubPages": true
 }

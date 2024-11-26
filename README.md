@@ -28,12 +28,12 @@ yarn add @dittolive/ditto @dittolive/react-ditto
 ```tsx
 <DittoProvider setup={createDittoInstance}>
   {({ loading, error }) => {
-    if (loading) return <span>Loading Ditto...</span>;
+    if (loading) return <span>Loading Ditto...</span>
     if (error)
       return (
         <span>There was an error loading Ditto. Error: {error.toString()}</span>
-      );
-    return <App />;
+      )
+    return <App />
   }}
 </DittoProvider>
 ```
@@ -59,14 +59,14 @@ const createDittoInstance = () => {
   return ditto
 }
 
-<DittoProvider setup={createDittoInstance}>
+;<DittoProvider setup={createDittoInstance}>
   {({ loading, error }) => {
-    if (loading) return <span>Loading Ditto...</span>;
+    if (loading) return <span>Loading Ditto...</span>
     if (error)
       return (
         <span>There was an error loading Ditto. Error: {error.toString()}</span>
-      );
-    return <App />;
+      )
+    return <App />
   }}
 </DittoProvider>
 ```
@@ -91,14 +91,14 @@ const createDittoInstance = async (path) => {
   }
 }
 
-<DittoLazyProvider setup={createDittoInstance}>
+;<DittoLazyProvider setup={createDittoInstance}>
   {({ loading, error }) => {
-    if (loading) return <span>Loading Ditto...</span>;
+    if (loading) return <span>Loading Ditto...</span>
     if (error)
       return (
         <span>There was an error loading Ditto. Error: {error.toString()}</span>
-      );
-    return <App />;
+      )
+    return <App />
   }}
 </DittoLazyProvider>
 ```
@@ -132,16 +132,20 @@ const createDittoInstance = (forPath: string) => {
 ### Online Identities
 
 ```ts
-const { create, getAuthenticationRequired, getTokenExpiresInSeconds } = useOnlineIdentity()
+const { create, getAuthenticationRequired, getTokenExpiresInSeconds } =
+  useOnlineIdentity()
 
 const createDittoInstance = (forPath: string) => {
   // Example of how to create an online instance with authentication enabled
   const dittoOnline = new Ditto(
-    create({
-      // If you're using the Ditto cloud, this ID should be the app ID shown on your app settings page on the portal.
-      appID: uuidv4(),
-      enableDittoCloudSync: true,
-    }, forPath),
+    create(
+      {
+        // If you're using the Ditto cloud, this ID should be the app ID shown on your app settings page on the portal.
+        appID: uuidv4(),
+        enableDittoCloudSync: true,
+      },
+      forPath,
+    ),
     forPath,
   )
   dittoOnline.startSync()
@@ -158,8 +162,8 @@ const createDittoInstance = (forPath: string) => {
     create({
       // If you're using the Ditto cloud, this ID should be the app ID shown on your app settings page on the portal.
       appID: uuidv4(),
-      // If you're using the Ditto cloud, this token should be the Online Playground Authentication Token shown on your app settings page on the portal. 
-      token: 'my-token'
+      // If you're using the Ditto cloud, this token should be the Online Playground Authentication Token shown on your app settings page on the portal.
+      token: 'my-token',
     }),
     forPath,
   )
@@ -170,9 +174,9 @@ const createDittoInstance = (forPath: string) => {
 
 You can find more information on working with online apps [here](#working-with-online-apps)
 
-## Quick Start with `create-react-app`
+## Quick Start with `vite`
 
-This is a quick guide on using Ditto with `create-react-app` builds.
+This is a quick guide on using Ditto with `vite` builds.
 
 1. Install this library with npm or yarn
 
@@ -189,12 +193,12 @@ yarn add @dittolive/ditto @dittolive/react-ditto
 2. In `./src/index.js`, or `./src/index.tsx` if you're using typescript, setup Ditto with the `DittoProvider` like so:
 
 ```tsx
-// ... other imports from create-react-app above
-import { Ditto } from "@dittolive/ditto";
+// ... other imports from vite above
+import { Ditto } from '@dittolive/ditto'
 import {
   DittoProvider,
   useOnlinePlaygroundIdentity,
-} from "@dittolive/react-ditto";
+} from '@dittolive/react-ditto'
 
 /**
  * This configuration is optional for web browser-based react applications. This
@@ -206,12 +210,12 @@ import {
  * details.
  **/
 const initOptions = {
-  webAssemblyModule: "/ditto.wasm",
-};
+  webAssemblyModule: '/ditto.wasm',
+}
 
 /** Example of a React root component setting up a single ditto instance that uses a development connection */
 const RootComponent = () => {
-  const { create } = useOnlinePlaygroundIdentity();
+  const { create } = useOnlinePlaygroundIdentity()
 
   return (
     <DittoProvider
@@ -221,43 +225,43 @@ const RootComponent = () => {
             // Create an app on https://portal.ditto.live/ and follow the
             // instructions to get your token. Replace the placeholders below
             // with your app id and token.
-            appID: "your-app-id",
-            token: "your-online-playground-token",
+            appID: 'your-app-id',
+            token: 'your-online-playground-token',
           }),
-          "testing"
-        );
-        await ditto.disableSyncWithV3();
-        ditto.startSync();
-        return ditto;
+          'testing',
+        )
+        await ditto.disableSyncWithV3()
+        ditto.startSync()
+        return ditto
       }}
       /* initOptions={initOptions} */
     >
       {({ loading, error }) => {
-        if (loading) return <p>Loading</p>;
-        if (error) return <p>{error.message}</p>;
-        return <App />;
+        if (loading) return <p>Loading</p>
+        if (error) return <p>{error.message}</p>
+        return <App />
       }}
     </DittoProvider>
-  );
-};
+  )
+}
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById('root'))
 root.render(
   <React.StrictMode>
     <RootComponent />
-  </React.StrictMode>
-);
+  </React.StrictMode>,
+)
 ```
 
 3. In your `App` component, you can now use hooks like `usePendingCursorOperation` or `usePendingIDSpecificOperation` to get your documents like so:
 
 ```tsx
-import { usePendingCursorOperation, useMutations } from '@dittolive/react-ditto';
+import { usePendingCursorOperation, useMutations } from '@dittolive/react-ditto'
 
 export default function App() {
   const { documents } = usePendingCursorOperation({
     collection: 'tasks',
-  });
+  })
 
   const { removeByID, upsert } = useMutations({ collection: 'tasks' })
 
@@ -282,26 +286,26 @@ export default function App() {
 Alternatively, you can also choose to go with the lazy variants of these hooks (`useLazyPendingCursorOperation` and `useLazyPendingIDSpecificOperation`), in order to launch queries on the data store as a response to a user event:
 
 ```tsx
-import { useLazyPendingCursorOperation } from '@dittolive/react-ditto';
+import { useLazyPendingCursorOperation } from '@dittolive/react-ditto'
 
 export default function App() {
-  const { documents, exec } = useLazyPendingCursorOperation();
+  const { documents, exec } = useLazyPendingCursorOperation()
 
   if (!documents?.length) {
     return (
-      <button onClick={() => exec({ collection: "tasks" })}>
+      <button onClick={() => exec({ collection: 'tasks' })}>
         Click to load!
       </button>
-    );
+    )
   }
-  
+
   return (
     <ul>
       {documents.map((doc) => (
         <li key={doc._id}>{JSON.stringify(doc.value)}</li>
       ))}
     </ul>
-  );
+  )
 }
 ```
 
@@ -314,22 +318,28 @@ Using the [Portal](http://portal.ditto.live) you can create apps that sync to th
 import { useEffect } from 'react'
 
 const RootComponent = () => {
-  const { create, getAuthenticationRequired, getTokenExpiresInSeconds } = useOnlineIdentity()
+  const { create, getAuthenticationRequired, getTokenExpiresInSeconds } =
+    useOnlineIdentity()
 
   return (
     <>
       <DittoProvider
         setup={() => {
-          const ditto = new Ditto(create({ appID: 'your-app-id', path: '/my-online-path' }, '/my-online-path'))
+          const ditto = new Ditto(
+            create(
+              { appID: 'your-app-id', path: '/my-online-path' },
+              '/my-online-path',
+            ),
+          )
           ditto.startSync()
           return ditto
         }}
         /*initOptions={initOptions} */
       >
         {({ loading, error, ditto }) => {
-          if (loading) return <p>Loading</p>;
-          if (error) return <p>{error.message}</p>;
-          return <App />;
+          if (loading) return <p>Loading</p>
+          if (error) return <p>{error.message}</p>
+          return <App />
         }}
       </DittoProvider>
     </>
@@ -340,24 +350,22 @@ const App = () => {
   const ditto = useDitto()
 
   useEffect(() => {
-    if(ditto) {
-      ditto
-        .auth
+    if (ditto) {
+      ditto.auth
         .loginWithToken('token', 'provider')
         .then(() => console.log('Login successful'))
     }
   }, [ditto])
-  
-  return (<div>Hello world!</div>)
-}
 
+  return <div>Hello world!</div>
+}
 ```
 
 For Online apps, the `useOnlineIdentity` hook returns the following set of properties that can be used to manage authentication for your app:
 
-* `create`: Creates an `onlineWithAuthentication` object preconfigured such that the hook can manage the authentication flow using the exposed `authenticate` function.
-* `getAuthenticationRequired`: Is a function that takes in the app path for which to check the authentication required state, and will return true if your Ditto instance is requiring the current user to authenticate with the app. You can configure authentication webhooks on the [Portal](http://portal.ditto.live), from your app settings area, in order to provide your own set of validation services for your app.
-* `getTokenExpiresInSeconds`: Is a function that takes in the app path for which to check the token expiry second, and returns the number of seconds in which your current token expires if this has been reported by the Ditto SDK.
+- `create`: Creates an `onlineWithAuthentication` object preconfigured such that the hook can manage the authentication flow using the exposed `authenticate` function.
+- `getAuthenticationRequired`: Is a function that takes in the app path for which to check the authentication required state, and will return true if your Ditto instance is requiring the current user to authenticate with the app. You can configure authentication webhooks on the [Portal](http://portal.ditto.live), from your app settings area, in order to provide your own set of validation services for your app.
+- `getTokenExpiresInSeconds`: Is a function that takes in the app path for which to check the token expiry second, and returns the number of seconds in which your current token expires if this has been reported by the Ditto SDK.
 
 ## Building this library and running tests
 

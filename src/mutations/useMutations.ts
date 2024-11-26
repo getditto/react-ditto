@@ -38,7 +38,7 @@ export interface UpdateByIDParams {
    * The _id of the document to remove
    */
   // The `DocumentIDValue` type needs to be narrowed in @dittolive/ditto
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+
   _id: DocumentID | DocumentIDValue
   /**
    * The update function to perform on the specified document
