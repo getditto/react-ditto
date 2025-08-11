@@ -1,7 +1,6 @@
 import { Ditto } from '@dittolive/ditto'
 import { render, renderHook, screen, waitFor } from '@testing-library/react'
 import { expect } from 'chai'
-import React from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { DittoProvider } from '../DittoProvider'

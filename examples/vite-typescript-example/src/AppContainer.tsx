@@ -49,7 +49,6 @@ const AppContainer: React.FC = () => {
       '/path-online',
     )
     return [dittoDevelopment, dittoOnline]
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }
 
   return (

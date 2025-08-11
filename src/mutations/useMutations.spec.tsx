@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
 import { renderHook, waitFor } from '@testing-library/react'
 import { expect } from 'chai'
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { DittoProvider } from '../DittoProvider'

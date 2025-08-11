@@ -94,7 +94,6 @@ describe('useQuery', function () {
 
     for (let i = 1; i < 6; i++) {
       expect(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         !!result.current.items.find((item) => item.value.document === i),
       ).to.eq(true)
     }
@@ -122,7 +121,6 @@ describe('useQuery', function () {
 
     for (let i = 1; i < 6; i++) {
       expect(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         !!result.current.items.find((doc) => doc.value.document === i),
       ).to.eq(true)
     }
@@ -151,7 +149,6 @@ describe('useQuery', function () {
 
     for (let i = 4; i < 6; i++) {
       expect(
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         !!result.current.items.find((doc) => doc.value.document === i),
       ).to.eq(true)
     }
