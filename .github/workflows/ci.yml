@@ -21,7 +21,11 @@ jobs:
           yarn
           cd examples/vite-typescript-example
           yarn
-          cd -
+          yarn build
+          cd ../vite-typescript-example-legacy
+          yarn
+          yarn build
+          cd ../..
           yarn types
           yarn lint
           yarn build

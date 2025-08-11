@@ -1,7 +1,7 @@
 import './App.css'
 
 import { useExecuteQuery, useQuery } from '@dittolive/react-ditto'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 type Task = {
   _id: string
@@ -10,30 +10,11 @@ type Task = {
   isDeleted: boolean
 }
 
-const styles: Record<string, React.CSSProperties> = {
-  app: {
-    maxWidth: '600px',
-    margin: '3em auto',
-    textAlign: 'left',
-  },
-  error: {
-    color: 'red',
-  },
-  header: {
-    backgroundColor: '#f5f5f5',
-    padding: '1em',
-  },
-}
-
 type Props = {
   path: string
 }
 
-function isError(error: unknown): error is Error {
-  return error instanceof Error
-}
-
-const App: React.FC<Props> = ({ path: persistenceDirectory }) => {
+const App = ({ path: persistenceDirectory }: Props) => {
   const [newBodyText, setNewBodyText] = useState<string>('')
   const {
     items: tasks,
@@ -41,19 +22,17 @@ const App: React.FC<Props> = ({ path: persistenceDirectory }) => {
     storeObserver,
     isLoading,
   } = useQuery<Task>('select * from tasks where isDeleted = false', {
-    queryArguments: { val: false },
     persistenceDirectory,
   })
 
-  const [upsert] = useExecuteQuery<unknown, { value: Partial<Task> }>(
+  const [upsert] = useExecuteQuery<void, { value: Partial<Task> }>(
     'insert into tasks documents (:value) on id conflict do update',
     {
-      queryArguments: { value: { isDeleted: false } },
       persistenceDirectory,
     },
   )
 
-  const [removeByID] = useExecuteQuery<unknown, { id: string }>(
+  const [removeByID] = useExecuteQuery<void, { id: string }>(
     'update tasks set isDeleted = true where _id = :id',
     {
       persistenceDirectory,
@@ -61,7 +40,7 @@ const App: React.FC<Props> = ({ path: persistenceDirectory }) => {
   )
 
   const [setCompletedByID] = useExecuteQuery<
-    unknown,
+    void,
     Pick<Task, '_id' | 'isCompleted'>
   >('update tasks set isCompleted = :isCompleted where _id = :_id', {
     persistenceDirectory,
@@ -72,40 +51,39 @@ const App: React.FC<Props> = ({ path: persistenceDirectory }) => {
   }
 
   return (
-    <div className="App" style={styles.app}>
-      <div className="header" style={styles.header}>
+    <div className="App">
+      <>
         <p>
-          Using Ditto with persistence directory &ldquo;{persistenceDirectory}
-          &ldquo; and query &ldquo;
-          {storeObserver.queryString}&ldquo;
+          Using Ditto with path &ldquo;{persistenceDirectory}&ldquo; and query
+          &ldquo;{storeObserver?.queryString}&ldquo;
         </p>
         <span>Number of tasks {tasks?.length}</span>
 
-        {isError(error) && <p style={styles.error}>Error: {error.message}</p>}
+        {error && <p style={{ color: 'red' }}>Error: {String(error)}</p>}
+      </>
 
-        <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-          <input
-            type="text"
-            placeholder="Your New Task"
-            value={newBodyText}
-            onChange={(e) => setNewBodyText(e.currentTarget.value)}
-          />
-          <button
-            type="button"
-            onClick={() => {
-              upsert({
-                value: {
-                  body: newBodyText,
-                  isCompleted: false,
-                  isDeleted: false,
-                },
-              })
-              setNewBodyText('')
-            }}
-          >
-            Add
-          </button>
-        </div>
+      <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+        <input
+          type="text"
+          placeholder="Your New Task"
+          value={newBodyText}
+          onChange={(e) => setNewBodyText(e.currentTarget.value)}
+        />
+        <button
+          type="button"
+          onClick={() => {
+            upsert({
+              value: {
+                body: newBodyText,
+                isCompleted: false,
+                isDeleted: false,
+              },
+            })
+            setNewBodyText('')
+          }}
+        >
+          Add
+        </button>
       </div>
       <ul className="no-bullets">
         {tasks.map((task) => {
