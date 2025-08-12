@@ -1,31 +1,66 @@
 import './App.css'
 
-import { useMutations, usePendingCursorOperation } from '@dittolive/react-ditto'
-import { useMemo, useState } from 'react'
+import { useExecuteQuery, useQuery } from '@dittolive/react-ditto'
+import { useState } from 'react'
+
+type Task = {
+  _id: string
+  body: string
+  isCompleted: boolean
+  isDeleted: boolean
+}
 
 type Props = {
   path: string
 }
 
-const App = ({ path }: Props) => {
+const App = ({ path: persistenceDirectory }: Props) => {
   const [newBodyText, setNewBodyText] = useState<string>('')
-  const params = useMemo(
-    () => ({
-      path: path,
-      collection: 'tasks',
-    }),
-    [path],
-  )
-  const { documents: tasks } = usePendingCursorOperation(params)
-  const { upsert, removeByID, updateByID } = useMutations({
-    collection: 'tasks',
-    path: path,
+  const {
+    items: tasks,
+    error,
+    storeObserver,
+    isLoading,
+  } = useQuery<Task>('select * from tasks where isDeleted = false', {
+    persistenceDirectory,
   })
+
+  const [upsert] = useExecuteQuery<void, { value: Partial<Task> }>(
+    'insert into tasks documents (:value) on id conflict do update',
+    {
+      persistenceDirectory,
+    },
+  )
+
+  const [removeByID] = useExecuteQuery<void, { id: string }>(
+    'update tasks set isDeleted = true where _id = :id',
+    {
+      persistenceDirectory,
+    },
+  )
+
+  const [setCompletedByID] = useExecuteQuery<
+    void,
+    Pick<Task, '_id' | 'isCompleted'>
+  >('update tasks set isCompleted = :isCompleted where _id = :_id', {
+    persistenceDirectory,
+  })
+
+  if (isLoading) {
+    return <p>Loading...</p>
+  }
 
   return (
     <div className="App">
-      <p>Using Ditto with path &ldquo;{path}&ldquo;</p>
-      <span>Number of tasks {tasks.length}</span>
+      <>
+        <p>
+          Using Ditto with path &ldquo;{persistenceDirectory}&ldquo; and query
+          &ldquo;{storeObserver?.queryString}&ldquo;
+        </p>
+        <span>Number of tasks {tasks?.length}</span>
+
+        {error && <p style={{ color: 'red' }}>Error: {String(error)}</p>}
+      </>
 
       <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>
         <input
@@ -41,6 +76,7 @@ const App = ({ path }: Props) => {
               value: {
                 body: newBodyText,
                 isCompleted: false,
+                isDeleted: false,
               },
             })
             setNewBodyText('')
@@ -52,8 +88,8 @@ const App = ({ path }: Props) => {
       <ul className="no-bullets">
         {tasks.map((task) => {
           return (
-            <li key={task.id.value}>
-              <p>DocumentId: {task.id.value}</p>
+            <li key={task.value._id}>
+              <p>DocumentId: {task.value._id}</p>
               <p>Body: {task.value.body}</p>
               <p>
                 Is Completed:{' '}
@@ -61,20 +97,16 @@ const App = ({ path }: Props) => {
               </p>
               <button
                 onClick={() => {
-                  removeByID({ _id: task.id })
+                  removeByID({ id: task.value._id })
                 }}
               >
                 Remove
               </button>
               <button
                 onClick={() => {
-                  updateByID({
-                    _id: task.id,
-                    updateClosure: (mutableDoc) => {
-                      mutableDoc
-                        .at('isCompleted')
-                        .set(!mutableDoc.value.isCompleted)
-                    },
+                  setCompletedByID({
+                    _id: task.value._id,
+                    isCompleted: !task.value.isCompleted,
                   })
                 }}
               >

@@ -39,7 +39,7 @@ const AuthenticationPanel: React.FC<Props> = ({ path, isAuthRequired }) => {
         onSubmit={(evt) => {
           evt.preventDefault()
           ditto.auth
-            .login(token, provider)
+            .loginWithToken(token, provider)
             .then(() => setIsAuthenticated(ditto.auth.status.isAuthenticated))
             .catch((err) => {
               setAuthError(err)

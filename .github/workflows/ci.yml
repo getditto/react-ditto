@@ -16,14 +16,28 @@ jobs:
       - name: 'Setup Chrome'
         uses: browser-actions/setup-chrome@latest
 
-      - name: 'Install and Build'
+      - name: 'Install Dependencies'
+        run: yarn
+
+      - name: 'Type Check'
+        run: yarn types
+
+      - name: 'Lint'
+        run: yarn lint
+
+      - name: 'Build Main Package'
+        run: yarn build
+
+      - name: 'Build Example - Vite TypeScript DQL'
         run: |
-          yarn
           cd examples/vite-typescript-example
           yarn
-          cd -
-          yarn types
-          yarn lint
+          yarn build
+
+      - name: 'Build Example - Vite TypeScript Legacy'
+        run: |
+          cd examples/vite-typescript-example-legacy
+          yarn
           yarn build
 
       - name: 'Run Tests'

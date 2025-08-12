@@ -1,6 +1,32 @@
-# Getting Started with Vite
+# React Ditto Example with Vite and TypeScript
 
-This project was bootstrapped with [Vite](https://vite.dev/).
+This example demonstrates how to use Ditto with React, TypeScript, and Vite.
+
+> [!NOTE]
+> At least Ditto v4.10.0 is required for this example to work.
+
+## Ditto Authentication Setup
+
+For detailed information about Ditto authentication, refer to the [Ditto Authentication Documentation](https://docs.ditto.live/key-concepts/authentication-and-authorization).
+
+### Configuring the Application
+
+To use Online mode with Ditto Cloud authentication, you need to configure the following constants in `src/AppContainer.tsx`:
+
+1. **DITTO_APP_ID**: Your Ditto application ID
+2. **DITTO_AUTH_URL**: The authentication endpoint URL
+3. **DITTO_WEBSOCKET_URL**: The WebSocket endpoint URL
+
+All these values can be found in your Ditto portal on your app's settings page.
+
+### Using Online Mode
+
+When you select "Online" from the identity dropdown in the application:
+
+1. An authentication panel will appear at the bottom of the screen
+2. Enter the following credentials:
+   - **Provider**: The authentication provider name configured in your Ditto app (e.g., "development", "jwt", etc.)
+   - **Token**: The authentication token or credentials for your chosen provider
 
 ## Available Scripts
 
@@ -34,6 +60,8 @@ Runs the TypeScript type checker
 Runs `eslint` to find and fix any configured linting issues
 
 ## Learn More
+
+To learn about Ditto, check out the [Ditto documentation](https://docs.ditto.live/).
 
 You can learn more in the [Vite documentation](https://vite.dev/guide/).
 
