@@ -1,3 +1,5 @@
+// some of these types are used in API documentation but eslint does not
+// recognize that, so we disable the rule for these imports
 import {
   Ditto,
   DocumentID,
