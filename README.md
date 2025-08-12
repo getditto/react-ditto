@@ -253,28 +253,40 @@ root.render(
 )
 ```
 
-3. In your `App` component, you can now use hooks like `usePendingCursorOperation` or `usePendingIDSpecificOperation` to get your documents like so:
+3. In your `App` component, you can now use the DQL hooks `useQuery` and `useExecuteQuery` to interact with your documents:
 
 ```tsx
-import { usePendingCursorOperation, useMutations } from '@dittolive/react-ditto'
+import { useQuery, useExecuteQuery } from '@dittolive/react-ditto'
+
+interface Task {
+  _id: string
+  text: string
+  isCompleted: boolean
+}
 
 export default function App() {
-  const { documents } = usePendingCursorOperation({
-    collection: 'tasks',
-  })
+  // Query documents using DQL
+  const { documents } = useQuery<Task>('SELECT * FROM tasks WHERE isCompleted = false')
 
-  const { removeByID, upsert } = useMutations({ collection: 'tasks' })
+  // Execute DQL mutations
+  const [upsert] = useExecuteQuery<void, { value: Partial<Task> }>(
+    'INSERT INTO tasks DOCUMENTS (:value) ON ID CONFLICT DO UPDATE'
+  )
+
+  const [removeByID] = useExecuteQuery<void, { id: string }>(
+    'UPDATE tasks SET isDeleted = true WHERE _id = :id'
+  )
 
   return (
     <>
-      <button onClick={() => upsert({ value: { text: 'Hello' } })}>
+      <button onClick={() => upsert({ value: { text: 'Hello', isCompleted: false } })}>
         Add Task
       </button>
       <ul>
         {documents.map((doc) => (
           <li key={doc._id}>
-            {JSON.stringify(doc.value)}
-            <button onClick={() => removeByID({ _id: doc.id })}>remove</button>
+            {doc.text}
+            <button onClick={() => removeByID({ id: doc._id })}>remove</button>
           </li>
         ))}
       </ul>
@@ -283,28 +295,53 @@ export default function App() {
 }
 ```
 
-Alternatively, you can also choose to go with the lazy variants of these hooks (`useLazyPendingCursorOperation` and `useLazyPendingIDSpecificOperation`), in order to launch queries on the data store as a response to a user event:
+The `useQuery` hook automatically subscribes to changes and updates your component when the query results change. The `useExecuteQuery` hook returns a function that executes DQL mutations when called. It can also be used to lazily execute non-mutating queries in responce to user actions.
+
+For more complex scenarios, you can also pass parameters to your queries:
 
 ```tsx
-import { useLazyPendingCursorOperation } from '@dittolive/react-ditto'
+import { useQuery, useExecuteQuery } from '@dittolive/react-ditto'
 
 export default function App() {
-  const { documents, exec } = useLazyPendingCursorOperation()
+  const [filter, setFilter] = useState<'all' | 'completed' | 'active'>('all')
+  
+  // Query with parameters
+  const { documents } = useQuery<Task>(
+    'SELECT * FROM tasks WHERE (:filter = "all" OR isCompleted = :showCompleted)',
+    {
+      args: {
+        filter,
+        showCompleted: filter === 'completed'
+      }
+    }
+  )
 
-  if (!documents?.length) {
-    return (
-      <button onClick={() => exec({ collection: 'tasks' })}>
-        Click to load!
-      </button>
-    )
-  }
+  // Update task completion status
+  const [setCompleted] = useExecuteQuery<void, { id: string, isCompleted: boolean }>(
+    'UPDATE tasks SET isCompleted = :isCompleted WHERE _id = :id'
+  )
 
   return (
-    <ul>
-      {documents.map((doc) => (
-        <li key={doc._id}>{JSON.stringify(doc.value)}</li>
-      ))}
-    </ul>
+    <div>
+      <select value={filter} onChange={(e) => setFilter(e.target.value as any)}>
+        <option value="all">All</option>
+        <option value="completed">Completed</option>
+        <option value="active">Active</option>
+      </select>
+      
+      <ul>
+        {documents.map((doc) => (
+          <li key={doc._id}>
+            <input
+              type="checkbox"
+              checked={doc.isCompleted}
+              onChange={(e) => setCompleted({ id: doc._id, isCompleted: e.target.checked })}
+            />
+            {doc.text}
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }
 ```
