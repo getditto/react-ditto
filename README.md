@@ -284,9 +284,9 @@ export default function App() {
       </button>
       <ul>
         {documents.map((doc) => (
-          <li key={doc._id}>
-            {doc.text}
-            <button onClick={() => removeByID({ id: doc._id })}>remove</button>
+          <li key={doc.value._id}>
+            {doc.value.text}
+            <button onClick={() => removeByID({ id: doc.value._id })}>remove</button>
           </li>
         ))}
       </ul>
@@ -331,13 +331,13 @@ export default function App() {
       
       <ul>
         {documents.map((doc) => (
-          <li key={doc._id}>
+          <li key={doc.value._id}>
             <input
               type="checkbox"
-              checked={doc.isCompleted}
-              onChange={(e) => setCompleted({ id: doc._id, isCompleted: e.target.checked })}
+              checked={doc.value.isCompleted}
+              onChange={(e) => setCompleted({ id: doc.value._id, isCompleted: e.target.checked })}
             />
-            {doc.text}
+            {doc.value.text}
           </li>
         ))}
       </ul>
