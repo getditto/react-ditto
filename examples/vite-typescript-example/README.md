@@ -2,6 +2,9 @@
 
 This example demonstrates how to use Ditto with React, TypeScript, and Vite.
 
+> [!NOTE]
+> At least Ditto v4.10.0 is required for this example to work.
+
 ## Ditto Authentication Setup
 
 For detailed information about Ditto authentication, refer to the [Ditto Authentication Documentation](https://docs.ditto.live/key-concepts/authentication-and-authorization).
