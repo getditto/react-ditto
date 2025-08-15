@@ -40,7 +40,7 @@
     "react-dom": ">=16.0.0"
   },
   "resolutions": {
-    "tar-fs": "3.0.8"
+    "tar-fs": "3.0.9"
   },
   "devDependencies": {
     "@dittolive/ditto": "^4.0.0",
