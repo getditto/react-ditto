@@ -11,10 +11,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@dittolive/ditto": "link:../../node_modules/@dittolive/ditto",
-    "@dittolive/react-ditto": "link:../../",
-    "react": "link:../../node_modules/react",
-    "react-dom": "link:../../node_modules/react-dom",
+    "@dittolive/ditto": "file:../../node_modules/@dittolive/ditto",
+    "@dittolive/react-ditto": "file:../../",
+    "react": "file:../../node_modules/react",
+    "react-dom": "file:../../node_modules/react-dom",
     "react-select": "^5.8.0",
     "uuid": "^9.0.1"
   },
@@ -60,6 +60,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "overrides": {
+    "prettier-eslint": {
+      "@typescript-eslint/typescript-estree": {
+        "minimatch": "9.0.9"
+      }
+    }
   },
   "engines": {
     "node": ">=18"

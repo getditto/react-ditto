@@ -39,11 +39,13 @@
     "react": ">=16.0.0",
     "react-dom": ">=16.0.0"
   },
-  "resolutions": {
-    "tar-fs": "3.1.1",
-    "cipher-base": "^1.0.5",
-    "sha.js": "^2.4.12",
-    "glob": "^7.2.3"
+  "overrides": {
+    "prettier-eslint": {
+      "@typescript-eslint/typescript-estree": {
+        "minimatch": "9.0.9"
+      }
+    },
+    "serialize-javascript": "7.0.4"
   },
   "devDependencies": {
     "@dittolive/ditto": "^4.0.0",
