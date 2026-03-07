@@ -18,9 +18,9 @@ jobs:
 
       - name: 'Install and Build'
         run: |
-          npm install
+          npm ci
           cd examples/vite-typescript-example
-          npm install
+          npm ci
           cd -
           npm run types
           npm run lint
