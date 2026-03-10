@@ -18,19 +18,19 @@ jobs:
 
       - name: 'Install and Build'
         run: |
-          yarn
+          npm ci
           cd examples/vite-typescript-example
-          yarn
+          npm ci
           cd -
-          yarn types
-          yarn lint
-          yarn build
+          npm run types
+          npm run lint
+          npm run build
 
       - name: 'Run Tests'
-        run: CHROMIUM_BIN=$(which chrome) yarn test
+        run: CHROMIUM_BIN=$(which chrome) npm test
 
       - name: 'Generate Documentation Website'
-        run: yarn docs:generate
+        run: npm run docs:generate
 
       - name: Deploy Documentation Website 🚀
         if: github.ref == 'refs/heads/master'
