@@ -38,7 +38,7 @@ on:
 
 jobs:
   fix:
-    uses: getditto/.github/.github/workflows/security-update-claude.yml@main
+    uses: getditto/ditto/.github/workflows/security-update-claude.yml@main
     with:
       ecosystem: ${{ inputs.ecosystem }}
       alerts: ${{ inputs.alerts }}
