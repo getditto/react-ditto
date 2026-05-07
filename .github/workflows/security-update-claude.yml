@@ -9,13 +9,7 @@ on:
       ecosystem:
         description: "Package ecosystem (npm, cargo, docker, go, python)"
         required: true
-        type: choice
-        options:
-          - npm
-          - cargo
-          - docker
-          - go
-          - python
+        type: string
       alerts:
         description: "JSON array of {package, version, cve, manifest}"
         required: true
