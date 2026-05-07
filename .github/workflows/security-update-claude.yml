@@ -1,0 +1,48 @@
+# Per-repo caller workflow for automated security patching.
+# The reusable workflow lives in getditto/sec-tools-public.
+
+name: Security Update
+
+on:
+  workflow_dispatch:
+    inputs:
+      ecosystem:
+        description: "Package ecosystem (npm, cargo, docker, go, python)"
+        required: true
+        type: choice
+        options:
+          - npm
+          - cargo
+          - docker
+          - go
+          - python
+      alerts:
+        description: "JSON array of {package, version, cve, manifest}"
+        required: true
+        type: string
+      linear_tickets:
+        description: "Comma-separated Linear ticket IDs"
+        required: false
+        type: string
+      batch_id:
+        description: "Unique batch identifier"
+        required: true
+        type: string
+      reviewers:
+        description: "Comma-separated GitHub teams/users to request review from"
+        required: false
+        type: string
+        default: "security-team,copilot"
+
+jobs:
+  fix:
+    uses: getditto/sec-tools-public/.github/workflows/security-update-claude.yml@main
+    with:
+      ecosystem: ${{ inputs.ecosystem }}
+      alerts: ${{ inputs.alerts }}
+      linear_tickets: ${{ inputs.linear_tickets }}
+      batch_id: ${{ inputs.batch_id }}
+      reviewers: ${{ inputs.reviewers }}
+    secrets:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      GH_TOKEN_SECURITY_PATCHES: ${{ secrets.GH_TOKEN_SECURITY_PATCHES }}
