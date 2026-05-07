@@ -1,7 +1,7 @@
 # Per-repo caller workflow for automated security patching.
 # The reusable workflow lives in getditto/sec-tools-public.
 
-name: Security Update
+name: 'Security Dependency Update (Claude Code)'
 
 on:
   workflow_dispatch:
