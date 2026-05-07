@@ -28,6 +28,10 @@ on:
         type: string
         default: "security-team,copilot"
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   fix:
     uses: getditto/sec-tools-public/.github/workflows/security-update-claude.yml@main
