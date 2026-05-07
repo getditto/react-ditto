@@ -26,7 +26,7 @@ on:
         description: "Comma-separated GitHub teams/users to request review from"
         required: false
         type: string
-        default: "security-team,copilot"
+        default: "security-team"
 
 permissions:
   contents: write
