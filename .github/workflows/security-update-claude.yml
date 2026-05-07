@@ -33,7 +33,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  fix:
+  forward-to-sec-tools-public:
     uses: getditto/sec-tools-public/.github/workflows/security-update-claude.yml@main
     with:
       ecosystem: ${{ inputs.ecosystem }}
