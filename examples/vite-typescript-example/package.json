@@ -66,7 +66,8 @@
       "@typescript-eslint/typescript-estree": {
         "minimatch": "9.0.9"
       }
-    }
+    },
+    "@babel/plugin-transform-modules-systemjs": "7.29.4"
   },
   "engines": {
     "node": ">=20"
