@@ -27,6 +27,10 @@ on:
         required: false
         type: string
         default: "security-team"
+      target_branch:
+        description: 'Target branch for checkout and PR base (default: dispatch ref)'
+        required: false
+        type: string
 
 permissions:
   contents: write
@@ -41,6 +45,7 @@ jobs:
       linear_tickets: ${{ inputs.linear_tickets }}
       batch_id: ${{ inputs.batch_id }}
       reviewers: ${{ inputs.reviewers }}
+      target_branch: ${{ inputs.target_branch }}
     secrets:
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
       GH_TOKEN_SECURITY_PATCHES: ${{ secrets.GH_TOKEN_SECURITY_PATCHES }}
