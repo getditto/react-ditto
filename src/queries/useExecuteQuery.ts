@@ -1,7 +1,21 @@
-import { Ditto, DQLQueryArguments, QueryResultItem } from '@dittolive/ditto'
+// some of these types are used in API documentation but eslint does not
+// recognize that, so we disable the rule for these imports
+import {
+  Ditto,
+  DQLQueryArguments,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  type QueryResult,
+  QueryResultItem,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  type SyncSubscription,
+} from '@dittolive/ditto'
 import { useCallback, useState } from 'react'
 
 import { useDittoContext } from '../DittoContext.js'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { DittoProvider } from '../DittoProvider.js'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { useQuery } from './useQuery.js'
 import { useVersion } from './useVersion.js'
 
 /**
@@ -109,7 +123,7 @@ export type UseExecuteQueryReturn<
      * successful execution. An empty array when nothing was mutated, and
      * `undefined` before the first successful execution.
      *
-     * See `QueryResult.mutatedDocumentIDsV2()`.
+     * See {@link QueryResult.mutatedDocumentIDsV2}.
      */
     mutatedDocumentIDs?: string[]
   },
@@ -121,7 +135,7 @@ export type UseExecuteQueryReturn<
  * This hook does not run the query immediately and does not set up a sync
  * subscription. Use this hook for running mutating queries and ad-hoc queries
  * in response to user actions. Be aware that mutations will not be synced to
- * other peers unless you also set up a `SyncSubscription` for the same
+ * other peers unless you also set up a {@link SyncSubscription} for the same
  * query, which can be done with a {@link useQuery} hook.
  *
  * Query arguments can be supplied when setting up the hook and when calling the
