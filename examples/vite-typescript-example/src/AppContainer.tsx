@@ -20,9 +20,17 @@ const DITTO_PLAYGROUND_TOKEN = 'REPLACE_ME_WITH_YOUR_PLAYGROUND_TOKEN'
 const DEVELOPMENT_PATH = '/path-development'
 const ONLINE_PATH = '/path-online'
 
+// The online (server) instance is only opened once the credentials above are
+// filled in. Until then the example runs fully offline and out of the box.
+const isOnlineConfigured =
+  DITTO_DATABASE_ID !== 'REPLACE_ME_WITH_YOUR_DATABASE_ID' &&
+  DITTO_SERVER_URL !== 'REPLACE_ME_WITH_YOUR_URL'
+
 const options: InstanceOption[] = [
   { path: DEVELOPMENT_PATH, name: 'Development (offline)' },
-  { path: ONLINE_PATH, name: 'Online (server)' },
+  ...(isOnlineConfigured
+    ? [{ path: ONLINE_PATH, name: 'Online (server)' }]
+    : []),
 ]
 
 /**
@@ -43,6 +51,10 @@ const AppContainer: React.FC = () => {
       ),
     )
     dittoDevelopment.sync.start()
+
+    if (!isOnlineConfigured) {
+      return [dittoDevelopment]
+    }
 
     // An instance connected to a Ditto server (Big Peer). Server connections
     // require an authentication expiration handler to be set before starting
