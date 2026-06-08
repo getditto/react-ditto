@@ -82,9 +82,10 @@ export type UseExecuteQueryReturn<
   ExecutionFunction<U>,
   {
     /**
-     * The Ditto instance used by this hook.
+     * The Ditto instance used by this hook. `undefined` until the execution
+     * function has run.
      */
-    ditto: Ditto
+    ditto?: Ditto
     /**
      * The most recent error that resulted from query execution
      *

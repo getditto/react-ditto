@@ -56,9 +56,10 @@ export interface UseQueryParams<
  */
 export interface UseQueryReturn<T> {
   /**
-   * The Ditto instance used by this hook.
+   * The Ditto instance used by this hook. `null` until the provider has loaded
+   * an instance for the requested persistence directory.
    */
-  ditto: Ditto
+  ditto: Ditto | null
   /**
    * The most recent error that occurred while setting up the query.
    *
@@ -91,9 +92,10 @@ export interface UseQueryReturn<T> {
    */
   reset: () => Promise<void>
   /**
-   * The underlying Ditto {@link StoreObserver}.
+   * The underlying Ditto {@link StoreObserver}. `undefined` until the query has
+   * been configured.
    */
-  storeObserver: StoreObserver
+  storeObserver?: StoreObserver
   /**
    * The underlying Ditto {@link SyncSubscription}. This is `undefined` when the
    * {@link UseQueryParams.localOnly | `localOnly`} parameter is set to `true`.
@@ -189,7 +191,7 @@ export function useQuery<
     // dependency but ensures that the hook is reset when deep changes occur in
     // `queryArguments`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ditto, queryArgumentsVersion, query])
+  }, [ditto, queryArgumentsVersion, query, params?.localOnly])
 
   useEffect(() => {
     reset().then(() => setIsLoading(false))

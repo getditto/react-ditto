@@ -16,7 +16,7 @@ export interface UsePeersParams {
  * @returns
  */
 export function useRemotePeers(params: UsePeersParams = {}): {
-  ditto: Ditto
+  ditto: Ditto | null
   remotePeers: Peer[]
 } {
   const { ditto } = useDitto(params.path)
