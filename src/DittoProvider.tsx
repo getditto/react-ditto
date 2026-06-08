@@ -7,7 +7,7 @@ import React, {
   useState,
 } from 'react'
 
-import { DittoContext } from './DittoContext.js'
+import { DittoContext, dittoInstanceKey } from './DittoContext.js'
 import { DittoHash, RegisterDitto, UnregisterDitto } from './index.js'
 
 export type RenderFunction = (providerState: ProviderState) => ReactNode
@@ -77,7 +77,7 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
                 `expected an array of Ditto instances to be returned by the setup function, but at least one element is not a Ditto instance (got ${ditto})`,
               )
             }
-            dittoHash[ditto.persistenceDirectory] = ditto
+            dittoHash[dittoInstanceKey(ditto)] = ditto
           }
           setDittoHash(dittoHash)
         } else {
@@ -90,7 +90,7 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
             )
           }
           const dittoHash: DittoHash = {}
-          dittoHash[ditto.persistenceDirectory] = ditto
+          dittoHash[dittoInstanceKey(ditto)] = ditto
           setDittoHash(dittoHash)
         }
         setProviderState({
@@ -117,7 +117,7 @@ export const DittoProvider: React.FunctionComponent<DittoProviderProps> = (
 
   const registerDitto: RegisterDitto = (ditto) => {
     const hash = { ...dittoHash }
-    hash[ditto.persistenceDirectory] = ditto
+    hash[dittoInstanceKey(ditto)] = ditto
     setDittoHash(hash)
   }
 

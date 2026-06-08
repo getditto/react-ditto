@@ -1,7 +1,4 @@
-import dittoPackage, {
-  Ditto,
-  IdentityOfflinePlayground,
-} from '@dittolive/ditto'
+import dittoPackage from '@dittolive/ditto'
 import { expect } from 'chai'
 import React from 'react'
 import { createRoot, Root } from 'react-dom/client'
@@ -10,17 +7,13 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { useDittoContext } from './DittoContext'
 import { DittoLazyProvider } from './DittoLazyProvider'
-import { waitFor } from './utils.spec'
+import { openOfflineDitto, waitFor } from './utils.spec'
 
-const testIdentity: () => {
-  identity: IdentityOfflinePlayground
+const testConfig: () => {
+  databaseID: string
   path: string
 } = () => ({
-  identity: {
-    appID: 'dittoLazyProviderSpec',
-    siteID: 100,
-    type: 'offlinePlayground',
-  },
+  databaseID: 'dittoLazyProviderSpec',
   path: uuidv4(),
 })
 
@@ -46,13 +39,11 @@ describe('Ditto Lazy Provider Tests', () => {
 
   it('should load ditto wasm from the CDN', async function () {
     this.timeout(10_000)
-    const config = testIdentity()
+    const config = testConfig()
 
     root.render(
       <DittoLazyProvider
-        setup={() => {
-          return Promise.resolve(new Ditto(config.identity, config.path))
-        }}
+        setup={() => openOfflineDitto(config.databaseID, config.path)}
       >
         {({ loading, error }) => {
           return (
@@ -77,14 +68,12 @@ describe('Ditto Lazy Provider Tests', () => {
   })
 
   it('should load ditto wasm from a locally served ditto.wasm file', async function () {
-    const config = testIdentity()
+    const config = testConfig()
 
     root.render(
       <DittoLazyProvider
         initOptions={initOptions}
-        setup={() => {
-          return Promise.resolve(new Ditto(config.identity, config.path))
-        }}
+        setup={() => openOfflineDitto(config.databaseID, config.path)}
       >
         {({ loading, error }) => {
           return (
@@ -108,7 +97,7 @@ describe('Ditto Lazy Provider Tests', () => {
   })
 
   it('should fail to load ditto from web assembly file that does not exist', async function () {
-    const config = testIdentity()
+    const config = testConfig()
     const initOptions = {
       webAssemblyModule:
         '/base/node_modules/@dittolive/ditto/web/ditto-that-does-not-exist.wasm',
@@ -117,9 +106,7 @@ describe('Ditto Lazy Provider Tests', () => {
     root.render(
       <DittoLazyProvider
         initOptions={initOptions}
-        setup={() => {
-          return Promise.resolve(new Ditto(config.identity, config.path))
-        }}
+        setup={() => openOfflineDitto(config.databaseID, config.path)}
       >
         {({ loading, error }) => {
           return (
@@ -144,7 +131,7 @@ describe('Ditto Lazy Provider Tests', () => {
   })
 
   it('should mount the provider with an empty set of Ditto instances.', async () => {
-    const config = testIdentity()
+    const config = testConfig()
 
     const TesterChildComponent = () => {
       const { dittoHash } = useDittoContext()
@@ -158,9 +145,7 @@ describe('Ditto Lazy Provider Tests', () => {
 
     root.render(
       <DittoLazyProvider
-        setup={() => {
-          return Promise.resolve(new Ditto(config.identity, config.path))
-        }}
+        setup={() => openOfflineDitto(config.databaseID, config.path)}
       >
         {() => <TesterChildComponent />}
       </DittoLazyProvider>,

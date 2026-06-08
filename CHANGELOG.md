@@ -2,6 +2,34 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/getditto/react-ditto/compare/v0.11.2...v1.0.0)
+
+### ⚠ BREAKING CHANGES
+
+* Upgrade the `@dittolive/ditto` peer dependency to `^5.0.0`. This library now
+  targets the Ditto v5 SDK and uses DQL exclusively.
+* Remove the query-builder hooks (`usePendingCursorOperation`,
+  `useLazyPendingCursorOperation`, `usePendingIDSpecificOperation`,
+  `useLazyPendingIDSpecificOperation`, `useCollections`) and `useMutations`. The
+  underlying query-builder API was removed in Ditto v5; use the `useQuery` and
+  `useExecuteQuery` DQL hooks instead.
+* Remove the identity hooks (`useOfflinePlaygroundIdentity`, `useOnlineIdentity`,
+  `useOnlinePlaygroundIdentity`). Ditto v5 removed the `Identity` types;
+  configure connectivity through `DittoConfig` and authenticate via `ditto.auth`.
+
+### Features
+
+* Add the `useQuery` hook for continuously observing a non-mutating DQL query
+  (store observer + sync subscription).
+* Add the `useExecuteQuery` hook for running mutating and on-demand DQL queries.
+
+### Notes
+
+* The `DittoProvider` `setup` function should now return instances created with
+  `Ditto.open(new DittoConfig(...))`. Instances are registered by their
+  configured persistence directory (falling back to the resolved absolute
+  directory).
+
 ### [0.11.2](https://github.com/getditto/react-ditto/compare/v0.11.1...v0.11.2) (2024-12-02)
 
 ### [0.11.1](https://github.com/getditto/react-ditto/compare/v0.11.0...v0.11.1) (2024-05-22)

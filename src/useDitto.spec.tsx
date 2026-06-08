@@ -1,40 +1,31 @@
-import { Ditto, IdentityOfflinePlayground } from '@dittolive/ditto'
+import { Ditto } from '@dittolive/ditto'
 import { renderHook, waitFor } from '@testing-library/react'
 import { expect } from 'chai'
 import { ReactNode } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
 import { DittoLazyProvider, DittoProvider, useDitto } from './'
+import { openOfflineDitto, wasmInitOptions } from './utils.spec'
 
-const testIdentity: () => {
-  identity: IdentityOfflinePlayground
+const testConfig: () => {
+  databaseID: string
   persistenceDirectory: string
 } = () => ({
-  identity: {
-    appID: 'useDittoSpec',
-    siteID: 100,
-    type: 'offlinePlayground',
-  },
+  databaseID: 'useDittoSpec',
   persistenceDirectory: uuidv4(),
 })
 
 describe('useDittoSpec tests', function () {
   it('should return a ditto instance with a matching persistence directory when a non-lazy provider is used.', async function () {
-    const testConfiguration = testIdentity()
-    const setup = (): Ditto => {
-      const ditto = new Ditto(
-        testConfiguration.identity,
+    const testConfiguration = testConfig()
+    const setup = (): Promise<Ditto> =>
+      openOfflineDitto(
+        testConfiguration.databaseID,
         testConfiguration.persistenceDirectory,
       )
-      return ditto
-    }
-
-    const initOptions = {
-      webAssemblyModule: '/base/node_modules/@dittolive/ditto/web/ditto.wasm',
-    }
 
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <DittoProvider setup={setup} initOptions={initOptions}>
+      <DittoProvider setup={setup} initOptions={wasmInitOptions}>
         {() => {
           return children
         }}
@@ -50,28 +41,21 @@ describe('useDittoSpec tests', function () {
     await waitFor(() => expect(result.current.ditto).to.exist, {
       timeout: 5000,
     })
-    expect(result.current.ditto.persistenceDirectory).to.eq(
+    expect(result.current.ditto.config.persistenceDirectory).to.eq(
       testConfiguration.persistenceDirectory,
     )
   })
 
   it('should return a ditto instance with a matching persistenceDirectory, and a loading state, when a lazy provider is used.', async function () {
-    const testConfiguration = testIdentity()
-    const setup = (): Promise<Ditto> => {
-      return Promise.resolve(
-        new Ditto(
-          testConfiguration.identity,
-          testConfiguration.persistenceDirectory,
-        ),
+    const testConfiguration = testConfig()
+    const setup = (): Promise<Ditto> =>
+      openOfflineDitto(
+        testConfiguration.databaseID,
+        testConfiguration.persistenceDirectory,
       )
-    }
-
-    const initOptions = {
-      webAssemblyModule: '/base/node_modules/@dittolive/ditto/web/ditto.wasm',
-    }
 
     const wrapper = ({ children }: { children: ReactNode }) => (
-      <DittoLazyProvider setup={setup} initOptions={initOptions}>
+      <DittoLazyProvider setup={setup} initOptions={wasmInitOptions}>
         {({ loading }) => {
           if (loading) {
             return null
@@ -96,7 +80,7 @@ describe('useDittoSpec tests', function () {
       { timeout: 5000 },
     )
 
-    expect(result.current?.ditto.persistenceDirectory).to.eq(
+    expect(result.current?.ditto.config.persistenceDirectory).to.eq(
       testConfiguration.persistenceDirectory,
     )
     expect(result.current?.loading).to.eq(false)

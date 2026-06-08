@@ -1,7 +1,4 @@
-import dittoPackage, {
-  Ditto,
-  IdentityOfflinePlayground,
-} from '@dittolive/ditto'
+import dittoPackage from '@dittolive/ditto'
 import { expect } from 'chai'
 import React from 'react'
 import { createRoot, Root } from 'react-dom/client'
@@ -10,17 +7,13 @@ import { v4 as uuidv4 } from 'uuid'
 
 import { useDittoContext } from './DittoContext'
 import { DittoProvider } from './DittoProvider'
-import { waitFor } from './utils.spec'
+import { openOfflineDitto, waitFor } from './utils.spec'
 
-const testIdentity: () => {
-  identity: IdentityOfflinePlayground
+const testConfig: () => {
+  databaseID: string
   path: string
 } = () => ({
-  identity: {
-    appID: 'dittoProviderSpec',
-    siteID: 100,
-    type: 'offlinePlayground',
-  },
+  databaseID: 'dittoProviderSpec',
   path: uuidv4(),
 })
 
@@ -46,14 +39,11 @@ describe('Ditto Provider Tests', () => {
 
   it('should load ditto wasm from the CDN', async function () {
     this.timeout(10_000)
-    const config = testIdentity()
+    const config = testConfig()
 
     root.render(
       <DittoProvider
-        setup={() => {
-          const ditto = new Ditto(config.identity, config.path)
-          return ditto
-        }}
+        setup={() => openOfflineDitto(config.databaseID, config.path)}
       >
         {({ loading, error }) => {
           return (
@@ -78,15 +68,12 @@ describe('Ditto Provider Tests', () => {
   })
 
   it('should load ditto wasm from a locally served ditto.wasm file', async function () {
-    const config = testIdentity()
+    const config = testConfig()
 
     root.render(
       <DittoProvider
         initOptions={initOptions}
-        setup={() => {
-          const ditto = new Ditto(config.identity, config.path)
-          return ditto
-        }}
+        setup={() => openOfflineDitto(config.databaseID, config.path)}
       >
         {({ loading, error }) => {
           return (
@@ -111,7 +98,7 @@ describe('Ditto Provider Tests', () => {
   })
 
   it('should fail to load ditto from web assembly file that does not exist', async function () {
-    const config = testIdentity()
+    const config = testConfig()
 
     const initOptions = {
       webAssemblyModule:
@@ -121,10 +108,7 @@ describe('Ditto Provider Tests', () => {
     root.render(
       <DittoProvider
         initOptions={initOptions}
-        setup={() => {
-          const ditto = new Ditto(config.identity, config.path)
-          return ditto
-        }}
+        setup={() => openOfflineDitto(config.databaseID, config.path)}
       >
         {({ loading, error }) => {
           return (
@@ -149,7 +133,7 @@ describe('Ditto Provider Tests', () => {
   })
 
   it('should mount the provider with the initialized Ditto instance.', async () => {
-    const config = testIdentity()
+    const config = testConfig()
 
     const TesterChildComponent = () => {
       const { dittoHash } = useDittoContext()
@@ -163,9 +147,7 @@ describe('Ditto Provider Tests', () => {
 
     root.render(
       <DittoProvider
-        setup={() => {
-          return new Ditto(config.identity, config.path)
-        }}
+        setup={() => openOfflineDitto(config.databaseID, config.path)}
         initOptions={initOptions}
       >
         {() => <TesterChildComponent />}
@@ -181,13 +163,13 @@ describe('Ditto Provider Tests', () => {
   })
 
   it('should pass the loading state to the child component when the provider is initialized as a single instance', async () => {
-    const config = testIdentity()
+    const config = testConfig()
     const renderFn = sinon.stub()
     renderFn.withArgs(sinon.match({ loading: false })).returns('loaded')
 
     root.render(
       <DittoProvider
-        setup={() => new Ditto(config.identity, config.path)}
+        setup={() => openOfflineDitto(config.databaseID, config.path)}
         initOptions={initOptions}
       >
         {renderFn}
@@ -201,17 +183,19 @@ describe('Ditto Provider Tests', () => {
   })
 
   it('should pass the loading state to the child component when the provider is initialized as an array of instances', async () => {
-    const config = testIdentity()
-    const config2 = testIdentity()
+    const config = testConfig()
+    const config2 = testConfig()
     const renderFn = sinon.stub()
     renderFn.withArgs(sinon.match({ loading: false })).returns('loaded')
 
     root.render(
       <DittoProvider
-        setup={() => [
-          new Ditto(config.identity, config.path),
-          new Ditto(config2.identity, config2.path),
-        ]}
+        setup={() =>
+          Promise.all([
+            openOfflineDitto(config.databaseID, config.path),
+            openOfflineDitto(config2.databaseID, config2.path),
+          ])
+        }
         initOptions={initOptions}
       >
         {renderFn}
@@ -243,14 +227,14 @@ describe('Ditto Provider Tests', () => {
   })
 
   it('should work with an async setup function', async () => {
-    const config = testIdentity()
+    const config = testConfig()
     const renderFn = sinon.stub()
     renderFn.withArgs(sinon.match({ loading: false })).returns('loaded')
 
     root.render(
       <DittoProvider
         setup={async () => {
-          const ditto = new Ditto(config.identity, config.path)
+          const ditto = await openOfflineDitto(config.databaseID, config.path)
           await new Promise((resolve) => setTimeout(resolve, 10))
           return ditto
         }}

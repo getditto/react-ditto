@@ -1,40 +1,54 @@
-# Getting Started with Vite
+# React + Ditto v5 Example (Vite)
+
+A minimal task list app showing how to use `@dittolive/react-ditto` with the
+Ditto v5 SDK and DQL. It demonstrates:
+
+- Opening Ditto instances with `Ditto.open(new DittoConfig(...))` for both an
+  offline (`smallPeersOnly`) instance and an online (`server`) instance.
+- Authenticating a server connection via `ditto.auth.setExpirationHandler` /
+  `ditto.auth.login`.
+- Reading data with `useQuery` and mutating it with `useExecuteQuery`.
 
 This project was bootstrapped with [Vite](https://vite.dev/).
 
-## Available Scripts
+## Configuration
 
-**Note: on newer versions of Node, you may run into `ERR_OSSL_EVP_UNSUPPORTED` errors. You may pass the command-line option of `--openssl-legacy-provider` to work around this. Refer to [Node v17 release notes](https://nodejs.org/es/blog/release/v17.0.0/#openssl-3-0).**
+The offline ("Development") instance works out of the box. To use the online
+("Online") instance, open `src/AppContainer.tsx` and replace the
+`REPLACE_ME_WITH_YOUR_*` placeholders with the database ID, connection URL, and
+playground token from your app's settings page in the
+[Ditto portal](https://portal.ditto.live). Copy the whole connection URL from
+"Connect via SDK → URL".
+
+## Available Scripts
 
 In the project directory, you can run:
 
-### `yarn dev`
+### `npm run dev`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+Runs the app in development mode. Open
+[http://localhost:3000](http://localhost:3000) to view it in the browser. The
+page reloads on edits.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+### `npm test`
 
-### `yarn test`
+Runs the test suite once with [Vitest](https://vitest.dev/). Use
+`npm run test:watch` for watch mode.
 
-Launches the test runner in the interactive watch mode.
+### `npm run build`
 
-### `yarn build`
+Builds the app for production to the `dist` folder.
 
-Builds the app for production to the `dist` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### `npm run type-check`
 
-### `yarn type-check`
+Runs the TypeScript type checker.
 
-Runs the TypeScript type checker
+### `npm run lint`
 
-### `yarn lint`
-
-Runs `eslint` to find and fix any configured linting issues
+Runs `eslint` to find and fix any configured linting issues.
 
 ## Learn More
 
-You can learn more in the [Vite documentation](https://vite.dev/guide/).
-
-To learn React, check out the [React documentation](https://react.dev/).
+- [Ditto documentation](https://docs.ditto.live)
+- [DQL reference](https://docs.ditto.live/dql)
+- [Vite documentation](https://vite.dev/guide/)

@@ -8,6 +8,17 @@ export interface DittoHash {
 export type RegisterDitto = (ditto: Ditto) => void
 export type UnregisterDitto = (persistenceDirectory: string) => void
 
+/**
+ * Computes the key under which a Ditto instance is registered in the provider's
+ * {@link DittoHash}.
+ *
+ * Uses the persistence directory configured on the instance — matching the
+ * value a consumer passes to {@link useDitto} or a hook's `persistenceDirectory`
+ * option — and falls back to the resolved absolute directory when none was set.
+ */
+export const dittoInstanceKey = (ditto: Ditto): string =>
+  ditto.config.persistenceDirectory ?? ditto.absolutePersistenceDirectory
+
 export interface DittoContextProps {
   dittoHash: DittoHash
   registerDitto?: RegisterDitto
