@@ -82,8 +82,11 @@ export type UseExecuteQueryReturn<
   ExecutionFunction<U>,
   {
     /**
-     * The Ditto instance used by this hook. `undefined` until the execution
-     * function has run.
+     * The Ditto instance used by this hook. `undefined` until an `execute()`
+     * call resolves an instance — set once the instance is found (before the
+     * query runs) and retained afterwards, including across {@link reset}. Note
+     * this stays `undefined` even with the non-lazy provider until the first
+     * `execute()` call.
      */
     ditto?: Ditto
     /**
