@@ -7,7 +7,7 @@ This is a React wrapper library for [Ditto](https://www.ditto.live).
 
 Currently, this project works in web browsers, Node.JS and Electron environments.
 
-If you have questions about this project or require any assistance, please get in touch via [contact@ditto.live](contact@ditto.live).
+If you have questions about this project or require any assistance, please get in touch via [support@ditto.com](mailto:support@ditto.com).
 
 > **Ditto SDK v5**
 >

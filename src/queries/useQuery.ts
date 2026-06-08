@@ -8,8 +8,6 @@ import {
 } from '@dittolive/ditto'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { type DittoProvider } from '../DittoProvider.js'
 import { useDitto } from '../useDitto.js'
 import { useVersion } from './useVersion.js'
 

@@ -17,7 +17,15 @@ module.exports = function (config) {
     port: 9876, // karma web server port
     colors: true,
     logLevel: config.LOG_INFO,
-    browsers: ['ChromeHeadless'],
+    // CI runners (and most container images) disable the Chrome sandbox, so
+    // run headless Chrome with it turned off.
+    customLaunchers: {
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox'],
+      },
+    },
+    browsers: ['ChromeHeadlessNoSandbox'],
     autoWatch: false,
     // singleRun: false, // Karma captures browsers, runs the tests and exits
     concurrency: Infinity,
