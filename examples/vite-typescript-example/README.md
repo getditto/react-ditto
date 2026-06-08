@@ -16,7 +16,7 @@ This project was bootstrapped with [Vite](https://vite.dev/).
 The offline ("Development") instance works out of the box. To use the online
 ("Online") instance, open `src/AppContainer.tsx` and replace the
 `REPLACE_ME_WITH_YOUR_*` placeholders with the database ID, connection URL, and
-playground token from your app's settings page in the
+playground token from your database's settings page in the
 [Ditto portal](https://portal.ditto.live). Copy the whole connection URL from
 "Connect via SDK → URL".
 

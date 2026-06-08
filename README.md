@@ -253,8 +253,8 @@ const initOptions = {
 const RootComponent = () => (
   <DittoProvider
     setup={async () => {
-      // Create an app at https://portal.ditto.live/ and copy your database ID
-      // and connection URL from the app's settings page.
+      // Create a database at https://portal.ditto.live/ and copy its database
+      // ID and connection URL from the settings page.
       const ditto = await Ditto.open(
         new DittoConfig(
           'your-database-id',

@@ -10,9 +10,9 @@ interface InstanceOption {
   path: string
 }
 
-// Online (server / Big Peer) connection details. Copy these from the Ditto
-// portal on your app's settings page. Copy the whole connection URL verbatim
-// from "Connect via SDK → URL"; do not build it from the database ID.
+// Online (server) connection details. Copy these from your database's settings
+// page in the Ditto portal. Copy the whole connection URL verbatim from
+// "Connect via SDK → URL"; do not build it from the database ID.
 const DITTO_DATABASE_ID = 'REPLACE_ME_WITH_YOUR_DATABASE_ID'
 const DITTO_SERVER_URL = 'REPLACE_ME_WITH_YOUR_URL'
 const DITTO_PLAYGROUND_TOKEN = 'REPLACE_ME_WITH_YOUR_PLAYGROUND_TOKEN'
