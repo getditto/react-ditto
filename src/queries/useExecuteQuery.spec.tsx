@@ -1,6 +1,6 @@
 import { Ditto, DittoError } from '@dittolive/ditto'
 import { renderHook, waitFor } from '@testing-library/react'
-import { expect } from 'chai'
+import { AssertionError, expect } from 'chai'
 import { ReactNode } from 'react'
 import { v4 as uuidv4 } from 'uuid'
 
@@ -264,7 +264,9 @@ describe('useExecuteQuery', function () {
     const [execute] = result.current
     try {
       await execute()
+      expect.fail('execute() should reject when the instance does not exist')
     } catch (e) {
+      if (e instanceof AssertionError) throw e
       expect(e).to.be.an.instanceOf(Error)
       expect((e as Error).message).to.eq(
         'Provider does not have a loaded Ditto instance with persistence ' +
@@ -290,7 +292,9 @@ describe('useExecuteQuery', function () {
     const [execute] = result.current
     try {
       await execute()
+      expect.fail('execute() should reject before the instance has loaded')
     } catch (e) {
+      if (e instanceof AssertionError) throw e
       expect(e).to.be.an.instanceOf(Error)
       expect((e as Error).message).to.eq(
         'Provider does not have a loaded Ditto instance with persistence ' +
@@ -336,26 +340,31 @@ describe('useExecuteQuery', function () {
     })
 
     it('should reject the execution function if an invalid Ditto instance is requested', async () => {
-      const config = testConfig()
+      // A lazy provider whose setup declines to create an instance for the
+      // requested path (returns null), so the execution function rejects.
+      const nullWrapper = ({ children }: { children: ReactNode }) => (
+        <DittoLazyProvider
+          setup={() => Promise.resolve(null)}
+          initOptions={wasmInitOptions}
+        >
+          {() => <>{children}</>}
+        </DittoLazyProvider>
+      )
 
       const { result } = renderHook(
         () =>
           useExecuteQuery<Data>('select * from foo', {
             persistenceDirectory: 'non-existent',
           }),
-        {
-          wrapper: wrapper(
-            config.databaseID,
-            config.persistenceDirectory,
-            true, // isLazy
-          ),
-        },
+        { wrapper: nullWrapper },
       )
 
       const [execute] = result.current
       try {
         await execute()
+        expect.fail('execute() should reject when setup returns no instance')
       } catch (e) {
+        if (e instanceof AssertionError) throw e
         expect(e).to.be.an.instanceOf(Error)
         expect((e as Error).message).to.eq(
           'Provider does not have a loaded Ditto instance with persistence ' +
