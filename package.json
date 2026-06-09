@@ -1,10 +1,16 @@
 {
   "name": "@dittolive/react-ditto",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React wrappers for Ditto",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
+  "files": [
+    "dist",
+    "!dist/**/*.spec.*",
+    "README.md",
+    "CHANGELOG.md"
+  ],
   "exports": {
     ".": {
       "require": "./dist/cjs/index.js",
