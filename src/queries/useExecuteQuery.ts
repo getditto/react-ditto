@@ -202,7 +202,7 @@ export function useExecuteQuery<
 
   const [ditto, setDitto] = useState<Ditto>()
   const [error, setError] = useState<unknown>(null)
-  const [items, setItems] = useState<QueryResultItem[]>()
+  const [items, setItems] = useState<QueryResultItem<T>[]>()
   const [isLoading, setIsLoading] = useState(false)
   const [mutatedDocumentIDs, setMutatedDocumentIDs] = useState<string[]>()
 
@@ -253,7 +253,10 @@ export function useExecuteQuery<
       }
 
       try {
-        const result = await nextDitto.store.execute(query, finalQueryArguments)
+        const result = await nextDitto.store.execute<T>(
+          query,
+          finalQueryArguments,
+        )
         setItems(result.items)
         setMutatedDocumentIDs(result.mutatedDocumentIDsV2())
       } catch (e: unknown) {
