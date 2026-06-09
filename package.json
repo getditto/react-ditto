@@ -1,6 +1,6 @@
 {
   "name": "@dittolive/react-ditto",
-  "version": "0.11.2",
+  "version": "1.0.0",
   "description": "React wrappers for Ditto",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
@@ -18,6 +18,7 @@
     "build:cjs": "tsc -p tsconfig.json",
     "build:static-files": "cp package.json CHANGELOG.md README.md dist/",
     "test": "karma start",
+    "test:watch": "karma start --auto-watch --no-single-run",
     "types": "tsc -p tsconfig.esm.json",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
@@ -35,7 +36,7 @@
     "lodash.isequal": "^4.5.0"
   },
   "peerDependencies": {
-    "@dittolive/ditto": "^4.0.0",
+    "@dittolive/ditto": "^5.0.0",
     "react": ">=16.0.0",
     "react-dom": ">=16.0.0"
   },
@@ -50,9 +51,10 @@
     "basic-ftp": "5.3.1"
   },
   "devDependencies": {
-    "@dittolive/ditto": "^4.0.0",
+    "@dittolive/ditto": "^5.0.0",
     "@testing-library/react": "^14.3.1",
     "@types/chai": "^4.2.21",
+    "@types/karma": "^6.3.8",
     "@types/lodash": "^4.14.172",
     "@types/lodash.isequal": "^4.5.6",
     "@types/mocha": "^10.0.0",

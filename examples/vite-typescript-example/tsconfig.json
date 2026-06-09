@@ -15,7 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client", "node", "jest", "@testing-library/jest-dom"]
+    "types": ["vite/client", "node", "vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["src", "setupTests.ts"]
+  "include": ["src", "vitest.setup.ts"]
 }

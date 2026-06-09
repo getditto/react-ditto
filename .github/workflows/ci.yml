@@ -16,18 +16,24 @@ jobs:
       - name: 'Setup Chrome'
         uses: browser-actions/setup-chrome@latest
 
-      - name: 'Install and Build'
+      - name: 'Install, lint and build library'
         run: |
           npm ci
-          cd examples/vite-typescript-example
-          npm ci
-          cd -
           npm run types
           npm run lint
           npm run build
 
-      - name: 'Run Tests'
-        run: CHROMIUM_BIN=$(which chrome) npm test
+      - name: 'Run library tests'
+        run: CHROME_BIN=$(which chrome) npm test
+
+      - name: 'Build and test example app'
+        working-directory: examples/vite-typescript-example
+        run: |
+          npm ci
+          npm run type-check
+          npm run lint
+          npm run build
+          npm test
 
       - name: 'Generate Documentation Website'
         run: npm run docs:generate

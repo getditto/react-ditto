@@ -4,6 +4,7 @@ import React, { ReactNode, useEffect, useRef, useState } from 'react'
 import {
   DittoContext,
   DittoHash,
+  dittoInstanceKey,
   RegisterDitto,
   UnregisterDitto,
 } from './DittoContext.js'
@@ -15,9 +16,13 @@ export interface DittoLazyProviderProps {
    * This function is called whenever a child component uses a Ditto instance through the useDitto hook
    * and the instance needs to be created.
    *
-   * @param props Path on which the app is being created. Should be used as a discriminator to determine how the Ditto instance
-   * should be created.
-   * @returns A Ditto instance initialized on the given path
+   * The returned instance is cached under `appPath`, so configure it with
+   * `appPath` as its persistence directory. That keeps the lazily loaded
+   * instance resolvable by the same path through `useDitto` and the query hooks.
+   *
+   * @param appPath Path the instance is created for. Used both as a discriminator
+   * for how to create the instance and as its cache key.
+   * @returns A Ditto instance initialized on the given path, or `null` to skip creation.
    */
   setup: (appPath: string) => Promise<Ditto | null>
   render?: RenderFunction
@@ -103,7 +108,7 @@ export const DittoLazyProvider: React.FunctionComponent<
   }
 
   const registerDitto: RegisterDitto = (ditto) => {
-    if (ditto.persistenceDirectory in dittoHash) {
+    if (dittoInstanceKey(ditto) in dittoHash) {
       throw new Error(
         'The instance path is already being used by a Ditto instance.',
       )
@@ -111,7 +116,7 @@ export const DittoLazyProvider: React.FunctionComponent<
 
     setDittoHash((currentHash) => ({
       ...currentHash,
-      [ditto.persistenceDirectory]: ditto,
+      [dittoInstanceKey(ditto)]: ditto,
     }))
   }
 

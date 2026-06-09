@@ -2,8 +2,10 @@ import { render, screen } from '@testing-library/react'
 
 import App from './App'
 
-test('renders learn react link', () => {
+// Rendered without a DittoProvider, so no Ditto instance is available and the
+// query stays in its loading state.
+test('renders the loading state when no Ditto instance is available', () => {
   render(<App path="tasks" />)
-  const linkElement = screen.getByText(/Using Ditto with path/i)
-  expect(linkElement).toBeInTheDocument()
+  const loading = screen.getByText(/Loading/i)
+  expect(loading).toBeInTheDocument()
 })
