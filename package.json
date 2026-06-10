@@ -39,7 +39,8 @@
     "url": "https://github.com/getditto/react-ditto.git"
   },
   "dependencies": {
-    "lodash.isequal": "^4.5.0"
+    "lodash.isequal": "^4.5.0",
+    "tmp": "^0.2.6"
   },
   "peerDependencies": {
     "@dittolive/ditto": "^5.0.0",
