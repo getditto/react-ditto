@@ -39,8 +39,7 @@
     "url": "https://github.com/getditto/react-ditto.git"
   },
   "dependencies": {
-    "lodash.isequal": "^4.5.0",
-    "tmp": "^0.2.6"
+    "lodash.isequal": "^4.5.0"
   },
   "peerDependencies": {
     "@dittolive/ditto": "^5.0.0",
@@ -55,7 +54,8 @@
     },
     "serialize-javascript": "7.0.4",
     "@babel/plugin-transform-modules-systemjs": "7.29.4",
-    "basic-ftp": "5.3.1"
+    "basic-ftp": "5.3.1",
+    "tmp": "^0.2.6"
   },
   "devDependencies": {
     "@dittolive/ditto": "^5.0.0",
