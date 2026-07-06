@@ -168,9 +168,12 @@ export function useQuery<
 
       storeObserverRef.current?.cancel()
       syncSubscriptionRef.current?.cancel()
+      // Clear the refs before re-registering so a failed (or skipped)
+      // registration leaves them `undefined` rather than exposing a stale,
+      // already-cancelled observer/subscription.
+      storeObserverRef.current = undefined
+      syncSubscriptionRef.current = undefined
 
-      // The observer drives `items`/`error`, so its failure becomes the hook's
-      // error state.
       try {
         storeObserverRef.current = ditto.store.registerObserver<T>(
           query,

@@ -210,11 +210,9 @@ describe('useQuery', function () {
       timeout: 5000,
     })
 
-    // The observer succeeded and is serving data...
     expect(result.current.items).to.have.lengthOf(3)
-    // ...so the rejected subscription must not have set the error state.
+    // A rejected subscription must not set the hook error state.
     expect(result.current.error).to.be.null
-    // The subscription itself failed to register.
     expect(result.current.syncSubscription).to.be.undefined
   })
 
@@ -237,9 +235,40 @@ describe('useQuery', function () {
     })
 
     expect(result.current.items).to.have.lengthOf(3)
-    // The unrestricted subscriptionQuery registers cleanly, no error.
     expect(result.current.error).to.be.null
     expect(result.current.syncSubscription).to.exist
+  })
+
+  it('clears a stale subscription when a reset re-registers with a rejected query', async () => {
+    const config = testConfig()
+
+    const { result, rerender } = renderHook(
+      ({ query }: { query: string }) =>
+        useQuery(query, {
+          persistenceDirectory: config.persistenceDirectory,
+          // Swallow the expected subscription failure after the query change.
+          onError: () => {},
+        }),
+      {
+        initialProps: { query: 'select * from foo' },
+        wrapper: wrapper(config.databaseID, config.persistenceDirectory),
+      },
+    )
+
+    await waitFor(() => expect(result.current.syncSubscription).to.exist, {
+      timeout: 5000,
+    })
+
+    // Changing to a query rejected by registerSubscription (ORDER BY/LIMIT
+    // under v5) triggers a reset. The now-cancelled subscription must not
+    // linger on the return value.
+    rerender({ query: 'select * from foo order by document limit 3' })
+
+    await waitFor(() => expect(result.current.items).to.have.lengthOf(3), {
+      timeout: 5000,
+    })
+    expect(result.current.syncSubscription).to.be.undefined
+    expect(result.current.error).to.be.null
   })
 
   it('has the expected failure mode when used with a mutating query', async () => {
