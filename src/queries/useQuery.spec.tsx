@@ -189,6 +189,59 @@ describe('useQuery', function () {
     await waitFor(() => expect(result.current.error).to.exist)
   })
 
+  it('keeps a working observer when the subscription query is rejected under v5', async () => {
+    const config = testConfig()
+
+    const { result } = renderHook(
+      () =>
+        // `ORDER BY`/`LIMIT` are valid to observe but rejected by
+        // `registerSubscription` under v5's `DQL_RESTRICT_SUBSCRIPTION`.
+        useQuery('select * from foo order by document limit 3', {
+          persistenceDirectory: config.persistenceDirectory,
+          // Swallow the expected subscription failure so it is not logged.
+          onError: () => {},
+        }),
+      {
+        wrapper: wrapper(config.databaseID, config.persistenceDirectory),
+      },
+    )
+
+    await waitFor(() => expect(result.current.items).not.to.be.empty, {
+      timeout: 5000,
+    })
+
+    // The observer succeeded and is serving data...
+    expect(result.current.items).to.have.lengthOf(3)
+    // ...so the rejected subscription must not have set the error state.
+    expect(result.current.error).to.be.null
+    // The subscription itself failed to register.
+    expect(result.current.syncSubscription).to.be.undefined
+  })
+
+  it('registers the subscription with subscriptionQuery when provided', async () => {
+    const config = testConfig()
+
+    const { result } = renderHook(
+      () =>
+        useQuery('select * from foo order by document limit 3', {
+          persistenceDirectory: config.persistenceDirectory,
+          subscriptionQuery: 'select * from foo',
+        }),
+      {
+        wrapper: wrapper(config.databaseID, config.persistenceDirectory),
+      },
+    )
+
+    await waitFor(() => expect(result.current.items).not.to.be.empty, {
+      timeout: 5000,
+    })
+
+    expect(result.current.items).to.have.lengthOf(3)
+    // The unrestricted subscriptionQuery registers cleanly, no error.
+    expect(result.current.error).to.be.null
+    expect(result.current.syncSubscription).to.exist
+  })
+
   it('has the expected failure mode when used with a mutating query', async () => {
     const config = testConfig()
 

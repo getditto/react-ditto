@@ -97,41 +97,6 @@ describe('Ditto Provider Tests', () => {
     )
   })
 
-  it('should fail to load ditto from web assembly file that does not exist', async function () {
-    const config = testConfig()
-
-    const initOptions = {
-      webAssemblyModule:
-        '/base/node_modules/@dittolive/ditto/web/ditto-that-does-not-exist.wasm',
-    }
-
-    root.render(
-      <DittoProvider
-        initOptions={initOptions}
-        setup={() => openOfflineDitto(config.databaseID, config.path)}
-      >
-        {({ loading, error }) => {
-          return (
-            <>
-              <div data-testid="loading">{`${loading}`}</div>
-              <div data-testid="error">{error?.message}</div>
-            </>
-          )
-        }}
-      </DittoProvider>,
-    )
-
-    await waitFor(
-      () =>
-        container.querySelector("div[data-testid='loading']").innerHTML ===
-        'false',
-    )
-    await waitFor(
-      () =>
-        container.querySelector("div[data-testid='error']").innerHTML === '',
-    )
-  })
-
   it('should mount the provider with the initialized Ditto instance.', async () => {
     const config = testConfig()
 

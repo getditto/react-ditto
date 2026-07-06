@@ -195,6 +195,29 @@ export default function App() {
 }
 ```
 
+### Subscriptions under Ditto v5
+
+Ditto v5 enables `DQL_RESTRICT_SUBSCRIPTION` by default, so a sync subscription
+whose query contains `ORDER BY`, `LIMIT`, or `OFFSET` is rejected
+("Unsupported feature: Limit or Order by"). Because `useQuery` observes and
+subscribes with the same query, an observed query carrying those clauses will
+fail to register a subscription.
+
+When that happens the store observer still works and keeps returning local data,
+and the failure is reported through `onError` (it does **not** populate the
+hook's `error`, which is reserved for query/observer failures). To keep sync
+working, pass a `subscriptionQuery` without the restricted clauses:
+
+```tsx
+const { items } = useQuery<Task>('SELECT * FROM tasks ORDER BY createdAt LIMIT 20', {
+  // Observe the ordered/limited result set, but subscribe to the full set.
+  subscriptionQuery: 'SELECT * FROM tasks',
+})
+```
+
+`subscriptionQuery` is ignored when `localOnly` is `true` (no subscription is
+created).
+
 ## Mutating and on-demand queries with `useExecuteQuery`
 
 `useExecuteQuery` returns an execution function that runs a DQL query on demand.
@@ -221,6 +244,42 @@ export default function AddTask() {
 Query arguments can be supplied when setting up the hook and/or when calling the
 execution function; when both are provided they are shallow-merged, with the
 execution function's arguments taking precedence.
+
+## Presence
+
+Two hooks expose Ditto's presence information so you can react to the peers and
+transports currently connected.
+
+`useRemotePeers` returns the list of connected remote peers, updating as peers
+join and leave:
+
+```tsx
+import { useRemotePeers } from '@dittolive/react-ditto'
+
+export default function PeerCount() {
+  const { remotePeers } = useRemotePeers()
+
+  return <p>{remotePeers.length} peer(s) connected</p>
+}
+```
+
+`useConnectionStatus` returns a boolean for whether a connection is active over
+a given transport. Pass the transport via `forTransport` (a `ConnectionType`:
+`'Bluetooth'`, `'P2PWiFi'`, `'AccessPoint'`, or `'WebSocket'`):
+
+```tsx
+import { useConnectionStatus } from '@dittolive/react-ditto'
+
+export default function BluetoothIndicator() {
+  const isConnected = useConnectionStatus({ forTransport: 'Bluetooth' })
+
+  return <p>Bluetooth: {isConnected ? 'connected' : 'disconnected'}</p>
+}
+```
+
+Both hooks accept an optional `path` to target a specific Ditto instance when
+several are registered with the `DittoProvider`; omit it to use the first
+registered instance.
 
 ## Quick Start with `vite`
 

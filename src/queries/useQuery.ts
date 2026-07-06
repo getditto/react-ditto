@@ -34,6 +34,19 @@ export interface UseQueryParams<
    */
   localOnly?: boolean
   /**
+   * The query used for the {@link SyncSubscription} instead of the observed
+   * `query`. Use this to pass a sync-appropriate query when the observed query
+   * carries clauses that Ditto rejects in subscriptions.
+   *
+   * Ditto v5 enables `DQL_RESTRICT_SUBSCRIPTION` by default, so a subscription
+   * query containing `ORDER BY`, `LIMIT`, or `OFFSET` throws
+   * ("Unsupported feature: Limit or Order by"). When your `query` needs those
+   * clauses for observation, pass an unrestricted `subscriptionQuery` here so
+   * sync still registers. Ignored when {@link UseQueryParams.localOnly} is
+   * `true`.
+   */
+  subscriptionQuery?: string
+  /**
    * A callback to run when an error occurs.
    *
    * @param error
@@ -170,11 +183,16 @@ export function useQuery<
       if (!params?.localOnly) {
         try {
           syncSubscriptionRef.current = ditto.sync.registerSubscription(
-            query,
+            params?.subscriptionQuery ?? query,
             params?.queryArguments,
           )
         } catch (e: unknown) {
-          setError(e)
+          // A failed subscription registration must not overwrite `error`: the
+          // observer may have succeeded and be serving data, and under v5's
+          // `DQL_RESTRICT_SUBSCRIPTION` an observed query with
+          // `ORDER BY`/`LIMIT`/`OFFSET` throws here even though observation is
+          // fine. Surface it via `onError` instead of the shared error state,
+          // and let callers pass `subscriptionQuery` to avoid it.
           if (params?.onError) params.onError(e)
           else console.error(e)
         }
@@ -191,7 +209,13 @@ export function useQuery<
     // dependency but ensures that the hook is reset when deep changes occur in
     // `queryArguments`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ditto, queryArgumentsVersion, query, params?.localOnly])
+  }, [
+    ditto,
+    queryArgumentsVersion,
+    query,
+    params?.localOnly,
+    params?.subscriptionQuery,
+  ])
 
   useEffect(() => {
     reset().then(() => setIsLoading(false))
