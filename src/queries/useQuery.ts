@@ -74,10 +74,12 @@ export interface UseQueryReturn<T> {
    */
   ditto: Ditto | null
   /**
-   * The most recent error that occurred while setting up the query.
+   * The most recent error from setting up the store observer.
    *
-   * Use the {@link UseQueryParams.onError | `onError`} callback parameter
-   * to handle errors as they occur.
+   * A failed sync subscription registration is not reflected here (the observer
+   * may still be serving data); those are delivered only through
+   * {@link UseQueryParams.onError | `onError`}. Use `onError` to handle all
+   * errors as they occur.
    */
   error: unknown
   /**
@@ -153,6 +155,11 @@ export function useQuery<
   const queryArgumentsVersion = useVersion(params?.queryArguments)
 
   const reset = useCallback(async () => {
+    const reportError = (e: unknown) => {
+      if (params?.onError) params.onError(e)
+      else console.error(e)
+    }
+
     const configureQuery = (onCompletion: () => void) => {
       if (!ditto) {
         onCompletion()
@@ -162,6 +169,8 @@ export function useQuery<
       storeObserverRef.current?.cancel()
       syncSubscriptionRef.current?.cancel()
 
+      // The observer drives `items`/`error`, so its failure becomes the hook's
+      // error state.
       try {
         storeObserverRef.current = ditto.store.registerObserver<T>(
           query,
@@ -173,13 +182,16 @@ export function useQuery<
         )
       } catch (e: unknown) {
         setError(e)
-        if (params?.onError) params.onError(e)
-        else console.error(e)
+        reportError(e)
         // Resolve even on failure so callers awaiting the returned promise (and
         // the loading state) are not left hanging.
         onCompletion()
       }
 
+      // Sync is best-effort: a failed subscription must not overwrite `error`,
+      // since the observer above may be serving data. Under v5's
+      // `DQL_RESTRICT_SUBSCRIPTION` an observed query with `ORDER BY`/`LIMIT`/
+      // `OFFSET` throws here; callers can pass `subscriptionQuery` to avoid it.
       if (!params?.localOnly) {
         try {
           syncSubscriptionRef.current = ditto.sync.registerSubscription(
@@ -187,14 +199,7 @@ export function useQuery<
             params?.queryArguments,
           )
         } catch (e: unknown) {
-          // A failed subscription registration must not overwrite `error`: the
-          // observer may have succeeded and be serving data, and under v5's
-          // `DQL_RESTRICT_SUBSCRIPTION` an observed query with
-          // `ORDER BY`/`LIMIT`/`OFFSET` throws here even though observation is
-          // fine. Surface it via `onError` instead of the shared error state,
-          // and let callers pass `subscriptionQuery` to avoid it.
-          if (params?.onError) params.onError(e)
-          else console.error(e)
+          reportError(e)
         }
       }
     }
