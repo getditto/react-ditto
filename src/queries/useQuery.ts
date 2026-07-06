@@ -34,6 +34,19 @@ export interface UseQueryParams<
    */
   localOnly?: boolean
   /**
+   * The query used for the {@link SyncSubscription} instead of the observed
+   * `query`. Use this to pass a sync-appropriate query when the observed query
+   * carries clauses that Ditto rejects in subscriptions.
+   *
+   * Ditto v5 enables `DQL_RESTRICT_SUBSCRIPTION` by default, so a subscription
+   * query containing `ORDER BY`, `LIMIT`, or `OFFSET` throws
+   * ("Unsupported feature: Limit or Order by"). When your `query` needs those
+   * clauses for observation, pass an unrestricted `subscriptionQuery` here so
+   * sync still registers. Ignored when {@link UseQueryParams.localOnly} is
+   * `true`.
+   */
+  subscriptionQuery?: string
+  /**
    * A callback to run when an error occurs.
    *
    * @param error
@@ -61,10 +74,12 @@ export interface UseQueryReturn<T> {
    */
   ditto: Ditto | null
   /**
-   * The most recent error that occurred while setting up the query.
+   * The most recent error from setting up the store observer.
    *
-   * Use the {@link UseQueryParams.onError | `onError`} callback parameter
-   * to handle errors as they occur.
+   * A failed sync subscription registration is not reflected here (the observer
+   * may still be serving data); those are delivered only through
+   * {@link UseQueryParams.onError | `onError`}. Use `onError` to handle all
+   * errors as they occur.
    */
   error: unknown
   /**
@@ -140,6 +155,11 @@ export function useQuery<
   const queryArgumentsVersion = useVersion(params?.queryArguments)
 
   const reset = useCallback(async () => {
+    const reportError = (e: unknown) => {
+      if (params?.onError) params.onError(e)
+      else console.error(e)
+    }
+
     const configureQuery = (onCompletion: () => void) => {
       if (!ditto) {
         onCompletion()
@@ -148,6 +168,11 @@ export function useQuery<
 
       storeObserverRef.current?.cancel()
       syncSubscriptionRef.current?.cancel()
+      // Clear the refs before re-registering so a failed (or skipped)
+      // registration leaves them `undefined` rather than exposing a stale,
+      // already-cancelled observer/subscription.
+      storeObserverRef.current = undefined
+      syncSubscriptionRef.current = undefined
 
       try {
         storeObserverRef.current = ditto.store.registerObserver<T>(
@@ -160,23 +185,24 @@ export function useQuery<
         )
       } catch (e: unknown) {
         setError(e)
-        if (params?.onError) params.onError(e)
-        else console.error(e)
+        reportError(e)
         // Resolve even on failure so callers awaiting the returned promise (and
         // the loading state) are not left hanging.
         onCompletion()
       }
 
+      // Sync is best-effort: a failed subscription must not overwrite `error`,
+      // since the observer above may be serving data. Under v5's
+      // `DQL_RESTRICT_SUBSCRIPTION` an observed query with `ORDER BY`/`LIMIT`/
+      // `OFFSET` throws here; callers can pass `subscriptionQuery` to avoid it.
       if (!params?.localOnly) {
         try {
           syncSubscriptionRef.current = ditto.sync.registerSubscription(
-            query,
+            params?.subscriptionQuery ?? query,
             params?.queryArguments,
           )
         } catch (e: unknown) {
-          setError(e)
-          if (params?.onError) params.onError(e)
-          else console.error(e)
+          reportError(e)
         }
       }
     }
@@ -191,7 +217,13 @@ export function useQuery<
     // dependency but ensures that the hook is reset when deep changes occur in
     // `queryArguments`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ditto, queryArgumentsVersion, query, params?.localOnly])
+  }, [
+    ditto,
+    queryArgumentsVersion,
+    query,
+    params?.localOnly,
+    params?.subscriptionQuery,
+  ])
 
   useEffect(() => {
     reset().then(() => setIsLoading(false))

@@ -189,6 +189,88 @@ describe('useQuery', function () {
     await waitFor(() => expect(result.current.error).to.exist)
   })
 
+  it('keeps a working observer when the subscription query is rejected under v5', async () => {
+    const config = testConfig()
+
+    const { result } = renderHook(
+      () =>
+        // `ORDER BY`/`LIMIT` are valid to observe but rejected by
+        // `registerSubscription` under v5's `DQL_RESTRICT_SUBSCRIPTION`.
+        useQuery('select * from foo order by document limit 3', {
+          persistenceDirectory: config.persistenceDirectory,
+          // Swallow the expected subscription failure so it is not logged.
+          onError: () => {},
+        }),
+      {
+        wrapper: wrapper(config.databaseID, config.persistenceDirectory),
+      },
+    )
+
+    await waitFor(() => expect(result.current.items).not.to.be.empty, {
+      timeout: 5000,
+    })
+
+    expect(result.current.items).to.have.lengthOf(3)
+    // A rejected subscription must not set the hook error state.
+    expect(result.current.error).to.be.null
+    expect(result.current.syncSubscription).to.be.undefined
+  })
+
+  it('registers the subscription with subscriptionQuery when provided', async () => {
+    const config = testConfig()
+
+    const { result } = renderHook(
+      () =>
+        useQuery('select * from foo order by document limit 3', {
+          persistenceDirectory: config.persistenceDirectory,
+          subscriptionQuery: 'select * from foo',
+        }),
+      {
+        wrapper: wrapper(config.databaseID, config.persistenceDirectory),
+      },
+    )
+
+    await waitFor(() => expect(result.current.items).not.to.be.empty, {
+      timeout: 5000,
+    })
+
+    expect(result.current.items).to.have.lengthOf(3)
+    expect(result.current.error).to.be.null
+    expect(result.current.syncSubscription).to.exist
+  })
+
+  it('clears a stale subscription when a reset re-registers with a rejected query', async () => {
+    const config = testConfig()
+
+    const { result, rerender } = renderHook(
+      ({ query }: { query: string }) =>
+        useQuery(query, {
+          persistenceDirectory: config.persistenceDirectory,
+          // Swallow the expected subscription failure after the query change.
+          onError: () => {},
+        }),
+      {
+        initialProps: { query: 'select * from foo' },
+        wrapper: wrapper(config.databaseID, config.persistenceDirectory),
+      },
+    )
+
+    await waitFor(() => expect(result.current.syncSubscription).to.exist, {
+      timeout: 5000,
+    })
+
+    // Changing to a query rejected by registerSubscription (ORDER BY/LIMIT
+    // under v5) triggers a reset. The now-cancelled subscription must not
+    // linger on the return value.
+    rerender({ query: 'select * from foo order by document limit 3' })
+
+    await waitFor(() => expect(result.current.items).to.have.lengthOf(3), {
+      timeout: 5000,
+    })
+    expect(result.current.syncSubscription).to.be.undefined
+    expect(result.current.error).to.be.null
+  })
+
   it('has the expected failure mode when used with a mutating query', async () => {
     const config = testConfig()
 
